@@ -229,11 +229,11 @@ class RtmApp {
     if (this.pairedWatch) {
       if (dot) dot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
       if (text) text.textContent = `Connected: ${this.pairedWatch} (Streaming)`;
-      if (btnText) btnText.textContent = `Change Watch ⌚`;
+      if (btnText) btnText.textContent = `Change Watch`;
     } else {
       if (dot) dot.className = 'w-2 h-2 rounded-full bg-slate-600';
       if (text) text.textContent = 'No wearable connected';
-      if (btnText) btnText.textContent = 'Add Smart Watch ⌚';
+      if (btnText) btnText.textContent = 'Add Smart Watch';
     }
   }
 
