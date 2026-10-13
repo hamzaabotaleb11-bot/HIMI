@@ -1,6 +1,7 @@
 /**
  * RTM (ريتم) - Main Application Controller
- * Handles UI interactions, state persistence, bilingual support, and plan generation.
+ * Handles Onboarding Wizard, Macronutrients progress/goal tracking,
+ * settings, bilingual support, and plan generation.
  */
 
 const PlanEngine = window.PlanEngine || {};
@@ -17,8 +18,40 @@ const i18n = {
     tabProgress: 'Progress Log',
     settingsBtn: 'Settings ⚙️',
 
+    // Onboarding Wizard
+    wizardHeader: 'Welcome to RTM (ريتم)',
+    wizardStepIndicator: 'Step {step} of 4',
+    step1Title: 'Your Body Metrics',
+    step1Subtitle: 'Used to calculate your precise Basal Metabolic Rate (BMR) & daily calorie burn.',
+    step2Title: 'Your Available Schedule',
+    step2Subtitle: 'We never force an unrealistic routine. RTM builds the optimal split around your free days.',
+    step3Title: 'Your Grocery & Meal Budget',
+    step3Subtitle: 'Fitness shouldn’t drain your wallet. We tailor meal staples to your budget tier.',
+    step4Title: 'Your Primary Goal',
+    step4Subtitle: 'Determines whether your body needs a deficit, surplus, or maintenance.',
+    nextStepBtn: 'Next Step →',
+    prevStepBtn: '← Back',
+    finishWizardBtn: 'Calculate TDEE & Build My Plan 🚀',
+
+    // Wizard Option Cards
+    budgetLowTitle: 'Smart Budget ($4 - $6 / day)',
+    budgetLowDesc: 'Eggs, oats, tuna, cottage cheese, rice, peanut butter',
+    budgetMidTitle: 'Standard Fresh ($8 - $12 / day)',
+    budgetMidDesc: 'Chicken breast, greek yogurt, sweet potatoes, berries, olive oil',
+    budgetHighTitle: 'Performance ($15+ / day)',
+    budgetHighDesc: 'Salmon fillets, sirloin steaks, avocados, whey isolate',
+
+    goalLoseTitle: 'Burn Fat & Shred',
+    goalLoseDesc: 'Moderate caloric deficit with high protein to protect lean muscle',
+    goalGainTitle: 'Build Lean Muscle (Hypertrophy)',
+    goalGainDesc: 'Lean caloric surplus optimized for muscle growth and recovery',
+    goalStrengthTitle: 'Maximize Strength & Power',
+    goalStrengthDesc: 'Performance-focused calories for heavy lifting and explosive power',
+    goalMaintainTitle: 'Healthy Maintenance',
+    goalMaintainDesc: 'Body recomposition and sustained lifestyle athletic energy',
+
     // Settings Modal
-    settingsTitle: 'Profile & Constraints',
+    settingsTitle: 'Profile & Constraints ⚙️',
     settingsSubtitle: 'Adjust your metrics. Your nutrition and training recalibrate automatically.',
     heightLabel: 'Height (cm)',
     weightLabel: 'Weight (kg)',
@@ -29,29 +62,25 @@ const i18n = {
     freeDaysLabel: 'Available Free Time (Days / Week):',
     daysValueSuffix: 'Days a week',
     budgetLabel: 'Grocery / Meal Budget Tier:',
-    budgetLow: 'Smart Budget ($4 - $6 / day) - Eggs, Oats, Tuna, Rice',
-    budgetMid: 'Standard Fresh ($8 - $12 / day) - Chicken, Berries, Greek Yogurt',
-    budgetHigh: 'Performance ($15+ / day) - Salmon, Steaks, Whey Isolate',
     goalLabel: 'Primary Goal:',
-    goalLose: 'Burn Fat & Shred',
-    goalGain: 'Build Lean Muscle (Hypertrophy)',
-    goalStrength: 'Maximize Strength & Power',
-    goalMaintain: 'Healthy Athletic Maintenance',
     saveSettingsBtn: 'Save & Recalibrate Plan',
+    restartWizardBtn: 'Run Setup Wizard Again 🔄',
     closeSettings: 'Close',
 
     // Overview Tab - Macronutrients
     macroMenuTitle: 'Daily Macronutrient Targets',
-    macroMenuSubtitle: 'Optimized fuel for your goal and current body composition.',
-    targetCalLabel: 'Target Daily Calories',
+    macroMenuSubtitle: 'Track your daily intake progress against your TDEE-calculated goals.',
+    targetCalLabel: 'Calories:',
     proteinLabel: 'Protein',
     carbsLabel: 'Carbohydrates',
     fatsLabel: 'Healthy Fats',
-    proteinDesc: 'Muscle preservation & growth (4 kcal/g)',
+    proteinDesc: 'Muscle repair & growth (4 kcal/g)',
     carbsDesc: 'High-energy training fuel (4 kcal/g)',
-    fatsDesc: 'Hormonal support & vital functions (9 kcal/g)',
-    adjustTargetsHint: 'Need to adjust your body stats or goals?',
+    fatsDesc: 'Hormonal support & health (9 kcal/g)',
+    adjustTargetsHint: 'Need to adjust your body metrics or goal?',
     openSettingsLink: 'Open Settings ⚙️',
+    quickLog: 'Quick Log:',
+    resetToday: 'Reset Today',
 
     // Workout Tab
     workoutHeader: 'Dynamic Weekly Routine',
@@ -85,8 +114,40 @@ const i18n = {
     tabProgress: 'متابعة التقدم',
     settingsBtn: 'الإعدادات ⚙️',
 
+    // Onboarding Wizard
+    wizardHeader: 'مرحباً بك في ريتم (RTM)',
+    wizardStepIndicator: 'الخطوة {step} من 4',
+    step1Title: 'بيانات جسمك الأساسية',
+    step1Subtitle: 'لحساب معدل الأيض الأساسي (BMR) وحرق السعرات اليومي بدقة.',
+    step2Title: 'جدول وقتك المتاح للتمرين',
+    step2Subtitle: 'لا نلزمك بجدول خيالي، بل نبني الخطة المثالية وفق أيام فراغك الفعلية.',
+    step3Title: 'ميزانية الوجبات والتسوق',
+    step3Subtitle: 'اللياقة لا يجب أن تستنزف محفظتك؛ نوفر مصادر بروتين عالية تناسب ميزانيتك.',
+    step4Title: 'هدفك الرياضي الأساسي',
+    step4Subtitle: 'لتحديد ما إذا كان جسمك يحتاج عجزاً أو فائضاً في السعرات.',
+    nextStepBtn: 'الخطوة التالية ←',
+    prevStepBtn: '→ السابق',
+    finishWizardBtn: 'احسب السعرات وأنشئ خطتي 🚀',
+
+    // Wizard Option Cards
+    budgetLowTitle: 'اقتصادي ذكي (٤ - ٦ $ يومياً)',
+    budgetLowDesc: 'بيض، شوفان، تونة، جبن قريش، أرز، زبدة فول سوداني',
+    budgetMidTitle: 'متوسط ومتنوع (٨ - ١٢ $ يومياً)',
+    budgetMidDesc: 'صدور دجاج، زبادي يوناني، بطاطا حلوة، توت، زيت زيتون',
+    budgetHighTitle: 'أداء عالي وفاخر (١٥+ $ يومياً)',
+    budgetHighDesc: 'سلمون طازج، ستيك بقري، أفوكادو، مكملات واي آيزوليت',
+
+    goalLoseTitle: 'حرق دهون وتنشيف',
+    goalLoseDesc: 'عجز سعرات معتدل مع بروتين عالي للحفاظ على الكتلة العضلية',
+    goalGainTitle: 'بناء وتضخيم عضلات صافية',
+    goalGainDesc: 'فائض سعرات مدروس ومحسوب لدعم الاستشفاء والبناء العضلي',
+    goalStrengthTitle: 'زيادة القوة البدنية والأداء',
+    goalStrengthDesc: 'سعرات تغذي أداء الأوزان العالية والطاقة الانفجارية',
+    goalMaintainTitle: 'حفاظ على الصحة واللياقة',
+    goalMaintainDesc: 'إعادة تشكيل الجسم وثبات الوزن مع طاقة ونشاط يومي',
+
     // Settings Modal
-    settingsTitle: 'الإعدادات والمعطيات',
+    settingsTitle: 'الإعدادات والمعطيات ⚙️',
     settingsSubtitle: 'عدّل بياناتك وظروفك، وسيتم تفصيل الخطة تلقائياً لتناسبك.',
     heightLabel: 'الطول (سم)',
     weightLabel: 'الوزن (كجم)',
@@ -97,21 +158,15 @@ const i18n = {
     freeDaysLabel: 'الوقت المتاح للتمرين (أيام بالأسبوع):',
     daysValueSuffix: 'أيام أسبوعياً',
     budgetLabel: 'الميزانية المخصصة للوجبات:',
-    budgetLow: 'اقتصادي ذكي (٤ - ٦ $ يومياً) - بيض، شوفان، تونة، أرز، قريش',
-    budgetMid: 'متوسط ومتنوع (٨ - ١٢ $ يومياً) - صدور دجاج، زبادي يوناني، بطاطا',
-    budgetHigh: 'أداء عالي وفاخر (١٥+ $ يومياً) - سلمون، ستيك، مكملات واي',
     goalLabel: 'الهدف الأساسي:',
-    goalLose: 'حرق دهون وتنشيف',
-    goalGain: 'بناء وتضخيم عضلات صافية',
-    goalStrength: 'زيادة القوة البدنية والأداء',
-    goalMaintain: 'حفاظ على الصحة واللياقة',
     saveSettingsBtn: 'حفظ وتحديث الخطة',
+    restartWizardBtn: 'إعادة تشغيل معالج الإعداد 🔄',
     closeSettings: 'إغلاق',
 
     // Overview Tab - Macronutrients
     macroMenuTitle: 'أهداف العناصر الغذائية اليومية (الماكروز)',
-    macroMenuSubtitle: 'توزيع دقيق ومدروس للطاقة يناسب هدفك وجسمك الحالي.',
-    targetCalLabel: 'السعرات الحرارية المستهدفة',
+    macroMenuSubtitle: 'تابع استهلاكك اليومي (المتحقق / المستهدف) المحسوب عبر معادلة TDEE.',
+    targetCalLabel: 'السعرات:',
     proteinLabel: 'البروتين',
     carbsLabel: 'الكربوهيدرات',
     fatsLabel: 'الدهون الصحية',
@@ -120,6 +175,8 @@ const i18n = {
     fatsDesc: 'لتوازن الهرمونات وصحة المفاصل (٩ سعرة/جم)',
     adjustTargetsHint: 'هل ترغب في تعديل وزنك أو أهدافك؟',
     openSettingsLink: 'افتح الإعدادات ⚙️',
+    quickLog: 'تسجيل سريع:',
+    resetToday: 'إعادة تعيين اليوم',
 
     // Workout Tab
     workoutHeader: 'جدول التمارين المخصص لك',
@@ -149,8 +206,9 @@ class RtmApp {
   constructor() {
     this.currentLang = localStorage.getItem('rtm_lang') || 'en';
     this.currentTab = 'overview';
+    this.wizardStep = 1;
 
-    // Default profile constraints
+    // Load or default user profile
     this.profile = JSON.parse(localStorage.getItem('rtm_profile')) || {
       heightCm: 175,
       weightKg: 78,
@@ -161,6 +219,7 @@ class RtmApp {
       goal: 'lose_weight'
     };
 
+    // Load progress history
     this.progressHistory = JSON.parse(localStorage.getItem('rtm_history')) || [
       { date: '2026-10-01', weight: 79.5, notes: 'Day 1: Started RTM journey' },
       { date: '2026-10-08', weight: 78.8, notes: 'Feeling stronger, hit protein target' },
@@ -175,8 +234,43 @@ class RtmApp {
     this.bindEvents();
     this.syncProfileToInputs();
     this.renderAll();
+
+    // Check if onboarding was completed before; if not, open wizard automatically
+    const onboarded = localStorage.getItem('rtm_onboarded');
+    if (!onboarded) {
+      this.openWizard();
+    }
   }
 
+  // Daily intake tracker (stored per date)
+  getTodayKey() {
+    return 'rtm_intake_' + new Date().toISOString().split('T')[0];
+  }
+
+  getDailyIntake() {
+    const saved = localStorage.getItem(this.getTodayKey());
+    return saved ? JSON.parse(saved) : { protein: 0, carbs: 0, fats: 0, calories: 0 };
+  }
+
+  saveDailyIntake(intake) {
+    localStorage.setItem(this.getTodayKey(), JSON.stringify(intake));
+    this.renderAll();
+  }
+
+  logMacro(macroType, amount) {
+    const intake = this.getDailyIntake();
+    intake[macroType] = Math.max(0, (intake[macroType] || 0) + amount);
+
+    // Recompute total calories from macros
+    intake.calories = (intake.protein * 4) + (intake.carbs * 4) + (intake.fats * 9);
+    this.saveDailyIntake(intake);
+  }
+
+  resetDailyIntake() {
+    this.saveDailyIntake({ protein: 0, carbs: 0, fats: 0, calories: 0 });
+  }
+
+  // Language management
   setLanguage(lang) {
     this.currentLang = lang;
     localStorage.setItem('rtm_lang', lang);
@@ -203,6 +297,7 @@ class RtmApp {
     }
   }
 
+  // Event bindings
   bindEvents() {
     // Language toggle
     const langToggleBtn = document.getElementById('langToggle');
@@ -212,7 +307,7 @@ class RtmApp {
       });
     }
 
-    // Settings Modal open/close
+    // Settings Modal
     const openSettingsBtn = document.getElementById('openSettingsBtn');
     if (openSettingsBtn) {
       openSettingsBtn.addEventListener('click', () => this.openSettings());
@@ -226,24 +321,28 @@ class RtmApp {
     const settingsModal = document.getElementById('settingsModal');
     if (settingsModal) {
       settingsModal.addEventListener('click', (e) => {
-        if (e.target === settingsModal) {
-          this.closeSettings();
-        }
+        if (e.target === settingsModal) this.closeSettings();
       });
     }
 
-    // Tabs navigation
+    const restartWizardBtn = document.getElementById('restartWizardBtn');
+    if (restartWizardBtn) {
+      restartWizardBtn.addEventListener('click', () => {
+        this.closeSettings();
+        this.openWizard();
+      });
+    }
+
+    // Navigation Tabs delegation
     document.addEventListener('click', (e) => {
       const tab = e.target.closest('.nav-tab');
       if (tab) {
         const target = tab.getAttribute('data-tab');
-        if (target) {
-          this.switchTab(target);
-        }
+        if (target) this.switchTab(target);
       }
     });
 
-    // Free days slider display
+    // Settings Free days slider display
     const freeDaysInput = document.getElementById('inputFreeDays');
     const freeDaysDisplay = document.getElementById('freeDaysValue');
     if (freeDaysInput && freeDaysDisplay) {
@@ -253,7 +352,7 @@ class RtmApp {
       });
     }
 
-    // Profile Settings Form submission
+    // Profile Settings Form
     const form = document.getElementById('profileForm');
     if (form) {
       form.addEventListener('submit', (e) => {
@@ -262,7 +361,7 @@ class RtmApp {
       });
     }
 
-    // Progress Log Form submission
+    // Progress Log Form
     const progressForm = document.getElementById('progressForm');
     if (progressForm) {
       progressForm.addEventListener('submit', (e) => {
@@ -270,21 +369,194 @@ class RtmApp {
         this.addProgressLog();
       });
     }
+
+    // Wizard Controls
+    const wizardNextBtn = document.getElementById('wizardNextBtn');
+    if (wizardNextBtn) {
+      wizardNextBtn.addEventListener('click', () => this.nextWizardStep());
+    }
+
+    const wizardPrevBtn = document.getElementById('wizardPrevBtn');
+    if (wizardPrevBtn) {
+      wizardPrevBtn.addEventListener('click', () => this.prevWizardStep());
+    }
+
+    const wizardFinishBtn = document.getElementById('wizardFinishBtn');
+    if (wizardFinishBtn) {
+      wizardFinishBtn.addEventListener('click', () => this.finishWizard());
+    }
+
+    // Wizard Option Card Selectors (Days, Budget, Goal)
+    document.querySelectorAll('.wizard-day-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.wizard-day-card').forEach(c => c.classList.remove('selected-card'));
+        card.classList.add('selected-card');
+        this.wizardFreeDays = parseInt(card.getAttribute('data-days'), 10);
+      });
+    });
+
+    document.querySelectorAll('.wizard-budget-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.wizard-budget-card').forEach(c => c.classList.remove('selected-card'));
+        card.classList.add('selected-card');
+        this.wizardBudgetTier = card.getAttribute('data-budget');
+      });
+    });
+
+    document.querySelectorAll('.wizard-goal-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.wizard-goal-card').forEach(c => c.classList.remove('selected-card'));
+        card.classList.add('selected-card');
+        this.wizardGoal = card.getAttribute('data-goal');
+      });
+    });
+
+    // Reset daily intake button
+    const resetBtn = document.getElementById('btnResetIntake');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        if (confirm(this.currentLang === 'ar' ? 'هل أنت متأكد من إعادة تعيين تسجيل اليوم؟' : 'Reset today\'s logged intake to 0?')) {
+          this.resetDailyIntake();
+        }
+      });
+    }
   }
 
+  // ============================================
+  // Onboarding Wizard Logic
+  // ============================================
+  openWizard() {
+    this.wizardStep = 1;
+    this.wizardFreeDays = this.profile.freeDays || 4;
+    this.wizardBudgetTier = this.profile.budgetTier || 'budget';
+    this.wizardGoal = this.profile.goal || 'lose_weight';
+
+    // Populate initial inputs in step 1
+    const wHeight = document.getElementById('wizHeight');
+    const wWeight = document.getElementById('wizWeight');
+    const wAge = document.getElementById('wizAge');
+    const wGender = document.getElementById('wizGender');
+
+    if (wHeight) wHeight.value = this.profile.heightCm;
+    if (wWeight) wWeight.value = this.profile.weightKg;
+    if (wAge) wAge.value = this.profile.age;
+    if (wGender) wGender.value = this.profile.gender;
+
+    // Select matching cards in steps 2, 3, 4
+    document.querySelectorAll('.wizard-day-card').forEach(c => {
+      c.classList.toggle('selected-card', parseInt(c.getAttribute('data-days'), 10) === this.wizardFreeDays);
+    });
+    document.querySelectorAll('.wizard-budget-card').forEach(c => {
+      c.classList.toggle('selected-card', c.getAttribute('data-budget') === this.wizardBudgetTier);
+    });
+    document.querySelectorAll('.wizard-goal-card').forEach(c => {
+      c.classList.toggle('selected-card', c.getAttribute('data-goal') === this.wizardGoal);
+    });
+
+    this.renderWizardStep();
+    const modal = document.getElementById('onboardingWizardModal');
+    if (modal) modal.classList.remove('opacity-0', 'pointer-events-none');
+  }
+
+  closeWizard() {
+    const modal = document.getElementById('onboardingWizardModal');
+    if (modal) modal.classList.add('opacity-0', 'pointer-events-none');
+  }
+
+  nextWizardStep() {
+    if (this.wizardStep === 1) {
+      // Validate inputs
+      const h = parseFloat(document.getElementById('wizHeight').value);
+      const w = parseFloat(document.getElementById('wizWeight').value);
+      const a = parseInt(document.getElementById('wizAge').value, 10);
+      if (!h || !w || !a) {
+        alert(this.currentLang === 'ar' ? 'يرجى إدخال الطول والوزن والعمر للمتابعة' : 'Please enter height, weight, and age to proceed');
+        return;
+      }
+    }
+    if (this.wizardStep < 4) {
+      this.wizardStep++;
+      this.renderWizardStep();
+    }
+  }
+
+  prevWizardStep() {
+    if (this.wizardStep > 1) {
+      this.wizardStep--;
+      this.renderWizardStep();
+    }
+  }
+
+  renderWizardStep() {
+    // Step indicators
+    for (let i = 1; i <= 4; i++) {
+      const stepIndicator = document.getElementById(`wizIndicator${i}`);
+      if (stepIndicator) {
+        stepIndicator.className = i === this.wizardStep
+          ? 'h-2 flex-1 rounded-full bg-emerald-400 transition-all duration-300'
+          : (i < this.wizardStep ? 'h-2 flex-1 rounded-full bg-emerald-500/40 transition-all duration-300' : 'h-2 flex-1 rounded-full bg-slate-800 transition-all duration-300');
+      }
+
+      const stepPane = document.getElementById(`wizStep${i}`);
+      if (stepPane) {
+        stepPane.classList.toggle('hidden', i !== this.wizardStep);
+      }
+    }
+
+    const stepLabel = document.getElementById('wizStepIndicatorText');
+    if (stepLabel) {
+      const template = i18n[this.currentLang].wizardStepIndicator;
+      stepLabel.textContent = template.replace('{step}', this.wizardStep);
+    }
+
+    // Toggle Back & Next / Finish buttons
+    const prevBtn = document.getElementById('wizardPrevBtn');
+    if (prevBtn) {
+      prevBtn.classList.toggle('hidden', this.wizardStep === 1);
+    }
+
+    const nextBtn = document.getElementById('wizardNextBtn');
+    const finishBtn = document.getElementById('wizardFinishBtn');
+    if (nextBtn) nextBtn.classList.toggle('hidden', this.wizardStep === 4);
+    if (finishBtn) finishBtn.classList.toggle('hidden', this.wizardStep !== 4);
+  }
+
+  finishWizard() {
+    const h = parseFloat(document.getElementById('wizHeight').value) || 175;
+    const w = parseFloat(document.getElementById('wizWeight').value) || 78;
+    const a = parseInt(document.getElementById('wizAge').value, 10) || 25;
+    const g = document.getElementById('wizGender').value || 'male';
+
+    this.profile = {
+      heightCm: h,
+      weightKg: w,
+      age: a,
+      gender: g,
+      freeDays: this.wizardFreeDays || 4,
+      budgetTier: this.wizardBudgetTier || 'budget',
+      goal: this.wizardGoal || 'lose_weight'
+    };
+
+    localStorage.setItem('rtm_profile', JSON.stringify(this.profile));
+    localStorage.setItem('rtm_onboarded', 'true');
+
+    this.closeWizard();
+    this.syncProfileToInputs();
+    this.renderAll();
+  }
+
+  // ============================================
+  // Settings & Tabs
+  // ============================================
   openSettings() {
     this.syncProfileToInputs();
     const modal = document.getElementById('settingsModal');
-    if (modal) {
-      modal.classList.remove('opacity-0', 'pointer-events-none');
-    }
+    if (modal) modal.classList.remove('opacity-0', 'pointer-events-none');
   }
 
   closeSettings() {
     const modal = document.getElementById('settingsModal');
-    if (modal) {
-      modal.classList.add('opacity-0', 'pointer-events-none');
-    }
+    if (modal) modal.classList.add('opacity-0', 'pointer-events-none');
   }
 
   switchTab(tabName) {
@@ -336,7 +608,6 @@ class RtmApp {
     localStorage.setItem('rtm_profile', JSON.stringify(this.profile));
     this.renderAll();
 
-    // Show temporary toast feedback and close modal after 600ms
     const toast = document.getElementById('saveToast');
     if (toast) {
       toast.classList.remove('opacity-0', 'pointer-events-none');
@@ -352,7 +623,6 @@ class RtmApp {
   addProgressLog() {
     const weightVal = parseFloat(document.getElementById('logWeight').value);
     const notesVal = document.getElementById('logNotes').value.trim();
-
     if (!weightVal) return;
 
     const newEntry = {
@@ -364,17 +634,18 @@ class RtmApp {
     this.progressHistory.unshift(newEntry);
     localStorage.setItem('rtm_history', JSON.stringify(this.progressHistory));
 
-    // Update profile weight if changed
     this.profile.weightKg = weightVal;
     localStorage.setItem('rtm_profile', JSON.stringify(this.profile));
     this.syncProfileToInputs();
 
     document.getElementById('logWeight').value = '';
     document.getElementById('logNotes').value = '';
-
     this.renderAll();
   }
 
+  // ============================================
+  // Render Everything (Macros, Workout, Meals)
+  // ============================================
   renderAll() {
     const isAr = this.currentLang === 'ar';
     const bmr = PlanEngine.calculateBMR(this.profile.weightKg, this.profile.heightCm, this.profile.age, this.profile.gender);
@@ -383,9 +654,14 @@ class RtmApp {
     const workoutPlan = PlanEngine.generateWorkoutSplit(this.profile.freeDays, this.profile.goal);
     const mealPlan = PlanEngine.generateBudgetMealPlan(this.profile.budgetTier, macros);
 
-    // 1. Overview Render: Macronutrients Menu
+    // Current daily intake progress
+    const intake = this.getDailyIntake();
+
+    // 1. Overview Render: progress / goal with a "/" in between
     const targetCalEl = document.getElementById('macroTargetCal');
-    if (targetCalEl) targetCalEl.textContent = `${macros.calories.toLocaleString()} kcal`;
+    if (targetCalEl) {
+      targetCalEl.innerHTML = `<span class="text-white">${intake.calories.toLocaleString()}</span> / <span class="text-emerald-400">${macros.calories.toLocaleString()} kcal</span>`;
+    }
 
     const goalBadgeEl = document.getElementById('macroGoalBadge');
     if (goalBadgeEl) {
@@ -398,43 +674,43 @@ class RtmApp {
       goalBadgeEl.textContent = goalsMap[this.profile.goal] || (isAr ? 'مخصص' : 'Custom');
     }
 
+    // Protein: progress / goal
     const proteinEl = document.getElementById('macroProtein');
-    if (proteinEl) proteinEl.textContent = `${macros.protein}g`;
+    if (proteinEl) {
+      proteinEl.innerHTML = `<span class="text-emerald-400 font-mono">${intake.protein}g</span> / <span class="text-white font-mono">${macros.protein}g</span>`;
+    }
 
+    // Carbs: progress / goal
     const carbsEl = document.getElementById('macroCarbs');
-    if (carbsEl) carbsEl.textContent = `${macros.carbs}g`;
+    if (carbsEl) {
+      carbsEl.innerHTML = `<span class="text-cyan-400 font-mono">${intake.carbs}g</span> / <span class="text-white font-mono">${macros.carbs}g</span>`;
+    }
 
+    // Fats: progress / goal
     const fatsEl = document.getElementById('macroFats');
-    if (fatsEl) fatsEl.textContent = `${macros.fats}g`;
+    if (fatsEl) {
+      fatsEl.innerHTML = `<span class="text-amber-400 font-mono">${intake.fats}g</span> / <span class="text-white font-mono">${macros.fats}g</span>`;
+    }
 
-    // Visual percentage proportions bar
-    const totalMacroCal = (macros.protein * 4) + (macros.carbs * 4) + (macros.fats * 9);
-    const pPct = Math.round(((macros.protein * 4) / totalMacroCal) * 100);
-    const cPct = Math.round(((macros.carbs * 4) / totalMacroCal) * 100);
-    const fPct = Math.max(0, 100 - (pPct + cPct));
-
-    const pBar = document.getElementById('barProtein');
-    const cBar = document.getElementById('barCarbs');
-    const fBar = document.getElementById('barFats');
-    if (pBar) {
-      pBar.style.width = `${pPct}%`;
-      pBar.title = `Protein: ${pPct}%`;
-    }
-    if (cBar) {
-      cBar.style.width = `${cPct}%`;
-      cBar.title = `Carbs: ${cPct}%`;
-    }
-    if (fBar) {
-      fBar.style.width = `${fPct}%`;
-      fBar.title = `Fats: ${fPct}%`;
-    }
+    // Percentages of progress vs target
+    const pProgressPct = Math.min(100, Math.round((intake.protein / Math.max(1, macros.protein)) * 100));
+    const cProgressPct = Math.min(100, Math.round((intake.carbs / Math.max(1, macros.carbs)) * 100));
+    const fProgressPct = Math.min(100, Math.round((intake.fats / Math.max(1, macros.fats)) * 100));
 
     const pPctLabel = document.getElementById('pctProtein');
     const cPctLabel = document.getElementById('pctCarbs');
     const fPctLabel = document.getElementById('pctFats');
-    if (pPctLabel) pPctLabel.textContent = `${pPct}%`;
-    if (cPctLabel) cPctLabel.textContent = `${cPct}%`;
-    if (fPctLabel) fPctLabel.textContent = `${fPct}%`;
+    if (pPctLabel) pPctLabel.textContent = `${pProgressPct}%`;
+    if (cPctLabel) cPctLabel.textContent = `${cProgressPct}%`;
+    if (fPctLabel) fPctLabel.textContent = `${fProgressPct}%`;
+
+    // Visual progress bars inside each card
+    const pProgBar = document.getElementById('progBarProtein');
+    const cProgBar = document.getElementById('progBarCarbs');
+    const fProgBar = document.getElementById('progBarFats');
+    if (pProgBar) pProgBar.style.width = `${pProgressPct}%`;
+    if (cProgBar) cProgBar.style.width = `${cProgressPct}%`;
+    if (fProgBar) fProgBar.style.width = `${fProgressPct}%`;
 
     // 2. Workout Tab Render
     const workoutContainer = document.getElementById('workoutScheduleContainer');
