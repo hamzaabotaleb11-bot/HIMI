@@ -1,9 +1,9 @@
 /**
  * RTM (ريتم) - Main Application Controller
- * Handles UI interactions, state persistence, bilingual support, and telemetry updates.
+ * Handles UI interactions, state persistence, bilingual support, and plan generation.
  */
+
 const PlanEngine = window.PlanEngine || {};
-const WearablesSimulator = window.WearablesSimulator;
 
 // Bilingual translations dictionary
 const i18n = {
@@ -14,12 +14,12 @@ const i18n = {
     tabOverview: 'Overview',
     tabWorkout: 'Workout Split',
     tabNutrition: 'Meal & Budget',
-    tabWearables: 'Wearables',
     tabProgress: 'Progress Log',
+    settingsBtn: 'Settings ⚙️',
 
-    // Profile form
-    profileTitle: 'Your Real-World Constraints',
-    profileSubtitle: 'Customize your inputs. Your plan adapts automatically.',
+    // Settings Modal
+    settingsTitle: 'Profile & Constraints',
+    settingsSubtitle: 'Adjust your metrics. Your nutrition and training recalibrate automatically.',
     heightLabel: 'Height (cm)',
     weightLabel: 'Weight (kg)',
     ageLabel: 'Age',
@@ -37,42 +37,36 @@ const i18n = {
     goalGain: 'Build Lean Muscle (Hypertrophy)',
     goalStrength: 'Maximize Strength & Power',
     goalMaintain: 'Healthy Athletic Maintenance',
-    updatePlanBtn: 'Recalibrate Plan',
+    saveSettingsBtn: 'Save & Recalibrate Plan',
+    closeSettings: 'Close',
 
-    // Overview Cards
-    tdeeLabel: 'Maintenance Burn (TDEE)',
+    // Overview Tab - Macronutrients
+    macroMenuTitle: 'Daily Macronutrient Targets',
+    macroMenuSubtitle: 'Optimized fuel for your goal and current body composition.',
     targetCalLabel: 'Target Daily Calories',
-    splitLabel: 'Training Routine',
-    budgetEstimateLabel: 'Est. Meal Cost',
-    wearableStatus: 'Smartwatch Sync',
-    connected: 'Connected',
-    disconnected: 'Not Connected',
-    connectPrompt: 'Pair Device',
-    disconnectPrompt: 'Disconnect',
+    proteinLabel: 'Protein',
+    carbsLabel: 'Carbohydrates',
+    fatsLabel: 'Healthy Fats',
+    proteinDesc: 'Muscle preservation & growth (4 kcal/g)',
+    carbsDesc: 'High-energy training fuel (4 kcal/g)',
+    fatsDesc: 'Hormonal support & vital functions (9 kcal/g)',
+    adjustTargetsHint: 'Need to adjust your body stats or goals?',
+    openSettingsLink: 'Open Settings ⚙️',
 
-    // Workout tab
+    // Workout Tab
     workoutHeader: 'Dynamic Weekly Routine',
     workoutSub: 'Optimized precisely for your schedule. High frequency, smart recovery.',
     exercisesTitle: 'Targeted Exercises',
     setsReps: 'Sets x Reps',
 
-    // Nutrition tab
+    // Nutrition Tab
     nutritionHeader: 'Budget-Smart Meal Strategy',
     nutritionSub: 'Hitting your protein targets without burning a hole in your wallet.',
     groceryListTitle: 'Core Grocery Staples (High-Value Protein & Carbs)',
     dailyMealSchedule: 'Daily Meal Breakdown',
     estCost: 'Estimated Daily Cost',
 
-    // Wearables tab
-    wearableHeader: 'Smartwatch Telemetry',
-    wearableSub: 'Simulate live biometric data feed from Apple Watch, Garmin, or WearOS.',
-    heartRateLabel: 'Heart Rate',
-    stepsLabel: 'Daily Steps',
-    activeBurnLabel: 'Active Calorie Burn',
-    batteryLabel: 'Battery Level',
-    lastSyncLabel: 'Last Synced',
-
-    // Progress tab
+    // Progress Tab
     progressHeader: 'Progress & Weigh-Ins',
     progressSub: 'Track your body transformation over time.',
     logWeightLabel: 'Log New Weight (kg)',
@@ -88,12 +82,12 @@ const i18n = {
     tabOverview: 'نظرة عامة',
     tabWorkout: 'جدول التمارين',
     tabNutrition: 'الغذاء والميزانية',
-    tabWearables: 'الساعة الذكية',
     tabProgress: 'متابعة التقدم',
+    settingsBtn: 'الإعدادات ⚙️',
 
-    // Profile form
-    profileTitle: 'معطياتك وظروفك الحقيقية',
-    profileSubtitle: 'أدخل بياناتك، وسيتم تفصيل الخطة تلقائياً لتناسب ظروفك.',
+    // Settings Modal
+    settingsTitle: 'الإعدادات والمعطيات',
+    settingsSubtitle: 'عدّل بياناتك وظروفك، وسيتم تفصيل الخطة تلقائياً لتناسبك.',
     heightLabel: 'الطول (سم)',
     weightLabel: 'الوزن (كجم)',
     ageLabel: 'العمر',
@@ -111,42 +105,36 @@ const i18n = {
     goalGain: 'بناء وتضخيم عضلات صافية',
     goalStrength: 'زيادة القوة البدنية والأداء',
     goalMaintain: 'حفاظ على الصحة واللياقة',
-    updatePlanBtn: 'تحديث الخطة الآن',
+    saveSettingsBtn: 'حفظ وتحديث الخطة',
+    closeSettings: 'إغلاق',
 
-    // Overview Cards
-    tdeeLabel: 'الحرق الطبيعي (TDEE)',
-    targetCalLabel: 'السعرات المستهدفة يومياً',
-    splitLabel: 'نظام التمرين',
-    budgetEstimateLabel: 'تكلفة الوجبات التقريبية',
-    wearableStatus: 'مزامنة الساعة الذكية',
-    connected: 'متصل',
-    disconnected: 'غير متصل',
-    connectPrompt: 'ربط الساعة',
-    disconnectPrompt: 'فصل الاتصال',
+    // Overview Tab - Macronutrients
+    macroMenuTitle: 'أهداف العناصر الغذائية اليومية (الماكروز)',
+    macroMenuSubtitle: 'توزيع دقيق ومدروس للطاقة يناسب هدفك وجسمك الحالي.',
+    targetCalLabel: 'السعرات الحرارية المستهدفة',
+    proteinLabel: 'البروتين',
+    carbsLabel: 'الكربوهيدرات',
+    fatsLabel: 'الدهون الصحية',
+    proteinDesc: 'للبناء العضلي والاستشفاء (٤ سعرة/جم)',
+    carbsDesc: 'مصدر الطاقة للأداء والتمارين (٤ سعرة/جم)',
+    fatsDesc: 'لتوازن الهرمونات وصحة المفاصل (٩ سعرة/جم)',
+    adjustTargetsHint: 'هل ترغب في تعديل وزنك أو أهدافك؟',
+    openSettingsLink: 'افتح الإعدادات ⚙️',
 
-    // Workout tab
+    // Workout Tab
     workoutHeader: 'جدول التمارين المخصص لك',
     workoutSub: 'مفصل بدقة حسب الأيام المتاحة لديك لتحقيق أفضل استشفاء وتطور.',
     exercisesTitle: 'التمارين المستهدفة',
     setsReps: 'الجولات والتكرارات',
 
-    // Nutrition tab
+    // Nutrition Tab
     nutritionHeader: 'خطة الوجبات الذكية والموفرة',
     nutritionSub: 'تغطية احتياجك من البروتين والطاقة بأعلى كفاءة وأفضل سعر.',
     groceryListTitle: 'قائمة التسوق الأساسية (بروتين عالي وتكلفة اقتصادية)',
     dailyMealSchedule: 'توزيع الوجبات اليومية',
     estCost: 'التكلفة اليومية التقديرية',
 
-    // Wearables tab
-    wearableHeader: 'بيانات الساعة الذكية الحية',
-    wearableSub: 'محاكاة البث المباشر للقياسات الحيوية من Apple Watch أو Garmin أو WearOS.',
-    heartRateLabel: 'نبضات القلب',
-    stepsLabel: 'الخطوات اليومية',
-    activeBurnLabel: 'الحرق النشط',
-    batteryLabel: 'نسبة البطارية',
-    lastSyncLabel: 'آخر مزامنة',
-
-    // Progress tab
+    // Progress Tab
     progressHeader: 'سجل الوزن والتقدم',
     progressSub: 'تابع تطور وزنك وملاحظاتك مع مرور الأسابيع.',
     logWeightLabel: 'تسجيل وزن جديد (كجم)',
@@ -162,7 +150,7 @@ class RtmApp {
     this.currentLang = localStorage.getItem('rtm_lang') || 'en';
     this.currentTab = 'overview';
 
-    // Default profile
+    // Default profile constraints
     this.profile = JSON.parse(localStorage.getItem('rtm_profile')) || {
       heightCm: 175,
       weightKg: 78,
@@ -179,8 +167,6 @@ class RtmApp {
       { date: '2026-10-13', weight: 78.0, notes: 'Hit all 4 workout days, meals on budget' }
     ];
 
-    this.wearables = new WearablesSimulator(this.onWearableTelemetry.bind(this));
-
     this.init();
   }
 
@@ -189,9 +175,6 @@ class RtmApp {
     this.bindEvents();
     this.syncProfileToInputs();
     this.renderAll();
-
-    // Auto-connect wearable for interactive feel
-    this.wearables.connect();
   }
 
   setLanguage(lang) {
@@ -229,7 +212,27 @@ class RtmApp {
       });
     }
 
-    // Tabs navigation - delegating so clicks anywhere inside the button work smoothly
+    // Settings Modal open/close
+    const openSettingsBtn = document.getElementById('openSettingsBtn');
+    if (openSettingsBtn) {
+      openSettingsBtn.addEventListener('click', () => this.openSettings());
+    }
+
+    const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+    if (closeSettingsBtn) {
+      closeSettingsBtn.addEventListener('click', () => this.closeSettings());
+    }
+
+    const settingsModal = document.getElementById('settingsModal');
+    if (settingsModal) {
+      settingsModal.addEventListener('click', (e) => {
+        if (e.target === settingsModal) {
+          this.closeSettings();
+        }
+      });
+    }
+
+    // Tabs navigation
     document.addEventListener('click', (e) => {
       const tab = e.target.closest('.nav-tab');
       if (tab) {
@@ -240,7 +243,7 @@ class RtmApp {
       }
     });
 
-    // Free days slider live label
+    // Free days slider display
     const freeDaysInput = document.getElementById('inputFreeDays');
     const freeDaysDisplay = document.getElementById('freeDaysValue');
     if (freeDaysInput && freeDaysDisplay) {
@@ -250,7 +253,7 @@ class RtmApp {
       });
     }
 
-    // Recalibrate button
+    // Profile Settings Form submission
     const form = document.getElementById('profileForm');
     if (form) {
       form.addEventListener('submit', (e) => {
@@ -259,21 +262,28 @@ class RtmApp {
       });
     }
 
-    // Wearable toggle
-    const wearToggleBtn = document.getElementById('wearableToggleBtn');
-    if (wearToggleBtn) {
-      wearToggleBtn.addEventListener('click', () => {
-        this.wearables.toggleConnection();
-      });
-    }
-
-    // Add progress log
+    // Progress Log Form submission
     const progressForm = document.getElementById('progressForm');
     if (progressForm) {
       progressForm.addEventListener('submit', (e) => {
         e.preventDefault();
         this.addProgressLog();
       });
+    }
+  }
+
+  openSettings() {
+    this.syncProfileToInputs();
+    const modal = document.getElementById('settingsModal');
+    if (modal) {
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+    }
+  }
+
+  closeSettings() {
+    const modal = document.getElementById('settingsModal');
+    if (modal) {
+      modal.classList.add('opacity-0', 'pointer-events-none');
     }
   }
 
@@ -289,13 +299,21 @@ class RtmApp {
   }
 
   syncProfileToInputs() {
-    document.getElementById('inputHeight').value = this.profile.heightCm;
-    document.getElementById('inputWeight').value = this.profile.weightKg;
-    document.getElementById('inputAge').value = this.profile.age;
-    document.getElementById('inputGender').value = this.profile.gender;
-    document.getElementById('inputFreeDays').value = this.profile.freeDays;
-    document.getElementById('inputBudget').value = this.profile.budgetTier;
-    document.getElementById('inputGoal').value = this.profile.goal;
+    const h = document.getElementById('inputHeight');
+    const w = document.getElementById('inputWeight');
+    const a = document.getElementById('inputAge');
+    const g = document.getElementById('inputGender');
+    const fd = document.getElementById('inputFreeDays');
+    const b = document.getElementById('inputBudget');
+    const goal = document.getElementById('inputGoal');
+
+    if (h) h.value = this.profile.heightCm;
+    if (w) w.value = this.profile.weightKg;
+    if (a) a.value = this.profile.age;
+    if (g) g.value = this.profile.gender;
+    if (fd) fd.value = this.profile.freeDays;
+    if (b) b.value = this.profile.budgetTier;
+    if (goal) goal.value = this.profile.goal;
 
     const freeDaysDisplay = document.getElementById('freeDaysValue');
     if (freeDaysDisplay) {
@@ -318,11 +336,16 @@ class RtmApp {
     localStorage.setItem('rtm_profile', JSON.stringify(this.profile));
     this.renderAll();
 
-    // Show temporary toast or feedback
+    // Show temporary toast feedback and close modal after 600ms
     const toast = document.getElementById('saveToast');
     if (toast) {
       toast.classList.remove('opacity-0', 'pointer-events-none');
-      setTimeout(() => toast.classList.add('opacity-0', 'pointer-events-none'), 2200);
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'pointer-events-none');
+        this.closeSettings();
+      }, 700);
+    } else {
+      this.closeSettings();
     }
   }
 
@@ -360,22 +383,64 @@ class RtmApp {
     const workoutPlan = PlanEngine.generateWorkoutSplit(this.profile.freeDays, this.profile.goal);
     const mealPlan = PlanEngine.generateBudgetMealPlan(this.profile.budgetTier, macros);
 
-    // 1. Overview Render
-    document.getElementById('statTDEE').textContent = `${tdee} kcal`;
-    document.getElementById('statTargetCal').textContent = `${macros.calories} kcal`;
-    document.getElementById('statSplitName').textContent = isAr ? workoutPlan.splitNameAr : workoutPlan.splitName;
-    document.getElementById('statBudgetCost').textContent = isAr ? mealPlan.estimatedCostPerDayAr : mealPlan.estimatedCostPerDay;
+    // 1. Overview Render: Macronutrients Menu
+    const targetCalEl = document.getElementById('macroTargetCal');
+    if (targetCalEl) targetCalEl.textContent = `${macros.calories.toLocaleString()} kcal`;
 
-    // Macro pills in overview
-    document.getElementById('macroProtein').textContent = `${macros.protein}g`;
-    document.getElementById('macroCarbs').textContent = `${macros.carbs}g`;
-    document.getElementById('macroFats').textContent = `${macros.fats}g`;
+    const goalBadgeEl = document.getElementById('macroGoalBadge');
+    if (goalBadgeEl) {
+      const goalsMap = {
+        lose_weight: isAr ? 'حرق دهون' : 'Fat Loss',
+        gain_muscle: isAr ? 'بناء عضلي' : 'Lean Bulk',
+        strength: isAr ? 'قوة بدنية' : 'Strength',
+        maintain: isAr ? 'حفاظ على الوزن' : 'Maintenance'
+      };
+      goalBadgeEl.textContent = goalsMap[this.profile.goal] || (isAr ? 'مخصص' : 'Custom');
+    }
+
+    const proteinEl = document.getElementById('macroProtein');
+    if (proteinEl) proteinEl.textContent = `${macros.protein}g`;
+
+    const carbsEl = document.getElementById('macroCarbs');
+    if (carbsEl) carbsEl.textContent = `${macros.carbs}g`;
+
+    const fatsEl = document.getElementById('macroFats');
+    if (fatsEl) fatsEl.textContent = `${macros.fats}g`;
+
+    // Visual percentage proportions bar
+    const totalMacroCal = (macros.protein * 4) + (macros.carbs * 4) + (macros.fats * 9);
+    const pPct = Math.round(((macros.protein * 4) / totalMacroCal) * 100);
+    const cPct = Math.round(((macros.carbs * 4) / totalMacroCal) * 100);
+    const fPct = Math.max(0, 100 - (pPct + cPct));
+
+    const pBar = document.getElementById('barProtein');
+    const cBar = document.getElementById('barCarbs');
+    const fBar = document.getElementById('barFats');
+    if (pBar) {
+      pBar.style.width = `${pPct}%`;
+      pBar.title = `Protein: ${pPct}%`;
+    }
+    if (cBar) {
+      cBar.style.width = `${cPct}%`;
+      cBar.title = `Carbs: ${cPct}%`;
+    }
+    if (fBar) {
+      fBar.style.width = `${fPct}%`;
+      fBar.title = `Fats: ${fPct}%`;
+    }
+
+    const pPctLabel = document.getElementById('pctProtein');
+    const cPctLabel = document.getElementById('pctCarbs');
+    const fPctLabel = document.getElementById('pctFats');
+    if (pPctLabel) pPctLabel.textContent = `${pPct}%`;
+    if (cPctLabel) cPctLabel.textContent = `${cPct}%`;
+    if (fPctLabel) fPctLabel.textContent = `${fPct}%`;
 
     // 2. Workout Tab Render
     const workoutContainer = document.getElementById('workoutScheduleContainer');
     if (workoutContainer) {
       workoutContainer.innerHTML = '';
-      workoutPlan.schedule.forEach((daySchedule, idx) => {
+      workoutPlan.schedule.forEach((daySchedule) => {
         const card = document.createElement('div');
         card.className = 'glass-card p-5 mb-4 border border-white/5';
         card.innerHTML = `
@@ -453,41 +518,6 @@ class RtmApp {
         `).join('');
       }
     }
-  }
-
-  onWearableTelemetry(data) {
-    const isAr = this.currentLang === 'ar';
-    const statusText = data.isConnected ? (isAr ? 'متصل' : 'Connected') : (isAr ? 'غير متصل' : 'Disconnected');
-    const btnText = data.isConnected ? (isAr ? 'فصل الاتصال' : 'Disconnect') : (isAr ? 'ربط الساعة' : 'Pair Device');
-
-    // Update Overview mini badge
-    const badge = document.getElementById('overviewWearableBadge');
-    if (badge) {
-      badge.textContent = statusText;
-      badge.className = `badge-pill text-xs ${data.isConnected ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'}`;
-    }
-
-    // Update Wearables Tab
-    const toggleBtn = document.getElementById('wearableToggleBtn');
-    if (toggleBtn) {
-      toggleBtn.textContent = btnText;
-      toggleBtn.className = `px-4 py-2 rounded-xl text-xs font-bold transition-all ${data.isConnected ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30 hover:bg-rose-500/30' : 'bg-emerald-500 text-slate-950 hover:bg-emerald-400'}`;
-    }
-
-    const heartRateEl = document.getElementById('telemetryHeartRate');
-    if (heartRateEl) heartRateEl.textContent = data.isConnected ? `${data.heartRate} BPM` : '-- BPM';
-
-    const stepsEl = document.getElementById('telemetrySteps');
-    if (stepsEl) stepsEl.textContent = data.isConnected ? data.steps.toLocaleString() : '--';
-
-    const caloriesEl = document.getElementById('telemetryCalories');
-    if (caloriesEl) caloriesEl.textContent = data.isConnected ? `${data.activeCalories} kcal` : '-- kcal';
-
-    const batteryEl = document.getElementById('telemetryBattery');
-    if (batteryEl) batteryEl.textContent = data.isConnected ? `${data.battery}%` : '--%';
-
-    const lastSyncEl = document.getElementById('telemetryLastSync');
-    if (lastSyncEl) lastSyncEl.textContent = data.isConnected ? data.lastSync : '--';
   }
 }
 

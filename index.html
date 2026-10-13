@@ -34,8 +34,8 @@
   <div class="fixed inset-0 pointer-events-none bg-radial-gradient z-0"></div>
 
   <!-- Header -->
-  <header class="relative z-10 border-b border-white/10 bg-[#0c121e]/80 backdrop-blur-md sticky top-0 px-4 lg:px-8 py-3.5">
-    <div class="max-w-7xl mx-auto flex items-center justify-between">
+  <header class="relative z-10 border-b border-white/10 bg-[#0c121e]/85 backdrop-blur-md sticky top-0 px-4 lg:px-8 py-3.5">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-3">
         <!-- Logo Icon -->
         <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center font-black text-slate-950 text-xl shadow-lg shadow-emerald-500/20">
@@ -52,26 +52,25 @@
         </div>
       </div>
 
-      <!-- Action items in header -->
-      <div class="flex items-center gap-3">
-        <!-- Wearable status pill in header -->
-        <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/90 border border-white/10 text-xs">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span class="text-slate-400" data-i18n="wearableStatus">Smartwatch:</span>
-          <span id="overviewWearableBadge" class="font-semibold text-emerald-400">Connected</span>
-        </div>
+      <!-- Action items in header: Settings & Language -->
+      <div class="flex items-center gap-2.5">
+        <!-- Settings Button -->
+        <button id="openSettingsBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-white/10 transition shadow-sm hover:border-emerald-500/40">
+          <span>⚙️</span>
+          <span data-i18n="settingsBtn">Settings ⚙️</span>
+        </button>
 
         <!-- Language Switcher -->
-        <button id="langToggle" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/10 transition">
+        <button id="langToggle" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-white/10 transition">
           العربية 🌐
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Navigation Tabs Bar -->
+  <!-- Navigation Tabs Bar (Simplified: No Wearables) -->
   <nav class="relative z-10 border-b border-white/5 bg-[#090d16]/95 backdrop-blur px-4 lg:px-8 py-2">
-    <div class="max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+    <div class="max-w-5xl mx-auto flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
       <button class="nav-tab active flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border border-transparent text-slate-400 hover:text-white" data-tab="overview" onclick="window.rtmApp && window.rtmApp.switchTab('overview')">
         <span>📊</span> <span data-i18n="tabOverview">Overview</span>
       </button>
@@ -81,309 +80,274 @@
       <button class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border border-transparent text-slate-400 hover:text-white" data-tab="nutrition" onclick="window.rtmApp && window.rtmApp.switchTab('nutrition')">
         <span>🥗</span> <span data-i18n="tabNutrition">Meal & Budget</span>
       </button>
-      <button class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border border-transparent text-slate-400 hover:text-white" data-tab="wearables" onclick="window.rtmApp && window.rtmApp.switchTab('wearables')">
-        <span>⌚</span> <span data-i18n="tabWearables">Wearables</span>
-      </button>
       <button class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border border-transparent text-slate-400 hover:text-white" data-tab="progress" onclick="window.rtmApp && window.rtmApp.switchTab('progress')">
         <span>📈</span> <span data-i18n="tabProgress">Progress Log</span>
       </button>
     </div>
   </nav>
 
-  <!-- Main Content Layout -->
-  <main class="relative z-10 flex-1 max-w-7xl mx-auto w-full px-4 lg:px-8 py-6">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+  <!-- Main Content Layout (Clean & Centered) -->
+  <main class="relative z-10 flex-1 max-w-5xl mx-auto w-full px-4 lg:px-8 py-8">
 
-      <!-- LEFT SIDEBAR: Real-World Constraints Form (Always accessible) -->
-      <aside class="lg:col-span-4 glass-card p-6 border border-white/10 sticky lg:top-24 shadow-2xl">
-        <div class="flex items-center justify-between mb-4">
+    <!-- TAB 1: OVERVIEW (ONLY MACRONUTRIENTS MENU VISIBLE) -->
+    <div id="pane-overview" class="tab-content space-y-6">
+      
+      <!-- Primary Macronutrients Card -->
+      <div class="glass-card p-6 sm:p-8 border border-white/10 shadow-2xl">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 mb-6 border-b border-white/10 gap-3">
           <div>
-            <h2 class="text-base font-bold text-white flex items-center gap-2" data-i18n="profileTitle">
-              Your Real-World Constraints
-            </h2>
-            <p class="text-xs text-slate-400 mt-0.5" data-i18n="profileSubtitle">
-              Customize your inputs. Your plan adapts automatically.
+            <div class="flex items-center gap-2">
+              <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight" data-i18n="macroMenuTitle">
+                Daily Macronutrient Targets
+              </h2>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-400 mt-1" data-i18n="macroMenuSubtitle">
+              Optimized fuel for your goal and current body composition.
             </p>
           </div>
-          <span class="text-emerald-400 text-lg">⚡</span>
+          
+          <div class="flex items-center gap-2">
+            <!-- Calorie Pill -->
+            <div class="px-4 py-2 rounded-2xl bg-slate-900/90 border border-emerald-500/30 flex items-center gap-2">
+              <span class="text-xs text-slate-400" data-i18n="targetCalLabel">Target:</span>
+              <span id="macroTargetCal" class="text-base sm:text-lg font-black text-emerald-400 font-mono">-- kcal</span>
+            </div>
+            <!-- Goal Badge -->
+            <span id="macroGoalBadge" class="badge-pill bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 text-xs px-3 py-1.5">
+              Goal
+            </span>
+          </div>
         </div>
 
-        <form id="profileForm" class="space-y-4">
-          <!-- Height & Weight -->
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-semibold text-slate-300 mb-1" data-i18n="heightLabel">Height (cm)</label>
-              <input type="number" id="inputHeight" min="120" max="240" value="175" required class="text-sm">
+        <!-- 3 Primary Macronutrient Stat Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <!-- Protein -->
+          <div class="p-5 rounded-2xl bg-slate-900/70 border border-emerald-500/20 text-center relative overflow-hidden group hover:border-emerald-500/40 transition">
+            <div class="flex items-center justify-between text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2">
+              <span data-i18n="proteinLabel">Protein</span>
+              <span id="pctProtein" class="font-mono text-slate-400 text-[11px]">--%</span>
             </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-300 mb-1" data-i18n="weightLabel">Weight (kg)</label>
-              <input type="number" id="inputWeight" min="35" max="250" step="0.5" value="78" required class="text-sm">
-            </div>
+            <div id="macroProtein" class="text-3xl sm:text-4xl font-black text-white font-mono my-1 tracking-tight">--g</div>
+            <p class="text-xs text-slate-400 mt-1" data-i18n="proteinDesc">Muscle preservation & growth (4 kcal/g)</p>
           </div>
 
-          <!-- Age & Gender -->
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-semibold text-slate-300 mb-1" data-i18n="ageLabel">Age</label>
-              <input type="number" id="inputAge" min="14" max="99" value="25" required class="text-sm">
+          <!-- Carbs -->
+          <div class="p-5 rounded-2xl bg-slate-900/70 border border-cyan-500/20 text-center relative overflow-hidden group hover:border-cyan-500/40 transition">
+            <div class="flex items-center justify-between text-xs font-bold text-cyan-400 uppercase tracking-wider mb-2">
+              <span data-i18n="carbsLabel">Carbohydrates</span>
+              <span id="pctCarbs" class="font-mono text-slate-400 text-[11px]">--%</span>
             </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-300 mb-1" data-i18n="genderLabel">Gender</label>
-              <select id="inputGender" class="text-sm">
-                <option value="male" data-i18n="genderMale">Male</option>
-                <option value="female" data-i18n="genderFemale">Female</option>
-              </select>
-            </div>
+            <div id="macroCarbs" class="text-3xl sm:text-4xl font-black text-white font-mono my-1 tracking-tight">--g</div>
+            <p class="text-xs text-slate-400 mt-1" data-i18n="carbsDesc">High-energy training fuel (4 kcal/g)</p>
           </div>
 
-          <!-- Free Time Commitment (2 to 6 days slider) -->
-          <div class="p-3.5 rounded-xl bg-slate-900/60 border border-white/5 space-y-2">
-            <div class="flex justify-between items-center text-xs">
-              <span class="font-semibold text-slate-200" data-i18n="freeDaysLabel">Available Free Time (Days/Wk):</span>
-              <span id="freeDaysValue" class="font-bold text-emerald-400 font-mono text-sm">4 Days a week</span>
+          <!-- Fats -->
+          <div class="p-5 rounded-2xl bg-slate-900/70 border border-amber-500/20 text-center relative overflow-hidden group hover:border-amber-500/40 transition">
+            <div class="flex items-center justify-between text-xs font-bold text-amber-400 uppercase tracking-wider mb-2">
+              <span data-i18n="fatsLabel">Healthy Fats</span>
+              <span id="pctFats" class="font-mono text-slate-400 text-[11px]">--%</span>
             </div>
-            <input type="range" id="inputFreeDays" min="2" max="6" step="1" value="4" class="w-full">
-            <div class="flex justify-between text-[10px] text-slate-500 font-mono">
-              <span>2 Days (Full Body)</span>
-              <span>4 Days (U/L)</span>
-              <span>6 Days (PPL x2)</span>
-            </div>
+            <div id="macroFats" class="text-3xl sm:text-4xl font-black text-white font-mono my-1 tracking-tight">--g</div>
+            <p class="text-xs text-slate-400 mt-1" data-i18n="fatsDesc">Hormonal support & vital functions (9 kcal/g)</p>
           </div>
+        </div>
 
-          <!-- Meal Budget Tier -->
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1" data-i18n="budgetLabel">Meal Budget Tier:</label>
-            <select id="inputBudget" class="text-xs">
-              <option value="budget" data-i18n="budgetLow">Smart Budget ($4 - $6 / day) - Eggs, Oats, Tuna, Rice</option>
-              <option value="moderate" data-i18n="budgetMid">Standard Fresh ($8 - $12 / day) - Chicken, Berries, Greek Yogurt</option>
-              <option value="premium" data-i18n="budgetHigh">Performance ($15+ / day) - Salmon, Steaks, Whey Isolate</option>
-            </select>
+        <!-- Proportional Macro Distribution Bar -->
+        <div class="space-y-2 mb-6">
+          <div class="h-3 w-full rounded-full bg-slate-950 overflow-hidden flex border border-white/5 p-0.5 gap-1">
+            <div id="barProtein" class="h-full bg-emerald-400 rounded-full transition-all duration-500" style="width: 30%"></div>
+            <div id="barCarbs" class="h-full bg-cyan-400 rounded-full transition-all duration-500" style="width: 45%"></div>
+            <div id="barFats" class="h-full bg-amber-400 rounded-full transition-all duration-500" style="width: 25%"></div>
           </div>
-
-          <!-- Fitness Goal -->
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1" data-i18n="goalLabel">Primary Goal:</label>
-            <select id="inputGoal" class="text-sm">
-              <option value="lose_weight" data-i18n="goalLose">Burn Fat & Shred</option>
-              <option value="gain_muscle" data-i18n="goalGain">Build Lean Muscle (Hypertrophy)</option>
-              <option value="strength" data-i18n="goalStrength">Maximize Strength & Power</option>
-              <option value="maintain" data-i18n="goalMaintain">Healthy Athletic Maintenance</option>
-            </select>
+          <div class="flex justify-between items-center text-[11px] text-slate-400 px-1">
+            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> <span data-i18n="proteinLabel">Protein</span></span>
+            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-cyan-400"></span> <span data-i18n="carbsLabel">Carbs</span></span>
+            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-400"></span> <span data-i18n="fatsLabel">Fats</span></span>
           </div>
+        </div>
 
-          <!-- Submit Button -->
-          <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-bold text-sm shadow-lg shadow-emerald-500/20 transition-all active:scale-[0.98]">
-            <span data-i18n="updatePlanBtn">Recalibrate Plan</span> 🔄
+        <!-- Call to Action footer inside card -->
+        <div class="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+          <span data-i18n="adjustTargetsHint">Need to adjust your body stats, free days, or budget?</span>
+          <button onclick="window.rtmApp && window.rtmApp.openSettings()" class="text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1 transition">
+            <span data-i18n="openSettingsLink">Open Settings ⚙️</span>
           </button>
-        </form>
-
-        <!-- Save feedback toast -->
-        <div id="saveToast" class="opacity-0 pointer-events-none transition-opacity duration-300 mt-3 p-2 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs text-center font-medium">
-          ✓ Plan recalibrated and saved!
         </div>
-      </aside>
-
-      <!-- RIGHT AREA: Dynamic Tab Panes -->
-      <section class="lg:col-span-8">
-
-        <!-- TAB 1: OVERVIEW -->
-        <div id="pane-overview" class="tab-content space-y-6">
-          <!-- Top KPI Metrics Grid -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div class="glass-card p-4 border border-white/10">
-              <div class="text-[11px] text-slate-400 font-semibold mb-1" data-i18n="tdeeLabel">Maintenance Burn</div>
-              <div id="statTDEE" class="text-xl font-black text-white font-mono">-- kcal</div>
-              <div class="text-[10px] text-slate-500 mt-1">Based on daily activity</div>
-            </div>
-            <div class="glass-card p-4 border border-white/10">
-              <div class="text-[11px] text-emerald-400 font-semibold mb-1" data-i18n="targetCalLabel">Target Daily Calories</div>
-              <div id="statTargetCal" class="text-xl font-black text-emerald-400 font-mono">-- kcal</div>
-              <div class="text-[10px] text-emerald-500/80 mt-1">Calculated for goal</div>
-            </div>
-            <div class="glass-card p-4 border border-white/10">
-              <div class="text-[11px] text-cyan-400 font-semibold mb-1" data-i18n="splitLabel">Training Routine</div>
-              <div id="statSplitName" class="text-sm font-bold text-white leading-snug">--</div>
-              <div class="text-[10px] text-slate-500 mt-1">Matched to free days</div>
-            </div>
-            <div class="glass-card p-4 border border-white/10">
-              <div class="text-[11px] text-amber-400 font-semibold mb-1" data-i18n="budgetEstimateLabel">Est. Meal Cost</div>
-              <div id="statBudgetCost" class="text-sm font-bold text-amber-300 leading-snug">--</div>
-              <div class="text-[10px] text-slate-500 mt-1">High protein value</div>
-            </div>
-          </div>
-
-          <!-- Macro Distribution Card -->
-          <div class="glass-card p-6 border border-white/10">
-            <div class="flex items-center justify-between mb-4">
-              <div>
-                <h3 class="text-sm font-bold text-white">Daily Macronutrient Targets</h3>
-                <p class="text-xs text-slate-400">Target nutrition for maximum body recomposition</p>
-              </div>
-              <span class="badge-pill bg-cyan-500/10 text-cyan-400 text-xs border border-cyan-500/20">Optimal Fuel</span>
-            </div>
-
-            <div class="grid grid-cols-3 gap-4">
-              <div class="p-4 rounded-xl bg-slate-900/60 border border-white/5 text-center">
-                <span class="text-xs text-emerald-400 font-semibold uppercase tracking-wider">Protein</span>
-                <div id="macroProtein" class="text-2xl font-black text-white font-mono mt-1">--g</div>
-                <span class="text-[10px] text-slate-400">Muscle recovery & repair</span>
-              </div>
-              <div class="p-4 rounded-xl bg-slate-900/60 border border-white/5 text-center">
-                <span class="text-xs text-cyan-400 font-semibold uppercase tracking-wider">Carbs</span>
-                <div id="macroCarbs" class="text-2xl font-black text-white font-mono mt-1">--g</div>
-                <span class="text-[10px] text-slate-400">Training fuel & glycogen</span>
-              </div>
-              <div class="p-4 rounded-xl bg-slate-900/60 border border-white/5 text-center">
-                <span class="text-xs text-amber-400 font-semibold uppercase tracking-wider">Healthy Fats</span>
-                <div id="macroFats" class="text-2xl font-black text-white font-mono mt-1">--g</div>
-                <span class="text-[10px] text-slate-400">Hormonal health</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Wearable Quick Glance Card -->
-          <div class="glass-card p-6 border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-4">
-              <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-500/20 to-cyan-500/20 border border-emerald-500/30 flex items-center justify-center text-2xl">
-                ⌚
-              </div>
-              <div>
-                <div class="flex items-center gap-2">
-                  <h4 class="font-bold text-white text-sm" data-i18n="wearableHeader">Smartwatch Telemetry</h4>
-                  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                </div>
-                <p class="text-xs text-slate-400 mt-0.5">Live biometric sync with your Apple Watch / WearOS device.</p>
-              </div>
-            </div>
-            <button onclick="document.querySelector('[data-tab=wearables]').click()" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/10 transition">
-              View Live Telemetry →
-            </button>
-          </div>
-        </div>
-
-        <!-- TAB 2: WORKOUT SPLIT -->
-        <div id="pane-workout" class="tab-content hidden space-y-4">
-          <div class="glass-card p-6 border border-white/10 mb-4">
-            <h3 class="text-lg font-extrabold text-white" data-i18n="workoutHeader">Dynamic Weekly Routine</h3>
-            <p class="text-xs text-slate-400 mt-1" data-i18n="workoutSub">
-              Optimized precisely for your schedule. High frequency, smart recovery.
-            </p>
-          </div>
-          <!-- Dynamic schedule cards will be injected here -->
-          <div id="workoutScheduleContainer" class="space-y-4"></div>
-        </div>
-
-        <!-- TAB 3: NUTRITION & BUDGET -->
-        <div id="pane-nutrition" class="tab-content hidden space-y-6">
-          <div class="glass-card p-6 border border-white/10">
-            <h3 class="text-lg font-extrabold text-white" data-i18n="nutritionHeader">Budget-Smart Meal Strategy</h3>
-            <p class="text-xs text-slate-400 mt-1" data-i18n="nutritionSub">
-              Hitting your protein targets without burning a hole in your wallet.
-            </p>
-          </div>
-
-          <!-- Grocery List Card -->
-          <div class="glass-card p-6 border border-white/10 space-y-4">
-            <h4 class="text-sm font-bold text-emerald-400 flex items-center gap-2" data-i18n="groceryListTitle">
-              🛒 Core Grocery Staples (High-Value Protein & Carbs)
-            </h4>
-            <div id="groceryListContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
-          </div>
-
-          <!-- Daily Meal Breakdown -->
-          <div class="space-y-3">
-            <h4 class="text-sm font-bold text-white px-1" data-i18n="dailyMealSchedule">Daily Meal Breakdown</h4>
-            <div id="dailyMealsContainer" class="space-y-3"></div>
-          </div>
-        </div>
-
-        <!-- TAB 4: WEARABLES TELEMETRY -->
-        <div id="pane-wearables" class="tab-content hidden space-y-6">
-          <div class="glass-card p-6 border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div>
-              <h3 class="text-lg font-extrabold text-white" data-i18n="wearableHeader">Smartwatch Telemetry</h3>
-              <p class="text-xs text-slate-400 mt-1" data-i18n="wearableSub">
-                Simulate live biometric data feed from Apple Watch, Garmin, or WearOS.
-              </p>
-            </div>
-            <button id="wearableToggleBtn" class="px-4 py-2 rounded-xl text-xs font-bold transition">
-              Pair Device
-            </button>
-          </div>
-
-          <!-- Live Biometrics Grid -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div class="glass-card p-5 border border-white/10 text-center">
-              <span class="animate-heartbeat text-2xl mb-1">❤️</span>
-              <div class="text-xs text-slate-400 mt-1" data-i18n="heartRateLabel">Heart Rate</div>
-              <div id="telemetryHeartRate" class="text-2xl font-black text-rose-400 font-mono mt-1">-- BPM</div>
-              <div class="text-[10px] text-slate-500 mt-1">Live Optical Sensor</div>
-            </div>
-
-            <div class="glass-card p-5 border border-white/10 text-center">
-              <span class="text-2xl mb-1">👟</span>
-              <div class="text-xs text-slate-400 mt-1" data-i18n="stepsLabel">Daily Steps</div>
-              <div id="telemetrySteps" class="text-2xl font-black text-cyan-400 font-mono mt-1">--</div>
-              <div class="text-[10px] text-slate-500 mt-1">Goal: 10,000 steps</div>
-            </div>
-
-            <div class="glass-card p-5 border border-white/10 text-center">
-              <span class="text-2xl mb-1">🔥</span>
-              <div class="text-xs text-slate-400 mt-1" data-i18n="activeBurnLabel">Active Burn</div>
-              <div id="telemetryCalories" class="text-2xl font-black text-amber-400 font-mono mt-1">-- kcal</div>
-              <div class="text-[10px] text-slate-500 mt-1">Motion + Heart tracking</div>
-            </div>
-
-            <div class="glass-card p-5 border border-white/10 text-center">
-              <span class="text-2xl mb-1">🔋</span>
-              <div class="text-xs text-slate-400 mt-1" data-i18n="batteryLabel">Battery Level</div>
-              <div id="telemetryBattery" class="text-2xl font-black text-emerald-400 font-mono mt-1">--%</div>
-              <div id="telemetryLastSync" class="text-[10px] text-slate-500 mt-1">--</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- TAB 5: PROGRESS LOG -->
-        <div id="pane-progress" class="tab-content hidden space-y-6">
-          <div class="glass-card p-6 border border-white/10">
-            <h3 class="text-lg font-extrabold text-white" data-i18n="progressHeader">Progress & Weigh-Ins</h3>
-            <p class="text-xs text-slate-400 mt-1" data-i18n="progressSub">
-              Track your body transformation over time.
-            </p>
-          </div>
-
-          <!-- Add weigh-in form -->
-          <div class="glass-card p-6 border border-white/10">
-            <form id="progressForm" class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
-              <div>
-                <label class="block text-xs font-semibold text-slate-300 mb-1" data-i18n="logWeightLabel">Log New Weight (kg)</label>
-                <input type="number" id="logWeight" step="0.1" min="30" max="250" placeholder="e.g. 77.5" required class="text-sm">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-slate-300 mb-1" data-i18n="logNotesLabel">Notes</label>
-                <input type="text" id="logNotes" placeholder="e.g. Great energy today" class="w-full text-sm rounded-xl bg-slate-900/80 border border-white/10 px-3 py-2.5 text-white">
-              </div>
-              <button type="submit" class="py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-md transition">
-                <span data-i18n="addLogBtn">Add Entry</span> 📝
-              </button>
-            </form>
-          </div>
-
-          <!-- Check-in history list -->
-          <div class="glass-card p-6 border border-white/10 space-y-3">
-            <h4 class="text-sm font-bold text-white mb-2" data-i18n="historyTitle">Check-In History</h4>
-            <div id="progressHistoryList" class="space-y-2"></div>
-          </div>
-        </div>
-
-      </section>
+      </div>
 
     </div>
+
+    <!-- TAB 2: WORKOUT SPLIT -->
+    <div id="pane-workout" class="tab-content hidden space-y-4">
+      <div class="glass-card p-6 border border-white/10 mb-4">
+        <h3 class="text-lg font-extrabold text-white" data-i18n="workoutHeader">Dynamic Weekly Routine</h3>
+        <p class="text-xs text-slate-400 mt-1" data-i18n="workoutSub">
+          Optimized precisely for your schedule. High frequency, smart recovery.
+        </p>
+      </div>
+      <div id="workoutScheduleContainer" class="space-y-4"></div>
+    </div>
+
+    <!-- TAB 3: NUTRITION & BUDGET -->
+    <div id="pane-nutrition" class="tab-content hidden space-y-6">
+      <div class="glass-card p-6 border border-white/10">
+        <h3 class="text-lg font-extrabold text-white" data-i18n="nutritionHeader">Budget-Smart Meal Strategy</h3>
+        <p class="text-xs text-slate-400 mt-1" data-i18n="nutritionSub">
+          Hitting your protein targets without burning a hole in your wallet.
+        </p>
+      </div>
+
+      <!-- Grocery List Card -->
+      <div class="glass-card p-6 border border-white/10 space-y-4">
+        <h4 class="text-sm font-bold text-emerald-400 flex items-center gap-2" data-i18n="groceryListTitle">
+          🛒 Core Grocery Staples (High-Value Protein & Carbs)
+        </h4>
+        <div id="groceryListContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+      </div>
+
+      <!-- Daily Meal Breakdown -->
+      <div class="space-y-3">
+        <h4 class="text-sm font-bold text-white px-1" data-i18n="dailyMealSchedule">Daily Meal Breakdown</h4>
+        <div id="dailyMealsContainer" class="space-y-3"></div>
+      </div>
+    </div>
+
+    <!-- TAB 4: PROGRESS LOG -->
+    <div id="pane-progress" class="tab-content hidden space-y-6">
+      <div class="glass-card p-6 border border-white/10">
+        <h3 class="text-lg font-extrabold text-white" data-i18n="progressHeader">Progress & Weigh-Ins</h3>
+        <p class="text-xs text-slate-400 mt-1" data-i18n="progressSub">
+          Track your body transformation over time.
+        </p>
+      </div>
+
+      <!-- Add weigh-in form -->
+      <div class="glass-card p-6 border border-white/10">
+        <form id="progressForm" class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1" data-i18n="logWeightLabel">Log New Weight (kg)</label>
+            <input type="number" id="logWeight" step="0.1" min="30" max="250" placeholder="e.g. 77.5" required class="text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1" data-i18n="logNotesLabel">Notes</label>
+            <input type="text" id="logNotes" placeholder="e.g. Great energy today" class="w-full text-sm rounded-xl bg-slate-900/80 border border-white/10 px-3 py-2.5 text-white">
+          </div>
+          <button type="submit" class="py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-md transition">
+            <span data-i18n="addLogBtn">Add Entry</span> 📝
+          </button>
+        </form>
+      </div>
+
+      <!-- Check-in history list -->
+      <div class="glass-card p-6 border border-white/10 space-y-3">
+        <h4 class="text-sm font-bold text-white mb-2" data-i18n="historyTitle">Check-In History</h4>
+        <div id="progressHistoryList" class="space-y-2"></div>
+      </div>
+    </div>
+
   </main>
+
+  <!-- ======================================================== -->
+  <!-- SETTINGS MODAL (Stores Height, Weight, Goal, Days, Budget) -->
+  <!-- ======================================================== -->
+  <div id="settingsModal" class="fixed inset-0 bg-black/75 backdrop-blur-md z-50 flex items-center justify-center p-4 transition-all duration-200 opacity-0 pointer-events-none">
+    <div class="glass-card max-w-lg w-full p-6 sm:p-7 border border-white/15 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between pb-4 mb-5 border-b border-white/10">
+        <div>
+          <h3 class="text-lg font-bold text-white flex items-center gap-2" data-i18n="settingsTitle">
+            Profile & Constraints ⚙️
+          </h3>
+          <p class="text-xs text-slate-400 mt-0.5" data-i18n="settingsSubtitle">
+            Adjust your metrics. Your nutrition and training recalibrate automatically.
+          </p>
+        </div>
+        <button id="closeSettingsBtn" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-sm font-bold transition">
+          ✕
+        </button>
+      </div>
+
+      <!-- Settings Form -->
+      <form id="profileForm" class="space-y-4">
+        <!-- Height & Weight -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1" data-i18n="heightLabel">Height (cm)</label>
+            <input type="number" id="inputHeight" min="120" max="240" value="175" required class="text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1" data-i18n="weightLabel">Weight (kg)</label>
+            <input type="number" id="inputWeight" min="35" max="250" step="0.5" value="78" required class="text-sm">
+          </div>
+        </div>
+
+        <!-- Age & Gender -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1" data-i18n="ageLabel">Age</label>
+            <input type="number" id="inputAge" min="14" max="99" value="25" required class="text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1" data-i18n="genderLabel">Gender</label>
+            <select id="inputGender" class="text-sm">
+              <option value="male" data-i18n="genderMale">Male</option>
+              <option value="female" data-i18n="genderFemale">Female</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Free Time Commitment (2 to 6 days slider) -->
+        <div class="p-3.5 rounded-xl bg-slate-900/60 border border-white/5 space-y-2">
+          <div class="flex justify-between items-center text-xs">
+            <span class="font-semibold text-slate-200" data-i18n="freeDaysLabel">Available Free Time (Days/Wk):</span>
+            <span id="freeDaysValue" class="font-bold text-emerald-400 font-mono text-sm">4 Days a week</span>
+          </div>
+          <input type="range" id="inputFreeDays" min="2" max="6" step="1" value="4" class="w-full">
+          <div class="flex justify-between text-[10px] text-slate-500 font-mono">
+            <span>2 Days (Full Body)</span>
+            <span>4 Days (U/L)</span>
+            <span>6 Days (PPL x2)</span>
+          </div>
+        </div>
+
+        <!-- Meal Budget Tier -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1" data-i18n="budgetLabel">Meal Budget Tier:</label>
+          <select id="inputBudget" class="text-xs">
+            <option value="budget" data-i18n="budgetLow">Smart Budget ($4 - $6 / day) - Eggs, Oats, Tuna, Rice</option>
+            <option value="moderate" data-i18n="budgetMid">Standard Fresh ($8 - $12 / day) - Chicken, Berries, Greek Yogurt</option>
+            <option value="premium" data-i18n="budgetHigh">Performance ($15+ / day) - Salmon, Steaks, Whey Isolate</option>
+          </select>
+        </div>
+
+        <!-- Fitness Goal -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1" data-i18n="goalLabel">Primary Goal:</label>
+          <select id="inputGoal" class="text-sm">
+            <option value="lose_weight" data-i18n="goalLose">Burn Fat & Shred</option>
+            <option value="gain_muscle" data-i18n="goalGain">Build Lean Muscle (Hypertrophy)</option>
+            <option value="strength" data-i18n="goalStrength">Maximize Strength & Power</option>
+            <option value="maintain" data-i18n="goalMaintain">Healthy Athletic Maintenance</option>
+          </select>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-bold text-sm shadow-lg shadow-emerald-500/20 transition-all active:scale-[0.98]">
+          <span data-i18n="saveSettingsBtn">Save & Recalibrate Plan</span> 💾
+        </button>
+      </form>
+
+      <!-- Save feedback toast inside modal -->
+      <div id="saveToast" class="opacity-0 pointer-events-none transition-opacity duration-300 mt-3 p-2 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs text-center font-medium">
+        ✓ Saved! Recalibrating plan...
+      </div>
+    </div>
+  </div>
 
   <!-- Footer -->
   <footer class="relative z-10 border-t border-white/5 py-6 px-4 text-center text-xs text-slate-500">
-    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+    <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
       <div>
         <span class="font-bold text-slate-400">RTM (ريتم)</span> — Personalized Fitness & Nutrition Engine
       </div>
@@ -393,9 +357,8 @@
     </div>
   </footer>
 
-  <!-- App Scripts -->
+  <!-- App Scripts (Zero Dependencies, Zero Wearables) -->
   <script src="./plan-engine.js"></script>
-  <script src="./wearables.js"></script>
   <script src="./app.js"></script>
 </body>
 </html>
