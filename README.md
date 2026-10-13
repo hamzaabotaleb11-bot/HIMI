@@ -8,14 +8,9 @@
 
 ## ⚡ Key Features
 
-1. **Physical Metrics & Calorie Engine**
-   - Inputs for Height, Weight, Age, and Gender.
-   - Computes Basal Metabolic Rate (BMR) and Total Daily Energy Expenditure (TDEE).
-   - Generates exact daily calorie goals and macronutrient distributions (Protein, Carbs, Fats) based on goals:
-     - Burn Fat & Shred (Caloric deficit + protein sparing)
-     - Build Lean Muscle (Hypertrophy caloric surplus)
-     - Maximize Strength & Power
-     - Healthy Athletic Maintenance
+1. **Clean Overview: Daily Macronutrient Targets**
+   - Displays clear daily targets for **Target Calories**, **Protein**, **Carbohydrates**, and **Healthy Fats**.
+   - Includes proportional percentage distribution bar and goal tracking.
 
 2. **Adaptive Training Splits (2 to 6 Days / Week)**
    - **2 Days:** Full Body Split A & B (Maximum efficiency compound movements)
@@ -31,9 +26,10 @@
    - **Performance ($15+ / day):** Salmon, sirloin steaks, avocados, whey isolate.
    - Full daily meal schedule: Breakfast, Lunch, Pre/Post-workout, and Dinner.
 
-4. **Smartwatch & Wearables Sync Simulation**
-   - Live telemetry feed: Real-time heart rate (with animated optical sensor pulse), daily step counter, active calorie burn, and battery level.
-   - Interactive pair/unpair device toggle.
+4. **Dedicated Profile & Settings Modal**
+   - Clean pop-up settings dialog accessible anytime from the header (`⚙️ Settings`).
+   - Manage Height, Weight, Age, Gender, Free Workout Days (2–6), Meal Budget Tier, and Fitness Goal.
+   - Saves preferences automatically to `localStorage` and recalibrates targets immediately.
 
 5. **Progress & Weigh-In Tracker**
    - Log new weigh-ins with date and workout/energy notes.
@@ -59,10 +55,9 @@ Because **RTM** is built as a zero-dependency modern web application:
 
 ```text
 HIMI/
-├── index.html        # App interface & responsive layout
-├── styles.css        # Design tokens, glassmorphism, heartbeat animations, dark theme
-├── app.js            # App controller, bilingual dictionary, state persistence
+├── index.html        # Clean, centered UI with Settings modal & Macronutrients overview
+├── styles.css        # Design tokens, glassmorphism, responsive grid, dark theme
+├── app.js            # App controller, bilingual dictionaries, settings & state persistence
 ├── plan-engine.js    # Workout split algorithms, TDEE, macros & budget meal logic
-├── wearables.js      # Smartwatch telemetry simulation & event streaming
 └── README.md         # Documentation & guide
 ```
