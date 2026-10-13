@@ -196,7 +196,7 @@ class RtmApp {
 
   setLanguage(lang) {
     this.currentLang = lang;
-    localStorage.getItem('rtm_lang', lang);
+    localStorage.setItem('rtm_lang', lang);
     this.applyLanguage();
     this.renderAll();
   }
@@ -229,12 +229,15 @@ class RtmApp {
       });
     }
 
-    // Tabs
-    document.querySelectorAll('.nav-tab').forEach(tab => {
-      tab.addEventListener('click', (e) => {
-        const target = e.currentTarget.getAttribute('data-tab');
-        this.switchTab(target);
-      });
+    // Tabs navigation - delegating so clicks anywhere inside the button work smoothly
+    document.addEventListener('click', (e) => {
+      const tab = e.target.closest('.nav-tab');
+      if (tab) {
+        const target = tab.getAttribute('data-tab');
+        if (target) {
+          this.switchTab(target);
+        }
+      }
     });
 
     // Free days slider live label
@@ -488,7 +491,15 @@ class RtmApp {
   }
 }
 
-// Start application when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-  window.rtmApp = new RtmApp();
-});
+// Start application reliably whether DOM is still loading or already ready
+function startRtmApp() {
+  if (!window.rtmApp) {
+    window.rtmApp = new RtmApp();
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', startRtmApp);
+} else {
+  startRtmApp();
+}

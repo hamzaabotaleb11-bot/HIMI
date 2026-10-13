@@ -72,19 +72,19 @@
   <!-- Navigation Tabs Bar -->
   <nav class="relative z-10 border-b border-white/5 bg-[#090d16]/95 backdrop-blur px-4 lg:px-8 py-2">
     <div class="max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
-      <button class="nav-tab active flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border border-transparent text-slate-400 hover:text-white" data-tab="overview">
+      <button class="nav-tab active flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border border-transparent text-slate-400 hover:text-white" data-tab="overview" onclick="window.rtmApp && window.rtmApp.switchTab('overview')">
         <span>📊</span> <span data-i18n="tabOverview">Overview</span>
       </button>
-      <button class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border border-transparent text-slate-400 hover:text-white" data-tab="workout">
+      <button class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border border-transparent text-slate-400 hover:text-white" data-tab="workout" onclick="window.rtmApp && window.rtmApp.switchTab('workout')">
         <span>🏋️</span> <span data-i18n="tabWorkout">Workout Split</span>
       </button>
-      <button class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border border-transparent text-slate-400 hover:text-white" data-tab="nutrition">
+      <button class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border border-transparent text-slate-400 hover:text-white" data-tab="nutrition" onclick="window.rtmApp && window.rtmApp.switchTab('nutrition')">
         <span>🥗</span> <span data-i18n="tabNutrition">Meal & Budget</span>
       </button>
-      <button class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border border-transparent text-slate-400 hover:text-white" data-tab="wearables">
+      <button class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border border-transparent text-slate-400 hover:text-white" data-tab="wearables" onclick="window.rtmApp && window.rtmApp.switchTab('wearables')">
         <span>⌚</span> <span data-i18n="tabWearables">Wearables</span>
       </button>
-      <button class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border border-transparent text-slate-400 hover:text-white" data-tab="progress">
+      <button class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border border-transparent text-slate-400 hover:text-white" data-tab="progress" onclick="window.rtmApp && window.rtmApp.switchTab('progress')">
         <span>📈</span> <span data-i18n="tabProgress">Progress Log</span>
       </button>
     </div>
