@@ -1,8 +1,10 @@
-# HIMI - Personalized Fitness & Nutrition Assistant
+# RTM (ريتم) - Personalized Fitness & Budget-Smart Nutrition
 
-A smart fitness and lifestyle app that tailors workout routines and meal plans around your real-world constraints:
-- **Body Profile:** Height, weight, and fitness metrics
-- **Time Availability:** Flexible scheduling (e.g., 2–6 days per week)
-- **Meal Budget:** Practical, cost-effective nutrition plans
-- **Goals:** Weight loss, muscle hypertrophy, endurance, or maintenance
-- **Future Integrations:** Wearable & smartwatch connectivity, progress tracking, and analytics.
+**RTM** adapts your training and nutrition to your actual lifestyle constraints — not an unrealistic fantasy schedule.
+
+### Core Inputs & Features:
+1. **Body Metrics:** Height, weight, target physique.
+2. **Flexible Time Commitment:** 2 to 6 days per week scheduling with dynamic split generation.
+3. **Meal Budget Tier:** Cost-conscious nutrition planning with targeted macros within your budget.
+4. **Primary Goals:** Fat loss, muscle hypertrophy, lean bulk, endurance, or maintenance.
+5. **Smart Tracking & Wearables:** Progress monitoring (weight & milestones) and simulated/direct smartwatch connectivity.
