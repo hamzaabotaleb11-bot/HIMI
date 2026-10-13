@@ -410,16 +410,6 @@ class RtmApp {
         this.wizardGoal = card.getAttribute('data-goal');
       });
     });
-
-    // Reset daily intake button
-    const resetBtn = document.getElementById('btnResetIntake');
-    if (resetBtn) {
-      resetBtn.addEventListener('click', () => {
-        if (confirm(this.currentLang === 'ar' ? 'هل أنت متأكد من إعادة تعيين تسجيل اليوم؟' : 'Reset today\'s logged intake to 0?')) {
-          this.resetDailyIntake();
-        }
-      });
-    }
   }
 
   // ============================================
