@@ -2,8 +2,7 @@
  * RTM (ريتم) - Plan Generator & Calculations Engine
  * Computes customized workout splits and budget-smart nutrition based on user constraints.
  */
-
-export const PlanEngine = {
+const PlanEngine = {
   // Calculate BMR using Mifflin-St Jeor formula
   calculateBMR(weightKg, heightCm, age = 25, gender = 'male') {
     const s = gender === 'female' ? -161 : 5;
@@ -368,3 +367,7 @@ export const PlanEngine = {
     return plans[budgetTier] || plans.budget;
   }
 };
+
+if (typeof window !== 'undefined') {
+  window.PlanEngine = PlanEngine;
+}

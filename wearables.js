@@ -2,8 +2,7 @@
  * RTM (ريتم) - Smartwatch & Wearables Integration Simulator
  * Simulates real-time telemetry (Heart rate, steps, calories burned, sync state)
  */
-
-export class WearablesSimulator {
+class WearablesSimulator {
   constructor(updateCallback) {
     this.updateCallback = updateCallback;
     this.isConnected = false;
@@ -73,4 +72,8 @@ export class WearablesSimulator {
       });
     }
   }
+}
+
+if (typeof window !== 'undefined') {
+  window.WearablesSimulator = WearablesSimulator;
 }

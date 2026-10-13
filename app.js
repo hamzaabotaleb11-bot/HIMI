@@ -2,9 +2,8 @@
  * RTM (ريتم) - Main Application Controller
  * Handles UI interactions, state persistence, bilingual support, and telemetry updates.
  */
-
-import { PlanEngine } from './plan-engine.js';
-import { WearablesSimulator } from './wearables.js';
+const PlanEngine = window.PlanEngine || {};
+const WearablesSimulator = window.WearablesSimulator;
 
 // Bilingual translations dictionary
 const i18n = {
