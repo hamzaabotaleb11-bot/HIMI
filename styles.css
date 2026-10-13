@@ -1,5 +1,5 @@
-/* RTM (ريتم) - Design System & Custom Styles */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap');
+/* RTM - Design System & Custom Styles */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 :root {
   --bg-primary: #090d16;
@@ -28,10 +28,6 @@ body {
   min-height: 100vh;
   line-height: 1.5;
   overflow-x: hidden;
-}
-
-[dir="rtl"] body, [dir="rtl"] {
-  font-family: 'Tajawal', system-ui, -apple-system, sans-serif;
 }
 
 /* Glassmorphism card */

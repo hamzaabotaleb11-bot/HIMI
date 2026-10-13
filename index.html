@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RTM (ريتم) - Personalized Fitness & Budget-Smart Nutrition</title>
+  <title>RTM - Personalized Fitness & Budget-Smart Nutrition</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -41,30 +41,23 @@
   <header class="relative z-10 border-b border-white/10 bg-[#0c121e]/85 backdrop-blur-md sticky top-0 px-4 lg:px-8 py-3.5">
     <div class="max-w-5xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <!-- Logo Icon -->
+        <!-- Custom 3D Logo Icon -->
         <img src="./icon.png" alt="RTM Logo" class="w-10 h-10 rounded-xl shadow-lg shadow-emerald-500/20 object-cover border border-white/10">
         <div>
           <div class="flex items-center gap-2">
-            <h1 class="text-xl font-extrabold tracking-tight text-white flex items-center gap-1.5">
-              <span>RTM</span>
-              <span class="text-xs text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">ريتم</span>
+            <h1 class="text-xl font-extrabold tracking-tight text-white">
+              RTM
             </h1>
           </div>
-          <p class="text-xs text-slate-400 hidden sm:block" data-i18n="tagline">Your Pace. Your Budget. Your Real Life.</p>
+          <p class="text-xs text-slate-400 hidden sm:block">Your Pace. Your Budget. Your Real Life.</p>
         </div>
       </div>
 
-      <!-- Action items in header: Settings & Language -->
+      <!-- Action items in header: Settings Only -->
       <div class="flex items-center gap-2.5">
-        <!-- Settings Button -->
-        <button id="openSettingsBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-white/10 transition shadow-sm hover:border-emerald-500/40">
+        <button id="openSettingsBtn" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-white/10 transition shadow-sm hover:border-emerald-500/40">
           <span>⚙️</span>
-          <span data-i18n="settingsBtn">Settings ⚙️</span>
-        </button>
-
-        <!-- Language Switcher -->
-        <button id="langToggle" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-white/10 transition">
-          العربية 🌐
+          <span>Settings</span>
         </button>
       </div>
     </div>
@@ -74,16 +67,16 @@
   <nav class="relative z-10 border-b border-white/5 bg-[#090d16]/95 backdrop-blur px-4 lg:px-8 py-2">
     <div class="max-w-5xl mx-auto flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
       <button class="nav-tab active flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border border-transparent text-slate-400 hover:text-white" data-tab="overview" onclick="window.rtmApp && window.rtmApp.switchTab('overview')">
-        <span>📊</span> <span data-i18n="tabOverview">Overview</span>
+        <span>📊</span> <span>Overview</span>
       </button>
       <button class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border border-transparent text-slate-400 hover:text-white" data-tab="workout" onclick="window.rtmApp && window.rtmApp.switchTab('workout')">
-        <span>🏋️</span> <span data-i18n="tabWorkout">Workout Split</span>
+        <span>🏋️</span> <span>Workout Split</span>
       </button>
       <button class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border border-transparent text-slate-400 hover:text-white" data-tab="nutrition" onclick="window.rtmApp && window.rtmApp.switchTab('nutrition')">
-        <span>🥗</span> <span data-i18n="tabNutrition">Meal & Budget</span>
+        <span>🥗</span> <span>Meal & Budget</span>
       </button>
       <button class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border border-transparent text-slate-400 hover:text-white" data-tab="progress" onclick="window.rtmApp && window.rtmApp.switchTab('progress')">
-        <span>📈</span> <span data-i18n="tabProgress">Progress Log</span>
+        <span>📈</span> <span>Progress Log</span>
       </button>
     </div>
   </nav>
@@ -98,10 +91,10 @@
       <div class="glass-card p-6 sm:p-8 border border-white/10 shadow-2xl">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 mb-6 border-b border-white/10 gap-3">
           <div>
-            <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight" data-i18n="macroMenuTitle">
+            <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight">
               Daily Macronutrient Targets
             </h2>
-            <p class="text-xs sm:text-sm text-slate-400 mt-1" data-i18n="macroMenuSubtitle">
+            <p class="text-xs sm:text-sm text-slate-400 mt-1">
               Track your daily intake progress against your TDEE-calculated goals.
             </p>
           </div>
@@ -109,7 +102,7 @@
           <div class="flex items-center gap-2">
             <!-- Calorie Progress / Target Pill -->
             <div class="px-4 py-2 rounded-2xl bg-slate-900/90 border border-emerald-500/30 flex items-center gap-2">
-              <span class="text-xs text-slate-400" data-i18n="targetCalLabel">Calories:</span>
+              <span class="text-xs text-slate-400">Calories:</span>
               <span id="macroTargetCal" class="text-sm sm:text-base font-bold font-mono">
                 <span class="text-white">0</span> / <span class="text-emerald-400">-- kcal</span>
               </span>
@@ -128,7 +121,7 @@
           <div class="p-5 rounded-2xl bg-slate-900/70 border border-emerald-500/20 relative overflow-hidden group hover:border-emerald-500/40 transition flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">
-                <span data-i18n="proteinLabel">Protein</span>
+                <span>Protein</span>
                 <span id="pctProtein" class="font-mono text-slate-400 text-[11px]">0%</span>
               </div>
               
@@ -142,7 +135,7 @@
                 <div id="progBarProtein" class="h-full bg-emerald-400 rounded-full transition-all duration-300" style="width: 0%"></div>
               </div>
 
-              <p class="text-[11px] text-slate-400" data-i18n="proteinDesc">Muscle repair & growth (4 kcal/g)</p>
+              <p class="text-[11px] text-slate-400">Muscle repair & growth (4 kcal/g)</p>
             </div>
           </div>
 
@@ -150,7 +143,7 @@
           <div class="p-5 rounded-2xl bg-slate-900/70 border border-cyan-500/20 relative overflow-hidden group hover:border-cyan-500/40 transition flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between text-xs font-bold text-cyan-400 uppercase tracking-wider mb-1">
-                <span data-i18n="carbsLabel">Carbohydrates</span>
+                <span>Carbohydrates</span>
                 <span id="pctCarbs" class="font-mono text-slate-400 text-[11px]">0%</span>
               </div>
               
@@ -164,7 +157,7 @@
                 <div id="progBarCarbs" class="h-full bg-cyan-400 rounded-full transition-all duration-300" style="width: 0%"></div>
               </div>
 
-              <p class="text-[11px] text-slate-400" data-i18n="carbsDesc">High-energy training fuel (4 kcal/g)</p>
+              <p class="text-[11px] text-slate-400">High-energy training fuel (4 kcal/g)</p>
             </div>
           </div>
 
@@ -172,7 +165,7 @@
           <div class="p-5 rounded-2xl bg-slate-900/70 border border-amber-500/20 relative overflow-hidden group hover:border-amber-500/40 transition flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between text-xs font-bold text-amber-400 uppercase tracking-wider mb-1">
-                <span data-i18n="fatsLabel">Healthy Fats</span>
+                <span>Healthy Fats</span>
                 <span id="pctFats" class="font-mono text-slate-400 text-[11px]">0%</span>
               </div>
               
@@ -186,17 +179,21 @@
                 <div id="progBarFats" class="h-full bg-amber-400 rounded-full transition-all duration-300" style="width: 0%"></div>
               </div>
 
-              <p class="text-[11px] text-slate-400" data-i18n="fatsDesc">Hormonal support & health (9 kcal/g)</p>
+              <p class="text-[11px] text-slate-400">Hormonal support & health (9 kcal/g)</p>
             </div>
           </div>
 
         </div>
 
-        <!-- Call to Action Footer inside card -->
-        <div class="pt-4 border-t border-white/10 flex items-center justify-end gap-3 text-xs text-slate-400">
-          <span data-i18n="adjustTargetsHint">Need to adjust your body metrics or goal?</span>
-          <button onclick="window.rtmApp && window.rtmApp.openSettings()" class="text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1 transition">
-            <span data-i18n="openSettingsLink">Open Settings ⚙️</span>
+        <!-- Call to Action Footer inside card (Add Smart Watch) -->
+        <div class="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+          <div class="flex items-center gap-2">
+            <span id="watchStatusDot" class="w-2 h-2 rounded-full bg-slate-600"></span>
+            <span id="watchStatusText" class="text-slate-400">No wearable connected</span>
+          </div>
+
+          <button id="addSmartwatchBtn" onclick="window.rtmApp && window.rtmApp.openSmartwatchModal()" class="text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1.5 transition px-3.5 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/20 shadow-sm">
+            <span id="addSmartwatchBtnText">Add Smart Watch ⌚</span>
           </button>
         </div>
       </div>
@@ -206,8 +203,8 @@
     <!-- TAB 2: WORKOUT SPLIT -->
     <div id="pane-workout" class="tab-content hidden space-y-4">
       <div class="glass-card p-6 border border-white/10 mb-4">
-        <h3 class="text-lg font-extrabold text-white" data-i18n="workoutHeader">Dynamic Weekly Routine</h3>
-        <p class="text-xs text-slate-400 mt-1" data-i18n="workoutSub">
+        <h3 class="text-lg font-extrabold text-white">Dynamic Weekly Routine</h3>
+        <p class="text-xs text-slate-400 mt-1">
           Optimized precisely for your schedule. High frequency, smart recovery.
         </p>
       </div>
@@ -217,15 +214,15 @@
     <!-- TAB 3: NUTRITION & BUDGET -->
     <div id="pane-nutrition" class="tab-content hidden space-y-6">
       <div class="glass-card p-6 border border-white/10">
-        <h3 class="text-lg font-extrabold text-white" data-i18n="nutritionHeader">Budget-Smart Meal Strategy</h3>
-        <p class="text-xs text-slate-400 mt-1" data-i18n="nutritionSub">
+        <h3 class="text-lg font-extrabold text-white">Budget-Smart Meal Strategy</h3>
+        <p class="text-xs text-slate-400 mt-1">
           Hitting your protein targets without burning a hole in your wallet.
         </p>
       </div>
 
       <!-- Grocery List Card -->
       <div class="glass-card p-6 border border-white/10 space-y-4">
-        <h4 class="text-sm font-bold text-emerald-400 flex items-center gap-2" data-i18n="groceryListTitle">
+        <h4 class="text-sm font-bold text-emerald-400 flex items-center gap-2">
           🛒 Core Grocery Staples (High-Value Protein & Carbs)
         </h4>
         <div id="groceryListContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
@@ -233,7 +230,7 @@
 
       <!-- Daily Meal Breakdown -->
       <div class="space-y-3">
-        <h4 class="text-sm font-bold text-white px-1" data-i18n="dailyMealSchedule">Daily Meal Breakdown</h4>
+        <h4 class="text-sm font-bold text-white px-1">Daily Meal Breakdown</h4>
         <div id="dailyMealsContainer" class="space-y-3"></div>
       </div>
     </div>
@@ -241,8 +238,8 @@
     <!-- TAB 4: PROGRESS LOG -->
     <div id="pane-progress" class="tab-content hidden space-y-6">
       <div class="glass-card p-6 border border-white/10">
-        <h3 class="text-lg font-extrabold text-white" data-i18n="progressHeader">Progress & Weigh-Ins</h3>
-        <p class="text-xs text-slate-400 mt-1" data-i18n="progressSub">
+        <h3 class="text-lg font-extrabold text-white">Progress & Weigh-Ins</h3>
+        <p class="text-xs text-slate-400 mt-1">
           Track your body transformation over time.
         </p>
       </div>
@@ -251,27 +248,93 @@
       <div class="glass-card p-6 border border-white/10">
         <form id="progressForm" class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
           <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1" data-i18n="logWeightLabel">Log New Weight (kg)</label>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Log New Weight (kg)</label>
             <input type="number" id="logWeight" step="0.1" min="30" max="250" placeholder="e.g. 77.5" required class="text-sm">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1" data-i18n="logNotesLabel">Notes</label>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Notes</label>
             <input type="text" id="logNotes" placeholder="e.g. Great energy today" class="w-full text-sm rounded-xl bg-slate-900/80 border border-white/10 px-3 py-2.5 text-white">
           </div>
           <button type="submit" class="py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-md transition">
-            <span data-i18n="addLogBtn">Add Entry</span> 📝
+            <span>Add Entry</span> 📝
           </button>
         </form>
       </div>
 
       <!-- Check-in history list -->
       <div class="glass-card p-6 border border-white/10 space-y-3">
-        <h4 class="text-sm font-bold text-white mb-2" data-i18n="historyTitle">Check-In History</h4>
+        <h4 class="text-sm font-bold text-white mb-2">Check-In History</h4>
         <div id="progressHistoryList" class="space-y-2"></div>
       </div>
     </div>
 
   </main>
+
+  <!-- ======================================================== -->
+  <!-- ⌚ SMART WATCH PAIRING MODAL                             -->
+  <!-- ======================================================== -->
+  <div id="smartwatchModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 transition-all duration-200 opacity-0 pointer-events-none">
+    <div class="glass-card max-w-md w-full p-6 sm:p-7 border border-white/15 shadow-2xl relative">
+      <div class="flex items-center justify-between pb-4 mb-4 border-b border-white/10">
+        <div>
+          <h3 class="text-lg font-bold text-white flex items-center gap-2">
+            <span>Connect Smart Watch ⌚</span>
+          </h3>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Pair your watch to automatically stream active calorie burn and heart rate.
+          </p>
+        </div>
+        <button onclick="window.rtmApp && window.rtmApp.closeSmartwatchModal()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-sm font-bold transition">
+          ✕
+        </button>
+      </div>
+
+      <!-- Device selection cards -->
+      <div class="space-y-2.5 mb-5">
+        <div class="watch-device-card selected-card p-3.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40 flex items-center justify-between" data-device="Apple Watch">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">🍎</span>
+            <div>
+              <div class="font-bold text-sm text-white">Apple Watch</div>
+              <div class="text-[11px] text-slate-400">HealthKit live stream</div>
+            </div>
+          </div>
+          <span class="text-emerald-400 text-xs font-semibold">Recommended</span>
+        </div>
+
+        <div class="watch-device-card p-3.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40 flex items-center justify-between" data-device="Samsung Galaxy Watch / WearOS">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">⌚</span>
+            <div>
+              <div class="font-bold text-sm text-white">Samsung Galaxy Watch / WearOS</div>
+              <div class="text-[11px] text-slate-400">Health Connect sync</div>
+            </div>
+          </div>
+          <span class="text-slate-400 text-xs">WearOS 4+</span>
+        </div>
+
+        <div class="watch-device-card p-3.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40 flex items-center justify-between" data-device="Garmin">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">🏃</span>
+            <div>
+              <div class="font-bold text-sm text-white">Garmin</div>
+              <div class="text-[11px] text-slate-400">Garmin Connect sensor feed</div>
+            </div>
+          </div>
+          <span class="text-slate-400 text-xs">ANT+ / BT</span>
+        </div>
+      </div>
+
+      <div id="watchPairingStatus" class="hidden mb-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs text-center font-semibold">
+        Connecting to watch...
+      </div>
+
+      <!-- Action Button -->
+      <button id="btnConnectWatch" onclick="window.rtmApp && window.rtmApp.pairSelectedWatch()" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-bold text-sm shadow-lg shadow-emerald-500/20 transition active:scale-95">
+        Pair Device Now ⌚
+      </button>
+    </div>
+  </div>
 
   <!-- ======================================================== -->
   <!-- 🌟 SEQUENTIAL ONBOARDING WIZARD MODAL (STEP-BY-STEP)     -->
@@ -282,7 +345,7 @@
       <!-- Wizard Progress Indicators (1 to 4) -->
       <div class="mb-6">
         <div class="flex items-center justify-between text-xs font-bold text-slate-400 mb-2">
-          <span class="text-emerald-400 flex items-center gap-1.5" data-i18n="wizardHeader">Welcome to RTM (ريتم)</span>
+          <span class="text-emerald-400 flex items-center gap-1.5">Welcome to RTM</span>
           <span id="wizStepIndicatorText" class="font-mono text-slate-300">Step 1 of 4</span>
         </div>
         <div class="flex gap-2 w-full">
@@ -296,33 +359,33 @@
       <!-- STEP 1: PHYSICAL METRICS -->
       <div id="wizStep1" class="space-y-4">
         <div>
-          <h3 class="text-xl font-extrabold text-white" data-i18n="step1Title">Your Body Metrics</h3>
-          <p class="text-xs text-slate-400 mt-1" data-i18n="step1Subtitle">
+          <h3 class="text-xl font-extrabold text-white">Your Body Metrics</h3>
+          <p class="text-xs text-slate-400 mt-1">
             Used to calculate your precise Basal Metabolic Rate (BMR) & daily calorie burn.
           </p>
         </div>
 
         <div class="grid grid-cols-2 gap-3 pt-2">
           <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1" data-i18n="heightLabel">Height (cm)</label>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Height (cm)</label>
             <input type="number" id="wizHeight" min="120" max="240" value="175" required class="text-sm font-mono">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1" data-i18n="weightLabel">Weight (kg)</label>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Weight (kg)</label>
             <input type="number" id="wizWeight" min="35" max="250" step="0.5" value="78" required class="text-sm font-mono">
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1" data-i18n="ageLabel">Age</label>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Age</label>
             <input type="number" id="wizAge" min="14" max="99" value="25" required class="text-sm font-mono">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1" data-i18n="genderLabel">Gender</label>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Gender</label>
             <select id="wizGender" class="text-sm">
-              <option value="male" data-i18n="genderMale">Male</option>
-              <option value="female" data-i18n="genderFemale">Female</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
             </select>
           </div>
         </div>
@@ -331,8 +394,8 @@
       <!-- STEP 2: AVAILABLE TIME / WORKOUT SCHEDULE -->
       <div id="wizStep2" class="space-y-4 hidden">
         <div>
-          <h3 class="text-xl font-extrabold text-white" data-i18n="step2Title">Your Available Schedule</h3>
-          <p class="text-xs text-slate-400 mt-1" data-i18n="step2Subtitle">
+          <h3 class="text-xl font-extrabold text-white">Your Available Schedule</h3>
+          <p class="text-xs text-slate-400 mt-1">
             We never force an unrealistic routine. RTM builds the optimal split around your free days.
           </p>
         </div>
@@ -383,8 +446,8 @@
       <!-- STEP 3: MEAL & GROCERY BUDGET -->
       <div id="wizStep3" class="space-y-4 hidden">
         <div>
-          <h3 class="text-xl font-extrabold text-white" data-i18n="step3Title">Your Grocery & Meal Budget</h3>
-          <p class="text-xs text-slate-400 mt-1" data-i18n="step3Subtitle">
+          <h3 class="text-xl font-extrabold text-white">Your Grocery & Meal Budget</h3>
+          <p class="text-xs text-slate-400 mt-1">
             Fitness shouldn’t drain your wallet. We tailor meal staples to your budget tier.
           </p>
         </div>
@@ -392,30 +455,30 @@
         <div class="space-y-2.5 pt-2">
           <div class="wizard-budget-card selected-card p-4 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-budget="budget">
             <div class="flex items-center justify-between font-bold text-sm text-white">
-              <span data-i18n="budgetLowTitle">Smart Budget ($4 - $6 / day)</span>
+              <span>Smart Budget ($4 - $6 / day)</span>
               <span class="badge-pill bg-emerald-500/15 text-emerald-400 text-[10px]">High Protein Value</span>
             </div>
-            <p class="text-xs text-slate-400 mt-1" data-i18n="budgetLowDesc">
-              Eggs, oats, tuna, cottage cheese (قريش), rice, peanut butter
+            <p class="text-xs text-slate-400 mt-1">
+              Eggs, oats, tuna, cottage cheese, rice, peanut butter
             </p>
           </div>
 
           <div class="wizard-budget-card p-4 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-budget="moderate">
             <div class="flex items-center justify-between font-bold text-sm text-white">
-              <span data-i18n="budgetMidTitle">Standard Fresh ($8 - $12 / day)</span>
+              <span>Standard Fresh ($8 - $12 / day)</span>
               <span class="badge-pill bg-cyan-500/15 text-cyan-400 text-[10px]">Balanced</span>
             </div>
-            <p class="text-xs text-slate-400 mt-1" data-i18n="budgetMidDesc">
+            <p class="text-xs text-slate-400 mt-1">
               Chicken breast, greek yogurt, sweet potatoes, berries, olive oil
             </p>
           </div>
 
           <div class="wizard-budget-card p-4 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-budget="premium">
             <div class="flex items-center justify-between font-bold text-sm text-white">
-              <span data-i18n="budgetHighTitle">Performance ($15+ / day)</span>
+              <span>Performance ($15+ / day)</span>
               <span class="badge-pill bg-amber-500/15 text-amber-400 text-[10px]">Gourmet & Speed</span>
             </div>
-            <p class="text-xs text-slate-400 mt-1" data-i18n="budgetHighDesc">
+            <p class="text-xs text-slate-400 mt-1">
               Salmon fillets, sirloin steaks, avocados, whey isolate
             </p>
           </div>
@@ -425,8 +488,8 @@
       <!-- STEP 4: PRIMARY GOAL -->
       <div id="wizStep4" class="space-y-4 hidden">
         <div>
-          <h3 class="text-xl font-extrabold text-white" data-i18n="step4Title">Your Primary Goal</h3>
-          <p class="text-xs text-slate-400 mt-1" data-i18n="step4Subtitle">
+          <h3 class="text-xl font-extrabold text-white">Your Primary Goal</h3>
+          <p class="text-xs text-slate-400 mt-1">
             Determines whether your body needs a deficit, surplus, or maintenance.
           </p>
         </div>
@@ -434,40 +497,40 @@
         <div class="space-y-2.5 pt-2">
           <div class="wizard-goal-card selected-card p-4 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-goal="lose_weight">
             <div class="font-bold text-sm text-white flex items-center justify-between">
-              <span class="flex items-center gap-2">🔥 <span data-i18n="goalLoseTitle">Burn Fat & Shred</span></span>
+              <span class="flex items-center gap-2">🔥 <span>Burn Fat & Shred</span></span>
               <span class="text-xs text-emerald-400 font-mono">-450 kcal deficit</span>
             </div>
-            <p class="text-xs text-slate-400 mt-1" data-i18n="goalLoseDesc">
+            <p class="text-xs text-slate-400 mt-1">
               Moderate caloric deficit with high protein to protect lean muscle
             </p>
           </div>
 
           <div class="wizard-goal-card p-4 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-goal="gain_muscle">
             <div class="font-bold text-sm text-white flex items-center justify-between">
-              <span class="flex items-center gap-2">💪 <span data-i18n="goalGainTitle">Build Lean Muscle (Hypertrophy)</span></span>
+              <span class="flex items-center gap-2">💪 <span>Build Lean Muscle (Hypertrophy)</span></span>
               <span class="text-xs text-cyan-400 font-mono">+350 kcal surplus</span>
             </div>
-            <p class="text-xs text-slate-400 mt-1" data-i18n="goalGainDesc">
+            <p class="text-xs text-slate-400 mt-1">
               Lean caloric surplus optimized for muscle growth and recovery
             </p>
           </div>
 
           <div class="wizard-goal-card p-4 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-goal="strength">
             <div class="font-bold text-sm text-white flex items-center justify-between">
-              <span class="flex items-center gap-2">⚡ <span data-i18n="goalStrengthTitle">Maximize Strength & Power</span></span>
+              <span class="flex items-center gap-2">⚡ <span>Maximize Strength & Power</span></span>
               <span class="text-xs text-amber-400 font-mono">+200 kcal</span>
             </div>
-            <p class="text-xs text-slate-400 mt-1" data-i18n="goalStrengthDesc">
+            <p class="text-xs text-slate-400 mt-1">
               Performance-focused calories for heavy lifting and explosive power
             </p>
           </div>
 
           <div class="wizard-goal-card p-4 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-goal="maintain">
             <div class="font-bold text-sm text-white flex items-center justify-between">
-              <span class="flex items-center gap-2">⚖️ <span data-i18n="goalMaintainTitle">Healthy Maintenance</span></span>
+              <span class="flex items-center gap-2">⚖️ <span>Healthy Maintenance</span></span>
               <span class="text-xs text-slate-400 font-mono">TDEE maintenance</span>
             </div>
-            <p class="text-xs text-slate-400 mt-1" data-i18n="goalMaintainDesc">
+            <p class="text-xs text-slate-400 mt-1">
               Body recomposition and sustained lifestyle athletic energy
             </p>
           </div>
@@ -477,16 +540,16 @@
       <!-- Wizard Navigation Action Buttons -->
       <div class="flex items-center justify-between pt-6 mt-6 border-t border-white/10 gap-3">
         <button id="wizardPrevBtn" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition hidden">
-          <span data-i18n="prevStepBtn">← Back</span>
+          <span>← Back</span>
         </button>
 
         <div class="ml-auto">
           <button id="wizardNextBtn" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20 transition active:scale-95">
-            <span data-i18n="nextStepBtn">Next Step →</span>
+            <span>Next Step →</span>
           </button>
 
           <button id="wizardFinishBtn" class="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-extrabold text-sm shadow-xl shadow-emerald-500/25 transition active:scale-95 hidden">
-            <span data-i18n="finishWizardBtn">Calculate TDEE & Build My Plan 🚀</span>
+            <span>Calculate TDEE & Build My Plan 🚀</span>
           </button>
         </div>
       </div>
@@ -503,10 +566,10 @@
       <!-- Modal Header -->
       <div class="flex items-center justify-between pb-4 mb-5 border-b border-white/10">
         <div>
-          <h3 class="text-lg font-bold text-white flex items-center gap-2" data-i18n="settingsTitle">
+          <h3 class="text-lg font-bold text-white flex items-center gap-2">
             Profile & Constraints ⚙️
           </h3>
-          <p class="text-xs text-slate-400 mt-0.5" data-i18n="settingsSubtitle">
+          <p class="text-xs text-slate-400 mt-0.5">
             Adjust your metrics. Your nutrition and training recalibrate automatically.
           </p>
         </div>
@@ -520,11 +583,11 @@
         <!-- Height & Weight -->
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1" data-i18n="heightLabel">Height (cm)</label>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Height (cm)</label>
             <input type="number" id="inputHeight" min="120" max="240" value="175" required class="text-sm">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1" data-i18n="weightLabel">Weight (kg)</label>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Weight (kg)</label>
             <input type="number" id="inputWeight" min="35" max="250" step="0.5" value="78" required class="text-sm">
           </div>
         </div>
@@ -532,14 +595,14 @@
         <!-- Age & Gender -->
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1" data-i18n="ageLabel">Age</label>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Age</label>
             <input type="number" id="inputAge" min="14" max="99" value="25" required class="text-sm">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1" data-i18n="genderLabel">Gender</label>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Gender</label>
             <select id="inputGender" class="text-sm">
-              <option value="male" data-i18n="genderMale">Male</option>
-              <option value="female" data-i18n="genderFemale">Female</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
             </select>
           </div>
         </div>
@@ -547,7 +610,7 @@
         <!-- Free Time Commitment (2 to 6 days slider) -->
         <div class="p-3.5 rounded-xl bg-slate-900/60 border border-white/5 space-y-2">
           <div class="flex justify-between items-center text-xs">
-            <span class="font-semibold text-slate-200" data-i18n="freeDaysLabel">Available Free Time (Days/Wk):</span>
+            <span class="font-semibold text-slate-200">Available Free Time (Days/Wk):</span>
             <span id="freeDaysValue" class="font-bold text-emerald-400 font-mono text-sm">4 Days a week</span>
           </div>
           <input type="range" id="inputFreeDays" min="2" max="6" step="1" value="4" class="w-full">
@@ -560,34 +623,34 @@
 
         <!-- Meal Budget Tier -->
         <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1" data-i18n="budgetLabel">Meal Budget Tier:</label>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Meal Budget Tier:</label>
           <select id="inputBudget" class="text-xs">
-            <option value="budget" data-i18n="budgetLow">Smart Budget ($4 - $6 / day) - Eggs, Oats, Tuna, Rice</option>
-            <option value="moderate" data-i18n="budgetMid">Standard Fresh ($8 - $12 / day) - Chicken, Berries, Greek Yogurt</option>
-            <option value="premium" data-i18n="budgetHigh">Performance ($15+ / day) - Salmon, Steaks, Whey Isolate</option>
+            <option value="budget">Smart Budget ($4 - $6 / day) - Eggs, Oats, Tuna, Rice</option>
+            <option value="moderate">Standard Fresh ($8 - $12 / day) - Chicken, Berries, Greek Yogurt</option>
+            <option value="premium">Performance ($15+ / day) - Salmon, Steaks, Whey Isolate</option>
           </select>
         </div>
 
         <!-- Fitness Goal -->
         <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1" data-i18n="goalLabel">Primary Goal:</label>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Primary Goal:</label>
           <select id="inputGoal" class="text-sm">
-            <option value="lose_weight" data-i18n="goalLose">Burn Fat & Shred</option>
-            <option value="gain_muscle" data-i18n="goalGain">Build Lean Muscle (Hypertrophy)</option>
-            <option value="strength" data-i18n="goalStrength">Maximize Strength & Power</option>
-            <option value="maintain" data-i18n="goalMaintain">Healthy Athletic Maintenance</option>
+            <option value="lose_weight">Burn Fat & Shred</option>
+            <option value="gain_muscle">Build Lean Muscle (Hypertrophy)</option>
+            <option value="strength">Maximize Strength & Power</option>
+            <option value="maintain">Healthy Athletic Maintenance</option>
           </select>
         </div>
 
         <!-- Submit Button -->
         <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-bold text-sm shadow-lg shadow-emerald-500/20 transition-all active:scale-[0.98]">
-          <span data-i18n="saveSettingsBtn">Save & Recalibrate Plan</span> 💾
+          <span>Save & Recalibrate Plan</span> 💾
         </button>
 
         <!-- Re-launch Wizard Option -->
         <div class="pt-2 text-center">
           <button type="button" id="restartWizardBtn" class="text-xs text-emerald-400 hover:text-emerald-300 font-semibold transition">
-            <span data-i18n="restartWizardBtn">Run Setup Wizard Again 🔄</span>
+            <span>Run Setup Wizard Again 🔄</span>
           </button>
         </div>
       </form>
@@ -598,6 +661,7 @@
       </div>
     </div>
   </div>
+
   <!-- App Scripts (Zero Dependencies) -->
   <script src="./plan-engine.js"></script>
   <script src="./app.js"></script>
