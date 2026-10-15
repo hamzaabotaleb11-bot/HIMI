@@ -54,6 +54,7 @@ class RtmApp {
   }
 
   init() {
+    this.initTheme();
     this.checkDailyReset();
     this.bindEvents();
     this.initFoodMacroTracker();
@@ -116,6 +117,76 @@ class RtmApp {
 
   saveDailyFoodLog(list) {
     localStorage.setItem(this.getFoodLogKey(), JSON.stringify(list));
+  }
+
+  // Done Meals Tracking (tied to local date)
+  getDoneMealsKey() {
+    return 'rtm_meals_done_' + this.getTodayDateString();
+  }
+
+  getDoneMealsList() {
+    try {
+      const saved = localStorage.getItem(this.getDoneMealsKey());
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  isMealDoneToday(index) {
+    const list = this.getDoneMealsList();
+    return list.includes(index);
+  }
+
+  toggleMealDone(index) {
+    const mealPlan = this.currentMealPlan;
+    if (!mealPlan || !mealPlan.dailyMeals || !mealPlan.dailyMeals[index]) return;
+    const meal = mealPlan.dailyMeals[index];
+
+    let list = this.getDoneMealsList();
+    const mealLogId = `meallog_${index}_${this.getTodayDateString()}`;
+
+    if (list.includes(index)) {
+      // Toggle off / undo: remove from done list and deduct macros
+      list = list.filter(i => i !== index);
+      localStorage.setItem(this.getDoneMealsKey(), JSON.stringify(list));
+      this.removeFoodLogItem(mealLogId);
+    } else {
+      // Mark as done
+      list.push(index);
+      localStorage.setItem(this.getDoneMealsKey(), JSON.stringify(list));
+
+      // 1. Update intake totals
+      const intake = this.getDailyIntake();
+      intake.protein = Math.max(0, Math.round(intake.protein + (meal.protein || 0)));
+      intake.carbs = Math.max(0, Math.round(intake.carbs + (meal.carbs || 0)));
+      intake.fats = Math.max(0, Math.round(intake.fats + (meal.fats || 0)));
+      intake.calories = Math.max(0, Math.round(intake.calories + (meal.calories || 0)));
+      localStorage.setItem(this.getTodayKey(), JSON.stringify(intake));
+
+      // 2. Append to daily food log
+      const foodSummary = meal.foods && meal.foods.length
+        ? meal.foods.map(f => `${f.name} (${f.qty})`).join(', ')
+        : meal.description;
+
+      const log = this.getDailyFoodLog();
+      const filteredLog = log.filter(item => item.id !== mealLogId);
+      filteredLog.unshift({
+        id: mealLogId,
+        name: `${meal.meal} (${foodSummary})`,
+        grams: 1,
+        protein: meal.protein || 0,
+        carbs: meal.carbs || 0,
+        fats: meal.fats || 0,
+        calories: meal.calories || 0,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      });
+      this.saveDailyFoodLog(filteredLog);
+
+      // 3. Re-render UI
+      this.renderAll();
+      this.renderFoodLog();
+    }
   }
 
   initFoodMacroTracker() {
@@ -309,18 +380,32 @@ class RtmApp {
   removeFoodLogItem(logId) {
     const log = this.getDailyFoodLog();
     const index = log.findIndex(item => item.id === logId);
-    if (index === -1) return;
+    if (index === -1) {
+      this.renderAll();
+      return;
+    }
 
     const [removed] = log.splice(index, 1);
     this.saveDailyFoodLog(log);
 
     // Deduct from intake
     const intake = this.getDailyIntake();
-    intake.protein = Math.max(0, Math.round(intake.protein - removed.protein));
-    intake.carbs = Math.max(0, Math.round(intake.carbs - removed.carbs));
-    intake.fats = Math.max(0, Math.round(intake.fats - removed.fats));
-    intake.calories = Math.max(0, Math.round(intake.calories - removed.calories));
+    intake.protein = Math.max(0, Math.round(intake.protein - (removed.protein || 0)));
+    intake.carbs = Math.max(0, Math.round(intake.carbs - (removed.carbs || 0)));
+    intake.fats = Math.max(0, Math.round(intake.fats - (removed.fats || 0)));
+    intake.calories = Math.max(0, Math.round(intake.calories - (removed.calories || 0)));
     localStorage.setItem(this.getTodayKey(), JSON.stringify(intake));
+
+    // If this entry was a logged meal, unmark it in done list
+    if (String(logId).startsWith('meallog_')) {
+      const parts = logId.split('_');
+      const mealIdx = parseInt(parts[1], 10);
+      let list = this.getDoneMealsList();
+      if (list.includes(mealIdx)) {
+        list = list.filter(i => i !== mealIdx);
+        localStorage.setItem(this.getDoneMealsKey(), JSON.stringify(list));
+      }
+    }
 
     this.renderAll();
     this.renderFoodLog();
@@ -329,6 +414,7 @@ class RtmApp {
   resetDailyMacros() {
     localStorage.setItem(this.getTodayKey(), JSON.stringify({ protein: 0, carbs: 0, fats: 0, calories: 0 }));
     this.saveDailyFoodLog([]);
+    localStorage.setItem(this.getDoneMealsKey(), JSON.stringify([]));
     this.renderAll();
     this.renderFoodLog();
   }
@@ -423,16 +509,27 @@ class RtmApp {
       }
     });
 
-    // Settings Free days slider display
-    const freeDaysInput = document.getElementById('inputFreeDays');
-    const freeDaysDisplay = document.getElementById('freeDaysValue');
-    if (freeDaysInput && freeDaysDisplay) {
-      freeDaysInput.addEventListener('input', (e) => {
-        freeDaysDisplay.textContent = `${e.target.value} Days a week`;
+    // Theme Options in Settings Modal
+    const themeDarkBtn = document.getElementById('themeDarkBtn');
+    if (themeDarkBtn) {
+      themeDarkBtn.addEventListener('click', () => this.setTheme('dark'));
+    }
+
+    const themeLightBtn = document.getElementById('themeLightBtn');
+    if (themeLightBtn) {
+      themeLightBtn.addEventListener('click', () => this.setTheme('light'));
+    }
+
+    // Change Stats Button in Settings Modal (opens wizard with current stats)
+    const btnChangeStats = document.getElementById('btnChangeStats');
+    if (btnChangeStats) {
+      btnChangeStats.addEventListener('click', () => {
+        this.closeSettings();
+        this.openWizard();
       });
     }
 
-    // Profile Settings Form
+    // Profile Settings Form (legacy fallback)
     const form = document.getElementById('profileForm');
     if (form) {
       form.addEventListener('submit', (e) => {
@@ -788,9 +885,74 @@ class RtmApp {
   }
 
   // ============================================
+  // Theme Management (Dark Mode / Light Mode)
+  // ============================================
+  initTheme() {
+    const savedTheme = localStorage.getItem('rtm_theme') || 'dark';
+    this.setTheme(savedTheme);
+  }
+
+  setTheme(theme) {
+    this.theme = theme;
+    localStorage.setItem('rtm_theme', theme);
+
+    const root = document.documentElement;
+    if (theme === 'light') {
+      root.classList.remove('dark');
+      root.classList.add('light');
+    } else {
+      root.classList.add('dark');
+      root.classList.remove('light');
+    }
+
+    this.updateThemeUI();
+  }
+
+  updateThemeUI() {
+    const isDark = (this.theme || localStorage.getItem('rtm_theme') || 'dark') === 'dark';
+    const darkBtn = document.getElementById('themeDarkBtn');
+    const lightBtn = document.getElementById('themeLightBtn');
+
+    if (darkBtn) {
+      const circle = darkBtn.querySelector('.theme-circle');
+      const badge = darkBtn.querySelector('.theme-active-badge');
+      const label = darkBtn.querySelector('.theme-label');
+      if (circle) {
+        circle.className = isDark
+          ? 'theme-circle w-24 h-24 sm:w-28 sm:h-28 rounded-full border-2 border-emerald-400 bg-slate-900 shadow-lg shadow-emerald-500/25 flex flex-col items-center justify-center transition-all duration-200 ring-4 ring-emerald-500/20 relative'
+          : 'theme-circle w-24 h-24 sm:w-28 sm:h-28 rounded-full border-2 border-white/10 bg-slate-800/60 shadow-md flex flex-col items-center justify-center transition-all duration-200 relative';
+      }
+      if (badge) badge.classList.toggle('hidden', !isDark);
+      if (label) {
+        label.className = isDark
+          ? 'theme-label text-xs font-bold text-emerald-400 transition'
+          : 'theme-label text-xs font-semibold text-slate-400 transition';
+      }
+    }
+
+    if (lightBtn) {
+      const circle = lightBtn.querySelector('.theme-circle');
+      const badge = lightBtn.querySelector('.theme-active-badge');
+      const label = lightBtn.querySelector('.theme-label');
+      if (circle) {
+        circle.className = !isDark
+          ? 'theme-circle w-24 h-24 sm:w-28 sm:h-28 rounded-full border-2 border-emerald-400 bg-white shadow-lg shadow-emerald-500/25 flex flex-col items-center justify-center transition-all duration-200 ring-4 ring-emerald-500/20 relative'
+          : 'theme-circle w-24 h-24 sm:w-28 sm:h-28 rounded-full border-2 border-white/10 bg-slate-800/60 shadow-md flex flex-col items-center justify-center transition-all duration-200 relative';
+      }
+      if (badge) badge.classList.toggle('hidden', isDark);
+      if (label) {
+        label.className = !isDark
+          ? 'theme-label text-xs font-bold text-emerald-600 transition'
+          : 'theme-label text-xs font-semibold text-slate-400 transition';
+      }
+    }
+  }
+
+  // ============================================
   // Settings & Tabs
   // ============================================
   openSettings() {
+    this.updateThemeUI();
     this.syncProfileToInputs();
     const modal = document.getElementById('settingsModal');
     if (modal) modal.classList.remove('opacity-0', 'pointer-events-none');
@@ -1174,17 +1336,49 @@ class RtmApp {
       `).join('');
     }
 
+    this.currentMealPlan = mealPlan;
+
     const dailyMealsContainer = document.getElementById('dailyMealsContainer');
     if (dailyMealsContainer) {
-      dailyMealsContainer.innerHTML = mealPlan.dailyMeals.map(meal => `
-        <div class="glass-card p-4 mb-3 border border-white/5">
-          <div class="flex justify-between items-center mb-1">
-            <h5 class="font-bold text-white text-sm">${meal.meal}</h5>
-            <span class="text-xs font-mono text-cyan-400 font-semibold">${meal.macros}</span>
+      dailyMealsContainer.innerHTML = mealPlan.dailyMeals.map((meal, index) => {
+        const isDone = this.isMealDoneToday(index);
+        const foods = Array.isArray(meal.foods) && meal.foods.length > 0
+          ? meal.foods
+          : [{ name: meal.description, qty: '1 serving' }];
+
+        return `
+          <div class="glass-card p-4 sm:p-4.5 mb-3 border ${isDone ? 'border-emerald-500/40 bg-emerald-500/5' : 'border-white/10'} transition-all duration-200">
+            <!-- Meal Header with Macro badge and Done button -->
+            <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-white/5 gap-2">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h5 class="font-extrabold text-white text-sm sm:text-base">${meal.meal}</h5>
+                  ${isDone ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Logged to Overview</span>` : ''}
+                </div>
+                <div class="text-xs font-mono text-cyan-400 font-semibold mt-0.5">${meal.macros}</div>
+              </div>
+
+              <!-- Done option button -->
+              <button onclick="window.rtmApp && window.rtmApp.toggleMealDone(${index})" class="shrink-0 px-3.5 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm ${isDone ? 'bg-emerald-500 text-slate-950 hover:bg-emerald-400 ring-2 ring-emerald-500/30' : 'bg-slate-800 hover:bg-emerald-500 hover:text-slate-950 text-slate-200 border border-white/10'}">
+                <svg class="w-3.5 h-3.5 ${isDone ? 'text-slate-950' : 'text-emerald-400'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span>${isDone ? 'Done ✓' : 'Done'}</span>
+              </button>
+            </div>
+
+            <!-- Given foods with quantity very simply put next to the food -->
+            <div class="space-y-1.5">
+              ${foods.map(f => `
+                <div class="flex items-center justify-between py-1.5 px-3 rounded-lg bg-slate-900/40 border border-white/5 text-xs">
+                  <span class="text-slate-200 font-medium">${f.name}</span>
+                  <span class="font-mono font-bold text-emerald-300 bg-emerald-500/15 px-2 py-0.5 rounded border border-emerald-500/25 shrink-0 ml-2">${f.qty}</span>
+                </div>
+              `).join('')}
+            </div>
           </div>
-          <p class="text-xs text-slate-300">${meal.description}</p>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     // 4. Progress Tab Render

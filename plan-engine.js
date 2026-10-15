@@ -525,30 +525,66 @@ var PlanEngine = {
           {
             meal: 'Breakfast',
             mealAr: 'الإفطار',
+            protein: 28,
+            carbs: 65,
+            fats: 18,
+            calories: 534,
+            macros: '28g P · 65g C · 18g F · 534 kcal',
+            foods: [
+              { name: 'Boiled or Scrambled Eggs', qty: '3 eggs' },
+              { name: 'Rolled Oats (warm water/milk)', qty: '60g' },
+              { name: 'Fresh Banana', qty: '1 medium' }
+            ],
             description: '3 Boiled or Scrambled Eggs + 60g Oats with warm water/milk + 1 Banana',
-            descriptionAr: '٣ بيضات مسلوقة أو مقلية بقليل من الزيت + ٦٠ جم شوفان + موزة',
-            macros: 'P: 28g | C: 65g | F: 18g'
+            descriptionAr: '٣ بيضات مسلوقة أو مقلية بقليل من الزيت + ٦٠ جم شوفان + موزة'
           },
           {
             meal: 'Lunch',
             mealAr: 'الغداء',
+            protein: 35,
+            carbs: 45,
+            fats: 6,
+            calories: 374,
+            macros: '35g P · 45g C · 6g F · 374 kcal',
+            foods: [
+              { name: 'Canned Tuna / Sardines (in Water)', qty: '1 can (140g)' },
+              { name: 'White or Brown Rice (Cooked)', qty: '150g' },
+              { name: 'Fresh Cucumber & Tomato Salad', qty: '1 large bowl' }
+            ],
             description: '1 Can Tuna (drained) + 150g Rice (cooked) + Large Cucumber & Tomato salad',
-            descriptionAr: 'علبة تونة مصفاة + ١٥٠ جم أرز مطبوخ + سلطة خيار وطماطم طازجة',
-            macros: 'P: 35g | C: 45g | F: 6g'
+            descriptionAr: 'علبة تونة مصفاة + ١٥٠ جم أرز مطبوخ + سلطة خيار وطماطم طازجة'
           },
           {
             meal: 'Pre/Post Workout Snack',
             mealAr: 'وجبة خفيفة / قبل التمرين',
+            protein: 8,
+            carbs: 20,
+            fats: 9,
+            calories: 193,
+            macros: '8g P · 20g C · 9g F · 193 kcal',
+            foods: [
+              { name: 'Whole Wheat Bread', qty: '1 slice' },
+              { name: 'Natural Peanut Butter', qty: '1 tbsp (16g)' },
+              { name: 'Black Coffee or Green Tea', qty: '1 cup' }
+            ],
             description: '1 Slice Whole Wheat Bread + 1 Tbsp Peanut Butter + Black Coffee / Tea',
-            descriptionAr: 'شريحة خبز حبة كاملة + ملعقة زبدة فول سوداني + شاي أو قهوة بدون سكر',
-            macros: 'P: 8g | C: 20g | F: 9g'
+            descriptionAr: 'شريحة خبز حبة كاملة + ملعقة زبدة فول سوداني + شاي أو قهوة بدون سكر'
           },
           {
             meal: 'Dinner',
             mealAr: 'العشاء',
+            protein: 28,
+            carbs: 25,
+            fats: 10,
+            calories: 302,
+            macros: '28g P · 25g C · 10g F · 302 kcal',
+            foods: [
+              { name: 'Cottage Cheese / Labneh (جبن قريش)', qty: '150g' },
+              { name: 'Whole Boiled Egg', qty: '1 egg' },
+              { name: 'Whole Wheat Baladi Bread / Pita', qty: '1/2 loaf' }
+            ],
             description: '150g Cottage Cheese (قريش) with olive oil & cumin + 1 boiled egg + pita bread',
-            descriptionAr: '١٥٠ جم جبن قريش بزيت زيتون وكمون + بيضة مسلوقة + نصف رغيف خبز بلدي',
-            macros: 'P: 28g | C: 25g | F: 10g'
+            descriptionAr: '١٥٠ جم جبن قريش بزيت زيتون وكمون + بيضة مسلوقة + نصف رغيف خبز بلدي'
           }
         ]
       },
@@ -646,30 +682,67 @@ var PlanEngine = {
           {
             meal: 'Breakfast',
             mealAr: 'الإفطار',
+            protein: 34,
+            carbs: 50,
+            fats: 14,
+            calories: 462,
+            macros: '34g P · 50g C · 14g F · 462 kcal',
+            foods: [
+              { name: 'Plain Greek Yogurt (0% Non-Fat)', qty: '200g' },
+              { name: 'Rolled Oats with Honey', qty: '50g' },
+              { name: 'Fresh / Frozen Mixed Berries', qty: '100g' },
+              { name: 'Farm Fresh Eggs', qty: '2 boiled' }
+            ],
             description: 'Greek Yogurt (200g) with Honey, Berries, and 50g Rolled Oats + 2 Eggs',
-            descriptionAr: '٢٠٠ جم زبادي يوناني مع ملعقة عسل وتوت وشوفان + بيضتان مسلوقتان',
-            macros: 'P: 34g | C: 50g | F: 14g'
+            descriptionAr: '٢٠٠ جم زبادي يوناني مع ملعقة عسل وتوت وشوفان + بيضتان مسلوقتان'
           },
           {
             meal: 'Lunch',
             mealAr: 'الغداء',
+            protein: 45,
+            carbs: 48,
+            fats: 10,
+            calories: 462,
+            macros: '45g P · 48g C · 10g F · 462 kcal',
+            foods: [
+              { name: 'Grilled Chicken Breast', qty: '180g' },
+              { name: 'Baked Sweet Potato', qty: '200g' },
+              { name: 'Steamed Broccoli with EVOO', qty: '150g' }
+            ],
             description: '180g Grilled Chicken Breast + 200g Baked Sweet Potato + Steamed Broccoli with Olive Oil',
-            descriptionAr: '١٨٠ جم صدور دجاج مشوية + ٢٠٠ جم بطاطا مشوية + بروكلي بزيت الزيتون',
-            macros: 'P: 45g | C: 48g | F: 10g'
+            descriptionAr: '١٨٠ جم صدور دجاج مشوية + ٢٠٠ جم بطاطا مشوية + بروكلي بزيت الزيتون'
           },
           {
             meal: 'Pre/Post Workout Snack',
             mealAr: 'وجبة خفيفة / قبل التمرين',
+            protein: 20,
+            carbs: 22,
+            fats: 11,
+            calories: 267,
+            macros: '20g P · 22g C · 11g F · 267 kcal',
+            foods: [
+              { name: 'Whey Protein Shake or Boiled Egg', qty: '1 scoop / 1 egg' },
+              { name: 'Fresh Crisp Apple', qty: '1 medium' },
+              { name: 'Raw Almonds', qty: '25g (handful)' }
+            ],
             description: 'Whey Protein Shake or 1 Hard-boiled egg with an apple and handful of almonds',
-            descriptionAr: 'سكوب بروتين أو بيضة مسلوقة مع تفاحة وحفنة لوز',
-            macros: 'P: 20g | C: 22g | F: 11g'
+            descriptionAr: 'سكوب بروتين أو بيضة مسلوقة مع تفاحة وحفنة لوز'
           },
           {
             meal: 'Dinner',
             mealAr: 'العشاء',
+            protein: 38,
+            carbs: 15,
+            fats: 14,
+            calories: 338,
+            macros: '38g P · 15g C · 14g F · 338 kcal',
+            foods: [
+              { name: 'Lean Minced Beef / Sirloin (90/10)', qty: '150g' },
+              { name: 'Mixed Fresh Green Salad', qty: '1 large bowl' },
+              { name: 'Extra Virgin Olive Oil Dressing', qty: '15ml' }
+            ],
             description: '150g Lean Minced Beef or Chicken + Mixed Green Salad + Olive Oil dressing',
-            descriptionAr: '١٥٠ جم لحم مفروم قليل الدسم أو دجاج + سلطة خضراء غنية بزيت الزيتون',
-            macros: 'P: 38g | C: 15g | F: 14g'
+            descriptionAr: '١٥٠ جم لحم مفروم قليل الدسم أو دجاج + سلطة خضراء غنية بزيت الزيتون'
           }
         ]
       },
@@ -767,30 +840,67 @@ var PlanEngine = {
           {
             meal: 'Breakfast',
             mealAr: 'الإفطار',
+            protein: 38,
+            carbs: 35,
+            fats: 24,
+            calories: 508,
+            macros: '38g P · 35g C · 24g F · 508 kcal',
+            foods: [
+              { name: 'Organic Pasture-Raised Eggs', qty: '3 eggs' },
+              { name: 'Smoked Salmon Fillet Slices', qty: '60g' },
+              { name: 'Artisanal Sourdough Toast', qty: '1 slice' },
+              { name: 'Organic Hass Avocado', qty: '1/2 avocado' }
+            ],
             description: '3 Whole Organic Eggs + Smoked Salmon slices on Sourdough bread + 1/2 Avocado',
-            descriptionAr: '٣ بيضات عضوية + شرائح سلمون مدخن على خبز الساوردو + نصف حبة أفوكادو',
-            macros: 'P: 38g | C: 35g | F: 24g'
+            descriptionAr: '٣ بيضات عضوية + شرائح سلمون مدخن على خبز الساوردو + نصف حبة أفوكادو'
           },
           {
             meal: 'Lunch',
             mealAr: 'الغداء',
+            protein: 48,
+            carbs: 50,
+            fats: 18,
+            calories: 554,
+            macros: '48g P · 50g C · 18g F · 554 kcal',
+            foods: [
+              { name: 'Grass-Fed Sirloin Steak or Salmon', qty: '200g' },
+              { name: 'Organic Jasmine Rice (Cooked)', qty: '180g' },
+              { name: 'Grilled Fresh Asparagus', qty: '150g' }
+            ],
             description: '200g Sirloin Steak or Salmon Fillet + Jasmine Rice + Grilled Asparagus',
-            descriptionAr: '٢٠٠ جم ستيك بقري أو سلمون + أرز ياسمين + هليون مشوي',
-            macros: 'P: 48g | C: 50g | F: 18g'
+            descriptionAr: '٢٠٠ جم ستيك بقري أو سلمون + أرز ياسمين + هليون مشوي'
           },
           {
-            meal: 'Post-Workout',
-            mealAr: 'بعد التمرين',
+            meal: 'Pre/Post Workout Snack',
+            mealAr: 'وجبة خفيفة / بعد التمرين',
+            protein: 30,
+            carbs: 28,
+            fats: 7,
+            calories: 295,
+            macros: '30g P · 28g C · 7g F · 295 kcal',
+            foods: [
+              { name: 'Whey Protein Isolate Shake', qty: '1 scoop (30g)' },
+              { name: 'Organic Brown Rice Cakes', qty: '2 cakes' },
+              { name: 'Raw Artisanal Almond Butter', qty: '1 tbsp (16g)' }
+            ],
             description: 'Whey Isolate Shake with almond milk + Rice cakes with almond butter',
-            descriptionAr: 'مشروب واي بروتين مع حليب لوز + كعك الأرز بزبدة اللوز',
-            macros: 'P: 30g | C: 28g | F: 7g'
+            descriptionAr: 'مشروب واي بروتين مع حليب لوز + كعك الأرز بزبدة اللوز'
           },
           {
             meal: 'Dinner',
             mealAr: 'العشاء',
+            protein: 42,
+            carbs: 30,
+            fats: 12,
+            calories: 396,
+            macros: '42g P · 30g C · 12g F · 396 kcal',
+            foods: [
+              { name: 'Grilled Fresh Salmon or White Fish', qty: '180g' },
+              { name: 'Roasted Vegetables & Tri-Color Quinoa', qty: '1 bowl (150g)' },
+              { name: 'Extra Virgin Olive Oil', qty: '10ml' }
+            ],
             description: '180g Grilled Chicken or White Fish + Roasted Vegetables & Quinoa Bowl',
-            descriptionAr: '١٨٠ جم دجاج أو سمك أبيض مشوي + خضار مشوية وطبق كينوا',
-            macros: 'P: 42g | C: 30g | F: 12g'
+            descriptionAr: '١٨٠ جم دجاج أو سمك أبيض مشوي + خضار مشوية وطبق كينوا'
           }
         ]
       }

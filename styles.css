@@ -140,3 +140,97 @@ input[type="range"] {
   background: rgba(16, 185, 129, 0.14) !important;
   box-shadow: 0 0 20px rgba(16, 185, 129, 0.22);
 }
+
+/* Settings Circle Options */
+.theme-circle {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.theme-circle:hover {
+  transform: translateY(-2px);
+}
+
+/* Light mode overrides */
+html.light {
+  color-scheme: light;
+}
+
+html.light body {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+html.light header {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+html.light nav {
+  background-color: rgba(248, 250, 252, 0.95) !important;
+  border-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+html.light .glass-card {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+}
+
+html.light .bg-radial-gradient {
+  background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.08) 0%, rgba(6, 182, 212, 0.03) 50%, transparent 80%) !important;
+}
+
+html.light .text-white {
+  color: #0f172a !important;
+}
+
+html.light .text-slate-100 {
+  color: #0f172a !important;
+}
+
+html.light .text-slate-200 {
+  color: #1e293b !important;
+}
+
+html.light .text-slate-300 {
+  color: #334155 !important;
+}
+
+html.light .text-slate-400 {
+  color: #64748b !important;
+}
+
+html.light .bg-slate-900,
+html.light .bg-slate-900\/40,
+html.light .bg-slate-900\/60,
+html.light .bg-slate-900\/70,
+html.light .bg-slate-900\/80 {
+  background-color: #f1f5f9 !important;
+  border-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+html.light .bg-slate-800,
+html.light .bg-slate-800\/60,
+html.light .bg-slate-800\/80,
+html.light .bg-slate-800\/90 {
+  background-color: #e2e8f0 !important;
+  color: #1e293b !important;
+}
+
+html.light .bg-slate-950 {
+  background-color: #0f172a !important;
+}
+
+html.light input[type="number"],
+html.light input[type="text"],
+html.light select {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+html.light .border-white\/5,
+html.light .border-white\/10,
+html.light .border-white\/15,
+html.light .border-white\/20 {
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
