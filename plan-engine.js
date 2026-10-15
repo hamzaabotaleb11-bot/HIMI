@@ -436,11 +436,15 @@ var PlanEngine = {
         tierNameAr: 'اقتصادي ذكي (بروتين عالي / تكلفة منخفضة)',
         estimatedCostPerDay: '$4.50 - $6.50 / day',
         estimatedCostPerDayAr: '٤.٥ - ٦.٥ دولار / يومياً',
+        estimatedCostPerWeek: '$31 - $45 / week',
         estimatedCostPerMonth: '$135 - $195 / mo',
         estimatedCostPerMonthAr: '١٣٥ - ١٩٥ دولار / شهرياً',
         groceryList: [
           {
             item: 'Whole Eggs (30-Egg Trays)',
+            weeklyQty: '28 - 30 Eggs / wk',
+            weeklyCost: '~$6.00 - $8.00',
+            weeklyMacros: '170g P · 1,960 kcal',
             monthlyQty: '4 Trays (120 Eggs)',
             category: 'Complete Protein',
             reason: '3 eggs at breakfast + 1 egg at dinner daily (~4 eggs/day)',
@@ -448,6 +452,9 @@ var PlanEngine = {
           },
           {
             item: 'Canned Tuna / Sardines (in Water)',
+            weeklyQty: '7 Cans / wk',
+            weeklyCost: '~$7.00 - $9.00',
+            weeklyMacros: '210g P · 840 kcal',
             monthlyQty: '30 Cans (1 Full Case)',
             category: 'Lean Protein',
             reason: '1 can daily for quick, zero-prep 35g midday lean protein',
@@ -455,6 +462,9 @@ var PlanEngine = {
           },
           {
             item: 'Cottage Cheese / Labneh (جبن قريش)',
+            weeklyQty: '1 kg (~2 Tubs) / wk',
+            weeklyCost: '~$4.00 - $6.00',
+            weeklyMacros: '120g P · 980 kcal',
             monthlyQty: '9 Tubs (4.5 kg total)',
             category: 'Slow-Release Casein',
             reason: '150g every night before sleep for continuous muscle recovery',
@@ -462,6 +472,9 @@ var PlanEngine = {
           },
           {
             item: 'Rolled Oats (Whole Grain)',
+            weeklyQty: '500g Bag / wk',
+            weeklyCost: '~$1.50 - $2.50',
+            weeklyMacros: '65g P · 330g C · 1,850 kcal',
             monthlyQty: '2 Bags (2 kg total)',
             category: 'Complex Carbs',
             reason: '60g daily with morning eggs & warm water/milk for fiber',
@@ -469,6 +482,9 @@ var PlanEngine = {
           },
           {
             item: 'White / Brown Rice & Dry Lentils',
+            weeklyQty: '1.2 kg Rice + 500g Lentils',
+            weeklyCost: '~$3.00 - $4.00',
+            weeklyMacros: '60g P · 450g C · 2,400 kcal',
             monthlyQty: '5 kg Rice + 2 kg Lentils',
             category: 'Clean Bulk Energy',
             reason: '150g cooked rice lunch + lentils for high-value carbs',
@@ -476,6 +492,9 @@ var PlanEngine = {
           },
           {
             item: 'Natural Peanut Butter',
+            weeklyQty: '250g (Half Jar) / wk',
+            weeklyCost: '~$2.00 - $3.00',
+            weeklyMacros: '60g P · 125g F · 1,470 kcal',
             monthlyQty: '2 Jars (1 kg total)',
             category: 'Healthy Fats',
             reason: 'Daily 1 tbsp snack toast for dense healthy fats & calories',
@@ -483,13 +502,19 @@ var PlanEngine = {
           },
           {
             item: 'Bananas & Fresh Salad Veggies',
+            weeklyQty: '1.2 kg Bananas + 1.5 kg Salad',
+            weeklyCost: '~$4.50 - $6.50',
+            weeklyMacros: 'Fiber · Potassium · Micronutrients',
             monthlyQty: '4-5 kg Bananas + 6 kg Salad',
-            category: 'Micronutrients & Potassium',
+            category: 'Micronutrients',
             reason: 'Daily breakfast banana + fresh cucumber & tomato salad',
             monthlyTarget: 'Weekly market restock (~10 kg/mo)'
           },
           {
             item: 'Whole Wheat Pita / Bread',
+            weeklyQty: '1 Pack (14 Pitas/Slices) / wk',
+            weeklyCost: '~$2.00 - $3.00',
+            weeklyMacros: '35g P · 180g C · 950 kcal',
             monthlyQty: '5 Packs (60 Pitas/Slices)',
             category: 'Complex Carbs',
             reason: 'Daily snack bread + dinner pita with cottage cheese',
@@ -532,11 +557,15 @@ var PlanEngine = {
         tierNameAr: 'متوازن ومتنوع (ميزانية متوسطة)',
         estimatedCostPerDay: '$8.00 - $12.00 / day',
         estimatedCostPerDayAr: '٨ - ١٢ دولار / يومياً',
+        estimatedCostPerWeek: '$56 - $84 / week',
         estimatedCostPerMonth: '$240 - $360 / mo',
         estimatedCostPerMonthAr: '٢٤٠ - ٣٦٠ دولار / شهرياً',
         groceryList: [
           {
             item: 'Fresh Chicken Breast (Bulk Value Pack)',
+            weeklyQty: '1.8 kg Fresh Breast / wk',
+            weeklyCost: '~$14.00 - $18.00',
+            weeklyMacros: '400g P · 2,160 kcal',
             monthlyQty: '7 - 8 kg Fresh Breast',
             category: 'Lean Protein',
             reason: '180g grilled chicken daily for high-bioavailability lunch',
@@ -544,6 +573,9 @@ var PlanEngine = {
           },
           {
             item: 'Greek Yogurt (Plain 0% Non-Fat)',
+            weeklyQty: '1.4 kg (1-2 Tubs) / wk',
+            weeklyCost: '~$7.00 - $9.00',
+            weeklyMacros: '140g P · 55g C · 820 kcal',
             monthlyQty: '6 Tubs (6 kg total)',
             category: 'Gut Health & Protein',
             reason: '200g daily morning bowl with berries and rolled oats',
@@ -551,6 +583,9 @@ var PlanEngine = {
           },
           {
             item: 'Farm Fresh Eggs (30-Egg Trays)',
+            weeklyQty: '21 Eggs / wk',
+            weeklyCost: '~$5.00 - $7.00',
+            weeklyMacros: '126g P · 1,470 kcal',
             monthlyQty: '3 Trays (90 Eggs)',
             category: 'Essential Choline',
             reason: '2 eggs daily with breakfast + 1 hard-boiled snack',
@@ -558,6 +593,9 @@ var PlanEngine = {
           },
           {
             item: 'Lean Minced Beef / Sirloin (90/10)',
+            weeklyQty: '800g Lean Beef / wk',
+            weeklyCost: '~$10.00 - $14.00',
+            weeklyMacros: '170g P · 1,400 kcal',
             monthlyQty: '3 - 4 kg Lean Beef',
             category: 'Heme Iron & Zinc',
             reason: '150g portion 3-4 nights a week for dinner variation',
@@ -565,6 +603,9 @@ var PlanEngine = {
           },
           {
             item: 'Sweet Potatoes & Quinoa',
+            weeklyQty: '1.5 kg Potatoes + 400g Quinoa',
+            weeklyCost: '~$5.00 - $7.00',
+            weeklyMacros: '35g P · 350g C · 1,750 kcal',
             monthlyQty: '6 kg Potatoes + 1.5 kg Quinoa',
             category: 'Low-GI Complex Carbs',
             reason: '200g baked sweet potato lunch + dinner quinoa bowls',
@@ -572,6 +613,9 @@ var PlanEngine = {
           },
           {
             item: 'Frozen Mixed Berries (Blueberries & Strawberries)',
+            weeklyQty: '700g Bag / wk',
+            weeklyCost: '~$4.00 - $6.00',
+            weeklyMacros: 'Antioxidants · 70g C · 350 kcal',
             monthlyQty: '3 Bags (3 kg total)',
             category: 'Antioxidants & Fiber',
             reason: '100g daily with morning Greek yogurt bowl',
@@ -579,6 +623,9 @@ var PlanEngine = {
           },
           {
             item: 'Extra Virgin Olive Oil & Raw Almonds',
+            weeklyQty: '100ml EVOO + 250g Almonds',
+            weeklyCost: '~$5.00 - $8.00',
+            weeklyMacros: 'Healthy Fats · 50g P · 1,800 kcal',
             monthlyQty: '2 Bottles (1.5L) + 1 kg Almonds',
             category: 'Hormone Support Fats',
             reason: 'Daily 15ml salad/cooking oil + afternoon handful of almonds',
@@ -586,6 +633,9 @@ var PlanEngine = {
           },
           {
             item: 'Fresh Broccoli & Baby Greens',
+            weeklyQty: '1.5 kg Fresh Greens / wk',
+            weeklyCost: '~$4.00 - $6.00',
+            weeklyMacros: 'Vitamins C/K · Iron & Fiber',
             monthlyQty: 'Weekly fresh buy (~6 kg/mo)',
             category: 'Micronutrients',
             reason: 'Daily steamed broccoli lunch + dressed dinner greens',
@@ -628,11 +678,15 @@ var PlanEngine = {
         tierNameAr: 'أداء عالي وفاخر (ميزانية مرنة)',
         estimatedCostPerDay: '$15.00+ / day',
         estimatedCostPerDayAr: '١٥+ دولار / يومياً',
+        estimatedCostPerWeek: '$105 - $140+ / week',
         estimatedCostPerMonth: '$450+ / mo',
         estimatedCostPerMonthAr: '٤٥٠+ دولار / شهرياً',
         groceryList: [
           {
             item: 'Fresh Salmon Fillets & White Fish',
+            weeklyQty: '1.4 kg Fresh Fillets / wk',
+            weeklyCost: '~$28.00 - $38.00',
+            weeklyMacros: '280g P · EPA/DHA · 2,400 kcal',
             monthlyQty: '5 - 6 kg Fresh Fillets',
             category: 'Omega-3 EPA/DHA',
             reason: '200g fresh salmon or cod 4x/week for peak brain & recovery',
@@ -640,6 +694,9 @@ var PlanEngine = {
           },
           {
             item: 'Grass-Fed Sirloin / Beef Steaks',
+            weeklyQty: '1.2 kg Prime Steaks / wk',
+            weeklyCost: '~$26.00 - $36.00',
+            weeklyMacros: '270g P · Natural Creatine · 2,200 kcal',
             monthlyQty: '5 - 6 kg Prime Steaks',
             category: 'Natural Creatine & Iron',
             reason: '200g steak 3x/week for natural strength and hormone peak',
@@ -647,6 +704,9 @@ var PlanEngine = {
           },
           {
             item: 'Whey Protein Isolate Powder',
+            weeklyQty: '7 Scoops (210g Powder) / wk',
+            weeklyCost: '~$9.00 - $12.00',
+            weeklyMacros: '175g P · 770 kcal (Fast Digest)',
             monthlyQty: '1 Large Tub (2 lb / 30 Servings)',
             category: 'Ultra-Fast Absorption',
             reason: '1 scoop immediately post-workout with almond milk',
@@ -654,6 +714,9 @@ var PlanEngine = {
           },
           {
             item: 'Organic Pasture-Raised Eggs',
+            weeklyQty: '21 - 28 Organic Eggs / wk',
+            weeklyCost: '~$9.00 - $12.00',
+            weeklyMacros: '150g P · High Choline · 1,600 kcal',
             monthlyQty: '3-4 Cartons (90-120 Eggs)',
             category: 'Bioavailable Protein',
             reason: '3 organic eggs daily with morning sourdough & smoked salmon',
@@ -661,6 +724,9 @@ var PlanEngine = {
           },
           {
             item: 'Fresh Organic Hass Avocados',
+            weeklyQty: '6 - 7 Whole Avocados / wk',
+            weeklyCost: '~$8.00 - $12.00',
+            weeklyMacros: 'Monounsaturated Fats · 1,100 kcal',
             monthlyQty: '25 - 30 Whole Avocados',
             category: 'Monounsaturated Fats',
             reason: '1/2 to 1 whole avocado daily across breakfast & salads',
@@ -668,6 +734,9 @@ var PlanEngine = {
           },
           {
             item: 'Organic Jasmine Rice & Tri-Color Quinoa',
+            weeklyQty: '1 kg Jasmine + 500g Quinoa / wk',
+            weeklyCost: '~$6.00 - $8.00',
+            weeklyMacros: '40g P · 400g C · 1,900 kcal',
             monthlyQty: '4 kg Jasmine Rice + 2 kg Quinoa',
             category: 'Clean Performance Fuel',
             reason: 'Daily post-workout carb reload & dinner bowl base',
@@ -675,6 +744,9 @@ var PlanEngine = {
           },
           {
             item: 'Artisanal Sourdough & Almond Butter',
+            weeklyQty: '1 Fresh Loaf + 150g Butter / wk',
+            weeklyCost: '~$7.00 - $9.00',
+            weeklyMacros: '35g P · 180g C · 1,400 kcal',
             monthlyQty: '4 Fresh Loaves + 2 Jars Butter',
             category: 'Fermented Carbs & Fats',
             reason: 'Daily breakfast sourdough toast + workout energy bites',
@@ -682,6 +754,9 @@ var PlanEngine = {
           },
           {
             item: 'Fresh Asparagus, Baby Spinach & Organic Berries',
+            weeklyQty: '2 kg Premium Produce / wk',
+            weeklyCost: '~$9.00 - $14.00',
+            weeklyMacros: 'Polyphenols · Nitrates & Micronutrients',
             monthlyQty: 'Weekly premium produce (~8 kg/mo)',
             category: 'Superfoods & Micronutrients',
             reason: 'Daily grilled asparagus, organic berry bowl & salad greens',

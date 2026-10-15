@@ -54,23 +54,54 @@ class RtmApp {
   }
 
   init() {
+    this.checkDailyReset();
     this.bindEvents();
     this.initFoodMacroTracker();
     this.syncProfileToInputs();
     this.renderAll();
     this.syncWatchUI();
 
+    // Check for 24-hour daily rollover whenever app becomes active or visible
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') this.checkDailyReset();
+    });
+    window.addEventListener('focus', () => this.checkDailyReset());
+    setInterval(() => this.checkDailyReset(), 60000);
+
     // Always launch the onboarding wizard on every page load / refresh
     this.openWizard();
   }
 
-  // Daily intake tracker (stored per date)
+  // Local date helper (YYYY-MM-DD in user's local timezone)
+  getTodayDateString() {
+    const d = new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  // Automatically reset overview macros every 24 hours / midnight rollover
+  checkDailyReset() {
+    const today = this.getTodayDateString();
+    const lastActive = localStorage.getItem('rtm_last_active_date');
+    if (!lastActive) {
+      localStorage.setItem('rtm_last_active_date', today);
+    } else if (lastActive !== today) {
+      localStorage.setItem('rtm_last_active_date', today);
+      // New day: refresh UI so daily overview totals start fresh at 0
+      this.renderAll();
+      this.renderFoodLog();
+    }
+  }
+
+  // Daily intake tracker (stored per local date)
   getTodayKey() {
-    return 'rtm_intake_' + new Date().toISOString().split('T')[0];
+    return 'rtm_intake_' + this.getTodayDateString();
   }
 
   getFoodLogKey() {
-    return 'rtm_food_log_' + new Date().toISOString().split('T')[0];
+    return 'rtm_food_log_' + this.getTodayDateString();
   }
 
   getDailyIntake() {
@@ -96,6 +127,7 @@ class RtmApp {
     const closeBtn = document.getElementById('closeAddMacroBtn');
     const addBtn = document.getElementById('btnAddFoodToMacros');
     const resetBtn = document.getElementById('resetDailyMacrosBtn');
+    const resetOverviewBtn = document.getElementById('btnResetOverviewMacros');
     const addSection = document.getElementById('addMacroSection');
 
     // Populate food select with grouped categories and optional search query
@@ -206,11 +238,15 @@ class RtmApp {
       });
     }
 
-    // Reset button
+    // Reset buttons (Header Reset button + In-log Reset link)
+    const handleMacroReset = () => {
+      this.resetDailyMacros();
+    };
     if (resetBtn) {
-      resetBtn.addEventListener('click', () => {
-        this.resetDailyMacros();
-      });
+      resetBtn.addEventListener('click', handleMacroReset);
+    }
+    if (resetOverviewBtn) {
+      resetOverviewBtn.addEventListener('click', handleMacroReset);
     }
 
     this.renderFoodLog();
@@ -300,9 +336,14 @@ class RtmApp {
   renderFoodLog() {
     const container = document.getElementById('todayFoodLogList');
     const section = document.getElementById('todayFoodLogSection');
+    const countEl = document.getElementById('todayFoodLogCount');
     if (!container || !section) return;
 
     const log = this.getDailyFoodLog();
+    if (countEl) {
+      countEl.textContent = log.length > 0 ? `${log.length} ${log.length === 1 ? 'item' : 'items'}` : '';
+    }
+
     if (log.length === 0) {
       section.classList.add('hidden');
       container.innerHTML = '';
@@ -311,20 +352,24 @@ class RtmApp {
 
     section.classList.remove('hidden');
     container.innerHTML = log.map(item => `
-      <div class="flex items-center justify-between p-2 rounded-lg bg-slate-950/60 border border-white/5 text-[11px]">
-        <div class="flex-1 pr-2">
-          <div class="font-bold text-white">${item.name} (${item.grams}g)</div>
-          <div class="text-[10px] text-slate-400 font-mono">
-            <span class="text-emerald-400 font-semibold">${item.protein}g P</span> • 
-            <span class="text-cyan-400 font-semibold">${item.carbs}g C</span> • 
-            <span class="text-amber-400 font-semibold">${item.fats}g F</span> • 
-            <span class="text-slate-300 font-semibold">${item.calories} kcal</span>
+      <div class="flex items-center justify-between p-3 rounded-xl bg-slate-950/70 border border-white/5 hover:border-white/15 transition text-xs gap-3">
+        <div class="space-y-0.5 flex-1 min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="font-bold text-white text-xs sm:text-sm truncate">${item.name}</span>
+            <span class="text-[11px] font-mono text-emerald-400 font-semibold">${item.grams}g</span>
+            <span class="text-[10px] text-slate-500 font-mono">${item.time}</span>
+          </div>
+          <div class="text-[11px] text-slate-400 font-mono flex items-center gap-2 flex-wrap">
+            <span class="text-emerald-400 font-semibold">+${item.protein}g P</span> · 
+            <span class="text-cyan-400 font-semibold">+${item.carbs}g C</span> · 
+            <span class="text-amber-400 font-semibold">+${item.fats}g F</span> · 
+            <span class="text-slate-200 font-semibold">+${item.calories} kcal</span>
           </div>
         </div>
-        <div class="flex items-center gap-2">
-          <span class="text-[10px] text-slate-500 font-mono">${item.time}</span>
-          <button onclick="window.rtmApp && window.rtmApp.removeFoodLogItem('${item.id}')" class="text-slate-500 hover:text-red-400 p-1 font-bold text-xs transition">✕</button>
-        </div>
+        <button onclick="window.rtmApp && window.rtmApp.removeFoodLogItem('${item.id}')" class="px-2.5 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 hover:text-rose-300 border border-rose-500/20 text-xs font-bold transition flex items-center gap-1 cursor-pointer shrink-0" title="Delete this food item">
+          <span>Delete</span>
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
       </div>
     `).join('');
   }
@@ -1084,7 +1129,7 @@ class RtmApp {
     const groceryTitle = document.getElementById('groceryHeadingTitle');
     if (groceryTitle) {
       const cleanTierName = (mealPlan.tierName || 'Budget-Smart').split('(')[0].trim();
-      groceryTitle.textContent = `Monthly Grocery Staples (${cleanTierName})`;
+      groceryTitle.textContent = `Weekly Meal Staples (${cleanTierName})`;
     }
 
     const tierBadge = document.getElementById('groceryTierBadge');
@@ -1097,6 +1142,11 @@ class RtmApp {
       tierBadge.textContent = tierMap[this.profile.budgetTier] || 'Smart Budget';
     }
 
+    const weeklyCostBadge = document.getElementById('groceryWeeklyCostBadge');
+    if (weeklyCostBadge) {
+      weeklyCostBadge.textContent = mealPlan.estimatedCostPerWeek ? `~${mealPlan.estimatedCostPerWeek}` : `~${mealPlan.estimatedCostPerDay}`;
+    }
+
     const costBadge = document.getElementById('groceryMonthlyCostBadge');
     if (costBadge) {
       costBadge.textContent = mealPlan.estimatedCostPerMonth ? `~${mealPlan.estimatedCostPerMonth}` : `~${mealPlan.estimatedCostPerDay}`;
@@ -1105,21 +1155,21 @@ class RtmApp {
     const groceryContainer = document.getElementById('groceryListContainer');
     if (groceryContainer) {
       groceryContainer.innerHTML = mealPlan.groceryList.map(item => `
-        <div class="flex items-start justify-between p-3.5 rounded-lg bg-slate-900/60 border border-white/5 hover:border-emerald-500/30 transition">
-          <div class="space-y-1">
+        <div class="p-3 sm:p-3.5 rounded-xl bg-slate-900/60 border border-white/5 hover:border-emerald-500/30 transition flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+          <div class="flex-1 space-y-1">
             <div class="flex items-center gap-2 flex-wrap">
-              <span class="font-semibold text-white text-sm">${item.item}</span>
-              ${item.monthlyQty ? `<span class="text-[11px] font-mono px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">${item.monthlyQty}</span>` : ''}
+              <span class="font-bold text-white text-sm">${item.item}</span>
+              ${item.weeklyQty ? `<span class="text-xs font-mono px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">${item.weeklyQty}</span>` : ''}
+              <span class="text-[10px] text-slate-400 font-medium px-2 py-0.5 rounded-md bg-slate-800/80 border border-white/5">${item.category || 'Core Staple'}</span>
             </div>
             <div class="text-xs text-slate-400 leading-relaxed">${item.reason}</div>
-            ${item.monthlyTarget ? `
-              <div class="text-[11px] text-slate-400 flex items-center gap-1.5 pt-0.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
-                <span>Monthly Target: <strong class="text-slate-300">${item.monthlyTarget}</strong></span>
-              </div>
-            ` : ''}
           </div>
-          <span class="badge-pill bg-emerald-500/10 text-emerald-400 text-xs shrink-0 ml-2 font-medium">${item.category || 'High Value'}</span>
+          <div class="flex items-center gap-3 shrink-0 text-right self-end sm:self-center">
+            <div class="text-right">
+              ${item.weeklyMacros ? `<div class="text-xs font-mono font-bold text-cyan-300">${item.weeklyMacros}</div>` : ''}
+              ${item.weeklyCost ? `<div class="text-xs font-mono font-bold text-emerald-400">${item.weeklyCost} / wk</div>` : ''}
+            </div>
+          </div>
         </div>
       `).join('');
     }
