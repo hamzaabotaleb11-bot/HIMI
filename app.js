@@ -126,12 +126,6 @@ class RtmApp {
       });
     }
 
-    // Quick Workout Generator (Workout Tab)
-    const btnQuickGen = document.getElementById('btnQuickGenerateWorkout');
-    if (btnQuickGen) {
-      btnQuickGen.addEventListener('click', () => this.quickGenerateWorkout());
-    }
-
     // Wizard Controls
     const wizardNextBtn = document.getElementById('wizardNextBtn');
     if (wizardNextBtn) {
@@ -419,50 +413,6 @@ class RtmApp {
       freeDaysDisplay.textContent = `${this.profile.freeDays} Days a week`;
     }
 
-    // Also sync the Quick Workout Generator inputs in the Workout tab
-    const qh = document.getElementById('quickWorkoutHeight');
-    const qw = document.getElementById('quickWorkoutWeight');
-    const qd = document.getElementById('quickWorkoutDays');
-    const qg = document.getElementById('quickWorkoutGoal');
-    if (qh) qh.value = this.profile.heightCm;
-    if (qw) qw.value = this.profile.weightKg;
-    if (qd) qd.value = this.profile.freeDays;
-    if (qg) qg.value = this.profile.goal;
-  }
-
-  quickGenerateWorkout() {
-    const hInput = document.getElementById('quickWorkoutHeight');
-    const wInput = document.getElementById('quickWorkoutWeight');
-    const dInput = document.getElementById('quickWorkoutDays');
-    const gInput = document.getElementById('quickWorkoutGoal');
-
-    if (!hInput || !wInput || !dInput || !gInput) return;
-
-    const h = parseFloat(hInput.value) || this.profile.heightCm;
-    const w = parseFloat(wInput.value) || this.profile.weightKg;
-    const days = parseInt(dInput.value, 10) || this.profile.freeDays;
-    const goal = gInput.value || this.profile.goal;
-
-    this.profile.heightCm = h;
-    this.profile.weightKg = w;
-    this.profile.freeDays = days;
-    this.profile.goal = goal;
-
-    localStorage.setItem('rtm_profile', JSON.stringify(this.profile));
-    this.syncProfileToInputs();
-    this.renderAll();
-
-    const toast = document.getElementById('quickWorkoutToast');
-    const toastMsg = document.getElementById('quickWorkoutToastMsg');
-    if (toast) {
-      if (toastMsg) {
-        toastMsg.textContent = `✓ Generated ${days}-Day routine for ${h} cm & ${w} kg!`;
-      }
-      toast.classList.remove('hidden');
-      setTimeout(() => {
-        toast.classList.add('hidden');
-      }, 3000);
-    }
   }
 
   saveProfileFromInputs() {

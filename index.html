@@ -195,59 +195,6 @@
     <!-- TAB 2: WORKOUT SPLIT -->
     <div id="pane-workout" class="tab-content hidden space-y-6">
       
-      <!-- Instant Workout Generator Card (Schedule, Goal, Height & Weight) -->
-      <div class="glass-card p-6 border border-emerald-500/25 bg-slate-900/80 shadow-xl space-y-4">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-white/10 gap-2">
-          <div>
-            <h3 class="text-base sm:text-lg font-black text-white flex items-center gap-2">
-              <span>⚡ Dynamic Workout Generator</span>
-            </h3>
-            <p class="text-xs text-slate-400 mt-0.5">
-              Instantly recalibrates your training split based on your schedule, goal, height, and weight.
-            </p>
-          </div>
-          <button id="btnQuickGenerateWorkout" class="self-start sm:self-auto px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-bold text-xs shadow-md shadow-emerald-500/20 transition active:scale-95 flex items-center gap-1.5 whitespace-nowrap">
-            <span>Generate Workout</span> ⚡
-          </button>
-        </div>
-
-        <!-- Quick Inputs Form Grid -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
-          <div>
-            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Height (cm)</label>
-            <input type="number" id="quickWorkoutHeight" min="120" max="240" class="text-xs font-mono font-bold">
-          </div>
-          <div>
-            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Weight (kg)</label>
-            <input type="number" id="quickWorkoutWeight" min="35" max="250" step="0.5" class="text-xs font-mono font-bold">
-          </div>
-          <div>
-            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Free Time (Schedule)</label>
-            <select id="quickWorkoutDays" class="text-xs">
-              <option value="2">2 Days (Full Body)</option>
-              <option value="3">3 Days (Push / Pull / Legs)</option>
-              <option value="4">4 Days (Upper / Lower)</option>
-              <option value="5">5 Days (U/L + PPL)</option>
-              <option value="6">6 Days (PPL x 2)</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Primary Goal</label>
-            <select id="quickWorkoutGoal" class="text-xs">
-              <option value="lose_weight">Burn Fat & Shred</option>
-              <option value="gain_muscle">Build Lean Muscle</option>
-              <option value="maintain">Healthy Maintenance</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Quick Generator Feedback Toast -->
-        <div id="quickWorkoutToast" class="hidden p-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center justify-between">
-          <span id="quickWorkoutToastMsg">✓ Workout generated based on your metrics!</span>
-          <span class="text-[10px] text-emerald-400 font-mono">Updated</span>
-        </div>
-      </div>
-
       <!-- Personalized Plan Parameters Banner -->
       <div id="workoutProfileBanner" class="glass-card p-6 border border-white/10 space-y-4">
         <!-- Rendered dynamically by app.js -->
@@ -603,10 +550,10 @@
       <div class="flex items-center justify-between pb-4 mb-5 border-b border-white/10">
         <div>
           <h3 class="text-lg font-bold text-white flex items-center gap-2">
-            Profile & Constraints ⚙️
+            Settings & Workout Generator ⚙️
           </h3>
           <p class="text-xs text-slate-400 mt-0.5">
-            Adjust your metrics. Your nutrition and training recalibrate automatically.
+            Adjust your metrics, schedule, and goal to generate your workout split and nutrition plan.
           </p>
         </div>
         <button id="closeSettingsBtn" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-sm font-bold transition">
@@ -678,8 +625,8 @@
         </div>
 
         <!-- Submit Button -->
-        <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-bold text-sm shadow-lg shadow-emerald-500/20 transition-all active:scale-[0.98]">
-          <span>Save & Recalibrate Plan</span> 💾
+        <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-bold text-sm shadow-lg shadow-emerald-500/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+          <span>Generate Workout & Save Plan</span> ⚡
         </button>
 
         <!-- Re-launch Wizard Option -->
@@ -692,7 +639,7 @@
 
       <!-- Save feedback toast inside modal -->
       <div id="saveToast" class="opacity-0 pointer-events-none transition-opacity duration-300 mt-3 p-2 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs text-center font-medium">
-        ✓ Saved! Recalibrating plan...
+        ✓ Workout generated and plan saved!
       </div>
     </div>
   </div>
