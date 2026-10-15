@@ -38,11 +38,12 @@ class RtmApp {
     }
     if (!Array.isArray(this.progressHistory) || this.progressHistory.length === 0) {
       this.progressHistory = [
-        { date: '2026-10-01', weight: 79.5, notes: 'Day 1: Started RTM journey' },
-        { date: '2026-10-08', weight: 78.8, notes: 'Feeling stronger, hit protein target' },
-        { date: '2026-10-13', weight: 78.0, notes: 'Hit all 4 workout days, meals on budget' }
+        { id: 'entry_3', timestamp: new Date('2026-10-13T12:00:00').getTime(), date: '2026-10-13', weight: 78.0, notes: 'Hit all 4 workout days, meals on budget' },
+        { id: 'entry_2', timestamp: new Date('2026-10-08T12:00:00').getTime(), date: '2026-10-08', weight: 78.8, notes: 'Feeling stronger, hit protein target' },
+        { id: 'entry_1', timestamp: new Date('2026-10-01T12:00:00').getTime(), date: '2026-10-01', weight: 79.5, notes: 'Day 1: Started RTM journey' }
       ];
     }
+    this.sortProgressHistory();
 
     // Paired smartwatch device
     this.pairedWatch = localStorage.getItem('rtm_paired_watch') || null;
@@ -293,13 +294,7 @@ class RtmApp {
       });
     }
 
-    const restartWizardBtn = document.getElementById('restartWizardBtn');
-    if (restartWizardBtn) {
-      restartWizardBtn.addEventListener('click', () => {
-        this.closeSettings();
-        this.openWizard();
-      });
-    }
+
 
     // Wizard Close Button & Modal Backdrop Click
     const closeWizardBtn = document.getElementById('closeWizardBtn');
@@ -717,18 +712,35 @@ class RtmApp {
     }
   }
 
+  sortProgressHistory() {
+    if (!Array.isArray(this.progressHistory)) {
+      this.progressHistory = [];
+      return;
+    }
+    this.progressHistory.sort((a, b) => {
+      const timeA = a.timestamp || (a.date ? new Date(a.date).getTime() : 0);
+      const timeB = b.timestamp || (b.date ? new Date(b.date).getTime() : 0);
+      return timeB - timeA; // Descending: Most recent first at the top
+    });
+  }
+
   addProgressLog() {
     const weightVal = parseFloat(document.getElementById('logWeight').value);
     const notesVal = document.getElementById('logNotes').value.trim();
     if (!weightVal) return;
 
+    const now = new Date();
     const newEntry = {
-      date: new Date().toISOString().split('T')[0],
+      id: 'entry_' + Date.now(),
+      timestamp: Date.now(),
+      date: now.toISOString().split('T')[0],
       weight: weightVal,
       notes: notesVal || '-'
     };
 
+    // Ensure new entry is placed at the top
     this.progressHistory.unshift(newEntry);
+    this.sortProgressHistory();
     localStorage.setItem('rtm_history', JSON.stringify(this.progressHistory));
 
     this.profile.weightKg = weightVal;
@@ -737,6 +749,13 @@ class RtmApp {
 
     document.getElementById('logWeight').value = '';
     document.getElementById('logNotes').value = '';
+    this.renderAll();
+  }
+
+  deleteProgressLog(identifier) {
+    this.progressHistory = this.progressHistory.filter(e => (e.id ? e.id !== identifier : e.date !== identifier));
+    this.sortProgressHistory();
+    localStorage.setItem('rtm_history', JSON.stringify(this.progressHistory));
     this.renderAll();
   }
 
