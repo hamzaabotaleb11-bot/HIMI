@@ -7,5 +7,4 @@ dist/
 *.apk
 *.aab
 download_apk.js
-*.keystore
-signing-key-info.txt
+
