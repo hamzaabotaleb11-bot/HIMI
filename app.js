@@ -586,7 +586,7 @@ class RtmApp {
     if (cProgBar) cProgBar.style.width = `${cProgressPct}%`;
     if (fProgBar) fProgBar.style.width = `${fProgressPct}%`;
 
-    // 2. Workout Tab Render: Dynamic Profile & Biomechanics Banner
+    // 2. Workout Tab Render: Clean and Simple
     const profileBanner = document.getElementById('workoutProfileBanner');
     if (profileBanner) {
       const goalsMap = {
@@ -596,132 +596,72 @@ class RtmApp {
       };
 
       profileBanner.innerHTML = `
-        <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-white/10 gap-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <div class="flex items-center gap-2">
               <span class="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
                 ACTIVE SPLIT
               </span>
-              <span class="text-xs text-slate-400 font-mono">${workoutPlan.schedule.length} Training Days / Week</span>
+              <span class="text-xs text-slate-400 font-mono">${workoutPlan.schedule.length} Days / Week</span>
             </div>
-            <h3 class="text-xl sm:text-2xl font-black text-white tracking-tight mt-1">
+            <h3 class="text-xl sm:text-2xl font-black text-white tracking-tight mt-1.5">
               ${workoutPlan.splitName}
             </h3>
-            <p class="text-xs sm:text-sm text-slate-300 mt-1">
-              Personalized for your <strong class="text-white">${this.profile.heightCm} cm</strong> height, <strong class="text-white">${this.profile.weightKg} kg</strong> weight, and <strong class="text-emerald-400">${this.profile.freeDays}-day</strong> weekly schedule.
-            </p>
           </div>
-
-          <!-- Parameter Summary Badges -->
-          <div class="flex flex-wrap items-center gap-2">
+          <div class="flex items-center gap-2">
             <span class="px-3 py-1.5 rounded-xl bg-slate-900/90 border border-white/10 text-xs font-semibold text-slate-200">
               🎯 ${goalsMap[this.profile.goal] || this.profile.goal}
             </span>
-            <span class="px-3 py-1.5 rounded-xl bg-slate-900/90 border border-emerald-500/30 text-xs font-semibold text-emerald-400 font-mono">
-              BMI: ${workoutPlan.bmi} (${workoutPlan.bmiCategory})
-            </span>
-          </div>
-        </div>
-
-        <!-- Biomechanical & Training Protocol Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
-          <!-- Leverage & Joint Physics -->
-          <div class="p-3.5 rounded-xl bg-slate-900/60 border border-white/5 space-y-1">
-            <div class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
-              <span>🦴</span> <span>Biomechanical Leverage</span>
-            </div>
-            <p class="text-xs text-slate-300 leading-relaxed">
-              ${workoutPlan.leverageNote}
-            </p>
-          </div>
-
-          <!-- Reps & Rest Strategy -->
-          <div class="p-3.5 rounded-xl bg-slate-900/60 border border-white/5 space-y-1">
-            <div class="text-[11px] font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
-              <span>⏱️</span> <span>Sets & Rest Intervals</span>
-            </div>
-            <div class="text-xs text-slate-200 font-semibold">
-              ${workoutPlan.defaultSets} sets • ${workoutPlan.repScheme}
-            </div>
-            <div class="text-[11px] text-slate-400">
-              Rest: <span class="text-cyan-400 font-mono font-medium">${workoutPlan.restTime}</span>
-            </div>
-          </div>
-
-          <!-- Pacing & Execution Tempo -->
-          <div class="p-3.5 rounded-xl bg-slate-900/60 border border-white/5 space-y-1">
-            <div class="text-[11px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
-              <span>⚡</span> <span>Tempo & Execution</span>
-            </div>
-            <p class="text-xs text-slate-300 leading-relaxed">
-              ${workoutPlan.pacingStrategy}
-            </p>
           </div>
         </div>
       `;
     }
 
-    // Schedule Cards Render
+    // Schedule Cards Render - Simple Movement, Sets, Reps, Rest list
     const workoutContainer = document.getElementById('workoutScheduleContainer');
     if (workoutContainer) {
       workoutContainer.innerHTML = '';
+      const cleanVal = (val) => String(val || '').replace(/\s*\(.*?\)/g, '').replace(/\s*reps?/i, '').replace(/\s*sets?/i, '').trim();
+
       workoutPlan.schedule.forEach((daySchedule) => {
         const card = document.createElement('div');
         card.className = 'glass-card p-5 sm:p-6 mb-5 border border-white/10 shadow-xl';
         card.innerHTML = `
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-4 border-b border-white/10 gap-2">
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="text-xs uppercase tracking-wider font-extrabold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 rounded-full">
-                  ${daySchedule.day}
-                </span>
-                <span class="text-xs text-slate-400 font-mono">⏱️ ${daySchedule.duration || '55 min'}</span>
-              </div>
-              <h4 class="text-lg sm:text-xl font-black text-white mt-2">${daySchedule.focus}</h4>
+          <div class="flex items-center justify-between pb-3 mb-4 border-b border-white/10">
+            <div class="flex items-center gap-2.5">
+              <span class="text-xs uppercase tracking-wider font-extrabold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 rounded-full">
+                ${daySchedule.day}
+              </span>
+              <h4 class="text-base sm:text-lg font-black text-white">${daySchedule.focus}</h4>
             </div>
-            <span class="text-xs text-slate-400 bg-slate-900/80 px-3 py-1.5 rounded-xl border border-white/5">
-              ${daySchedule.exercises.length} Exercises + Finisher
+            <span class="text-xs text-slate-400 font-mono">
+              ${daySchedule.exercises.length} Movements
             </span>
           </div>
 
-          <!-- Exercises Grid -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
-            ${daySchedule.exercises.map(ex => `
-              <div class="p-3.5 rounded-xl bg-slate-900/70 border border-white/5 hover:border-emerald-500/30 transition flex flex-col justify-between">
-                <div>
-                  <div class="flex items-start justify-between gap-2">
-                    <div class="font-bold text-slate-100 text-sm leading-snug">${ex.name}</div>
-                    <span class="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded whitespace-nowrap">
-                      ${ex.sets} sets
-                    </span>
-                  </div>
-                  <div class="text-[11px] text-cyan-400 font-medium mt-0.5">${ex.target || ''}</div>
-                  ${ex.formCue ? `<p class="text-[11px] text-slate-400 mt-2 bg-slate-950/60 p-2 rounded-lg border border-white/5 leading-relaxed">💡 <strong class="text-slate-300">Cue:</strong> ${ex.formCue}</p>` : ''}
-                </div>
-                <div class="flex items-center justify-between pt-2.5 mt-2.5 border-t border-white/5 text-[11px] text-slate-400 font-mono">
-                  <span>Target: <strong class="text-slate-200">${ex.reps}</strong></span>
-                  <span>Rest: <strong class="text-emerald-400">${ex.rest || '60s'}</strong></span>
-                </div>
-              </div>
-            `).join('')}
+          <!-- Clean List Table: Movement, Sets, Reps, Rest -->
+          <div class="overflow-x-auto rounded-xl border border-white/10 bg-slate-900/60">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-950/70 text-[11px] uppercase tracking-wider font-bold text-slate-400 border-b border-white/10">
+                  <th class="py-3 px-4">Movement</th>
+                  <th class="py-3 px-3 text-center whitespace-nowrap">Sets</th>
+                  <th class="py-3 px-3 text-center whitespace-nowrap">Reps</th>
+                  <th class="py-3 px-4 text-right whitespace-nowrap">Rest</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-white/5 text-xs sm:text-sm">
+                ${daySchedule.exercises.map(ex => `
+                  <tr class="hover:bg-white/[0.02] transition">
+                    <td class="py-3.5 px-4 font-bold text-white">${ex.name}</td>
+                    <td class="py-3.5 px-3 text-center font-mono font-bold text-emerald-400 whitespace-nowrap">${cleanVal(ex.sets)}</td>
+                    <td class="py-3.5 px-3 text-center font-mono font-bold text-slate-200 whitespace-nowrap">${cleanVal(ex.reps)}</td>
+                    <td class="py-3.5 px-4 text-right font-mono font-bold text-cyan-400 whitespace-nowrap">${cleanVal(ex.rest)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
           </div>
-
-          <!-- End-of-Session Finisher / Recovery Card -->
-          ${daySchedule.finisher ? `
-            <div class="p-3.5 rounded-xl bg-gradient-to-r from-emerald-500/10 via-cyan-500/10 to-transparent border border-emerald-500/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <div>
-                <div class="flex items-center gap-2">
-                  <span class="text-sm">🏁</span>
-                  <span class="text-xs font-bold text-emerald-300 uppercase tracking-wider">${daySchedule.finisher.title}</span>
-                  <span class="text-[10px] font-mono text-cyan-400 font-bold bg-cyan-500/10 px-2 py-0.5 rounded">${daySchedule.finisher.duration}</span>
-                </div>
-                <p class="text-xs text-slate-300 mt-1 leading-relaxed">${daySchedule.finisher.description}</p>
-              </div>
-              <span class="text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/20 whitespace-nowrap self-end sm:self-auto">
-                Goal Focused
-              </span>
-            </div>
-          ` : ''}
         `;
         workoutContainer.appendChild(card);
       });

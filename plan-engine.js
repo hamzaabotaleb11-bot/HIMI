@@ -99,47 +99,21 @@ var PlanEngine = {
     let cardioProtocol = null;
 
     if (userGoal === 'lose_weight') {
-      repScheme = bmi >= 26 ? '12-15 reps (Metabolic joint-friendly)' : '10-14 reps (Hypertrophic fat-burn)';
+      repScheme = bmi >= 26 ? '12-15' : '10-14';
       defaultSets = '3-4';
-      restTime = '45-60s (Shorter rest for elevated calorie burn)';
-      pacingStrategy = 'High-density supersets with continuous muscular tension';
-      cardioProtocol = {
-        title: 'Post-Workout Fat Oxidation Finisher',
-        duration: '12-15 mins',
-        description: bmi >= 27
-          ? 'Low-impact steep incline treadmill walk (10-12% incline @ 4.2-4.8 km/h) to accelerate fat oxidation while protecting knees and joints.'
-          : 'High-intensity interval rowing or stair sprints (40s work / 20s recovery) to maximize post-exercise oxygen consumption.'
-      };
+      restTime = '45-60s';
     } else if (userGoal === 'gain_muscle') {
-      repScheme = '8-12 reps (Hypertrophy volume)';
+      repScheme = '8-12';
       defaultSets = '3-4';
-      restTime = '75-90s (Adequate ATP replenishment for volume)';
-      pacingStrategy = 'Strict 3-second eccentric descent for maximum micro-trauma';
-      cardioProtocol = {
-        title: 'Active Recovery & Flexibility',
-        duration: '5-8 mins',
-        description: 'Light incline walk cool-down followed by loaded thoracic spine and hip flexor stretches to optimize nutrient delivery.'
-      };
+      restTime = '75-90s';
     } else if (userGoal === 'strength') {
-      repScheme = '4-6 reps (Heavy compound) / 8-10 reps (Accessories)';
-      defaultSets = '4-5';
-      restTime = '120-180s (Full central nervous system recovery)';
-      pacingStrategy = 'Maximum explosive concentric drive with strict isometric brace';
-      cardioProtocol = {
-        title: 'CNS Decompression & Core Stability',
-        duration: '5 mins',
-        description: 'Dead hangs from pull-up bar (3 sets of 45s) for spinal decompression and diaphragmatic box breathing.'
-      };
+      repScheme = '6-8';
+      defaultSets = '3-4';
+      restTime = '90-120s';
     } else { // maintain
-      repScheme = '10-12 reps (Athletic conditioning)';
+      repScheme = '10-12';
       defaultSets = '3';
-      restTime = '60-75s';
-      pacingStrategy = 'Smooth continuous rhythm through full joint range of motion';
-      cardioProtocol = {
-        title: 'Aerobic Base Conditioning',
-        duration: '10 mins',
-        description: 'Zone 2 steady-state jogging or stationary bike at a smooth conversational pace.'
-      };
+      restTime = '60s';
     }
 
     // Exercise tailoring helpers based on height & weight
