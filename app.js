@@ -1645,7 +1645,7 @@ class RtmApp {
     // Current daily intake progress
     const intake = this.getDailyIntake();
 
-    // 1. Overview Render: Day of Week & Date Display
+    // 1. Overview Render: Day of Week, Date & Training Day Display
     const now = new Date();
     const daysFull = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const monthsShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -1656,6 +1656,48 @@ class RtmApp {
     if (dayTextEl) dayTextEl.textContent = dayName;
     const dateTextEl = document.getElementById('overviewDateText');
     if (dateTextEl) dateTextEl.textContent = dateFormatted;
+
+    // Show what training day it is in Overview
+    const todayCode = this.getTodayDayCode(); // e.g. "Thu"
+    const isFreeDay = Array.isArray(this.profile.selectedDays) && this.profile.selectedDays.includes(todayCode);
+
+    const trainingBadge = document.getElementById('overviewTrainingDayBadge');
+    const trainingDot = document.getElementById('overviewTrainingDot');
+    const trainingText = document.getElementById('overviewTrainingDayText');
+    const trainingFocus = document.getElementById('overviewTrainingDayFocus');
+
+    if (isFreeDay) {
+      const dayIdx = this.profile.selectedDays.indexOf(todayCode);
+      const daySchedule = (workoutPlan && workoutPlan.schedule && workoutPlan.schedule[dayIdx])
+        ? workoutPlan.schedule[dayIdx]
+        : (workoutPlan && workoutPlan.schedule && workoutPlan.schedule[0]) || { day: 'Workout', focus: 'Training Session' };
+
+      if (trainingBadge) {
+        trainingBadge.className = 'px-2.5 py-0.5 rounded-lg text-xs font-bold font-mono transition flex items-center gap-1.5 bg-cyan-500/15 border border-cyan-500/30 text-cyan-300';
+      }
+      if (trainingDot) {
+        trainingDot.className = 'w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse';
+      }
+      if (trainingText) {
+        trainingText.textContent = `${daySchedule.day}: ${daySchedule.focus}`;
+      }
+      if (trainingFocus) {
+        trainingFocus.textContent = `· Training: ${daySchedule.focus}`;
+      }
+    } else {
+      if (trainingBadge) {
+        trainingBadge.className = 'px-2.5 py-0.5 rounded-lg text-xs font-bold font-mono transition flex items-center gap-1.5 bg-slate-800/80 border border-white/10 text-slate-400';
+      }
+      if (trainingDot) {
+        trainingDot.className = 'w-1.5 h-1.5 rounded-full bg-slate-500';
+      }
+      if (trainingText) {
+        trainingText.textContent = 'Rest Day';
+      }
+      if (trainingFocus) {
+        trainingFocus.textContent = '· Rest Day (Muscle Recovery)';
+      }
+    }
 
     // Overview Calories: progress / goal with a "/" in between
     const targetCalEl = document.getElementById('macroTargetCal');
