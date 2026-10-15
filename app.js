@@ -19,8 +19,11 @@ class RtmApp {
       gender: 'male',
       freeDays: 4,
       budgetTier: 'budget',
-      goal: 'lose_weight'
+      goal: 'gain_muscle'
     };
+    if (this.profile.goal === 'strength') {
+      this.profile.goal = 'gain_muscle';
+    }
 
     // Load progress history
     this.progressHistory = JSON.parse(localStorage.getItem('rtm_history')) || [
@@ -540,7 +543,6 @@ class RtmApp {
       const goalsMap = {
         lose_weight: 'Fat Loss',
         gain_muscle: 'Lean Bulk',
-        strength: 'Strength',
         maintain: 'Maintenance'
       };
       goalBadgeEl.textContent = goalsMap[this.profile.goal] || 'Custom';
@@ -590,7 +592,6 @@ class RtmApp {
       const goalsMap = {
         lose_weight: 'Burn Fat & Shred',
         gain_muscle: 'Build Lean Muscle (Hypertrophy)',
-        strength: 'Maximize Strength & Power',
         maintain: 'Healthy Athletic Maintenance'
       };
 
