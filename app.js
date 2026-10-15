@@ -4,7 +4,7 @@
  * Smart Watch pairing, settings, and plan generation.
  */
 
-const PlanEngine = window.PlanEngine || {};
+var PlanEngine = window.PlanEngine || (typeof PlanEngine !== 'undefined' ? PlanEngine : {});
 
 class RtmApp {
   constructor() {
