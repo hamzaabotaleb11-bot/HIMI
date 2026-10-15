@@ -57,11 +57,8 @@ class RtmApp {
     this.renderAll();
     this.syncWatchUI();
 
-    // Check if onboarding was completed before; if not, open wizard automatically
-    const onboarded = localStorage.getItem('rtm_onboarded');
-    if (!onboarded) {
-      this.openWizard();
-    }
+    // Always launch the onboarding wizard on every page load / refresh
+    this.openWizard();
   }
 
   // Daily intake tracker (stored per date)
