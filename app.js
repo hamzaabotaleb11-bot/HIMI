@@ -50,6 +50,11 @@ class RtmApp {
     this.pairedWatch = localStorage.getItem('rtm_paired_watch') || null;
     this.selectedWatchDevice = 'Apple Watch';
 
+    // Workout tab training days selection (synced with profile)
+    this.workoutTabSelectedDays = Array.isArray(this.profile.selectedDays) && this.profile.selectedDays.length >= 2
+      ? [...this.profile.selectedDays]
+      : ['Mon', 'Tue', 'Thu', 'Fri'];
+
     this.init();
   }
 
@@ -563,6 +568,45 @@ class RtmApp {
       wizardFinishBtn.addEventListener('click', () => this.finishWizard());
     }
 
+    // Workout Split Tab Day Checkboxes (Choose Free Days like the wizard)
+    document.querySelectorAll('.workout-tab-day-btn').forEach(card => {
+      card.addEventListener('click', () => {
+        const day = card.getAttribute('data-day');
+        if (!Array.isArray(this.workoutTabSelectedDays)) {
+          this.workoutTabSelectedDays = Array.isArray(this.profile.selectedDays) && this.profile.selectedDays.length >= 2
+            ? [...this.profile.selectedDays]
+            : ['Mon', 'Tue', 'Thu', 'Fri'];
+        }
+
+        if (this.workoutTabSelectedDays.includes(day)) {
+          if (this.workoutTabSelectedDays.length <= 2) {
+            const toast = document.getElementById('quickWorkoutToast');
+            const toastMsg = document.getElementById('quickWorkoutToastMsg');
+            if (toast && toastMsg) {
+              toastMsg.textContent = 'Please select at least 2 training days!';
+              toast.classList.remove('hidden');
+              setTimeout(() => toast.classList.add('hidden'), 2000);
+            }
+            return;
+          }
+          this.workoutTabSelectedDays = this.workoutTabSelectedDays.filter(d => d !== day);
+        } else {
+          if (this.workoutTabSelectedDays.length >= 6) {
+            const toast = document.getElementById('quickWorkoutToast');
+            const toastMsg = document.getElementById('quickWorkoutToastMsg');
+            if (toast && toastMsg) {
+              toastMsg.textContent = 'Maximum 6 training days per week!';
+              toast.classList.remove('hidden');
+              setTimeout(() => toast.classList.add('hidden'), 2000);
+            }
+            return;
+          }
+          this.workoutTabSelectedDays.push(day);
+        }
+        this.updateWorkoutTabDayUI();
+      });
+    });
+
     // Wizard Day-of-Week Checkboxes (Choose Free Days)
     document.querySelectorAll('.wizard-day-checkbox').forEach(card => {
       card.addEventListener('click', () => {
@@ -999,27 +1043,76 @@ class RtmApp {
     // Also sync the Quick Workout Generator inputs in the Workout tab
     const qh = document.getElementById('quickWorkoutHeight');
     const qw = document.getElementById('quickWorkoutWeight');
-    const qd = document.getElementById('quickWorkoutDays');
     const qg = document.getElementById('quickWorkoutGoal');
     if (qh) qh.value = this.profile.heightCm;
     if (qw) qw.value = this.profile.weightKg;
-    if (qd) qd.value = this.profile.freeDays;
     if (qg) qg.value = this.profile.goal;
+
+    this.workoutTabSelectedDays = Array.isArray(this.profile.selectedDays) && this.profile.selectedDays.length >= 2
+      ? [...this.profile.selectedDays]
+      : ['Mon', 'Tue', 'Thu', 'Fri'];
+    this.updateWorkoutTabDayUI();
+  }
+
+  updateWorkoutTabDayUI() {
+    const daysOrder = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    if (!Array.isArray(this.workoutTabSelectedDays)) {
+      this.workoutTabSelectedDays = Array.isArray(this.profile.selectedDays) && this.profile.selectedDays.length >= 2
+        ? [...this.profile.selectedDays]
+        : ['Mon', 'Tue', 'Thu', 'Fri'];
+    }
+    this.workoutTabSelectedDays.sort((a, b) => daysOrder.indexOf(a) - daysOrder.indexOf(b));
+
+    document.querySelectorAll('.workout-tab-day-btn').forEach(card => {
+      const day = card.getAttribute('data-day');
+      const isSelected = this.workoutTabSelectedDays.includes(day);
+      card.classList.toggle('selected-card', isSelected);
+      const statusEl = card.querySelector('.tab-day-status');
+      if (statusEl) {
+        statusEl.textContent = isSelected ? 'Free' : 'Rest';
+        statusEl.className = isSelected
+          ? 'text-[10px] text-emerald-400 font-semibold mt-1 tab-day-status'
+          : 'text-[10px] text-slate-500 font-medium mt-1 tab-day-status';
+      }
+    });
+
+    const count = this.workoutTabSelectedDays.length;
+    const countLabel = document.getElementById('tabSelectedDaysCount');
+    if (countLabel) {
+      countLabel.textContent = `${count} ${count === 1 ? 'Day' : 'Days'} (${this.workoutTabSelectedDays.join(', ')})`;
+    }
+
+    const badge = document.getElementById('tabSplitBadge');
+    const splitInfo = {
+      2: 'Full Body A/B (2-Day)',
+      3: 'Push / Pull / Legs (3-Day)',
+      4: 'Upper / Lower Split (4-Day)',
+      5: 'Upper / Lower + PPL (5-Day)',
+      6: 'Push / Pull / Legs x 2 (6-Day)'
+    };
+    if (badge) {
+      badge.textContent = splitInfo[Math.min(6, Math.max(2, count))] || 'Upper / Lower Split (4-Day)';
+    }
   }
 
   quickGenerateWorkout() {
     const hInput = document.getElementById('quickWorkoutHeight');
     const wInput = document.getElementById('quickWorkoutWeight');
-    const dInput = document.getElementById('quickWorkoutDays');
     const gInput = document.getElementById('quickWorkoutGoal');
 
     const h = parseFloat(hInput ? hInput.value : this.profile.heightCm) || 175;
     const w = parseFloat(wInput ? wInput.value : this.profile.weightKg) || 78;
-    const days = parseInt(dInput ? dInput.value : this.profile.freeDays, 10) || 4;
     const goal = (gInput ? gInput.value : this.profile.goal) || 'gain_muscle';
+
+    if (!Array.isArray(this.workoutTabSelectedDays) || this.workoutTabSelectedDays.length < 2) {
+      this.workoutTabSelectedDays = ['Mon', 'Tue', 'Thu', 'Fri'];
+    }
+    const selectedDays = [...this.workoutTabSelectedDays];
+    const days = Math.min(6, Math.max(2, selectedDays.length));
 
     this.profile.heightCm = h;
     this.profile.weightKg = w;
+    this.profile.selectedDays = selectedDays;
     this.profile.freeDays = days;
     this.profile.goal = goal;
 
@@ -1033,7 +1126,7 @@ class RtmApp {
     const toastMsg = document.getElementById('quickWorkoutToastMsg');
     if (toast) {
       if (toastMsg) {
-        toastMsg.textContent = `Generated ${days}-Day routine for ${h} cm & ${w} kg!`;
+        toastMsg.textContent = `Generated ${days}-Day split (${selectedDays.join(', ')}) for ${h} cm & ${w} kg!`;
       }
       toast.classList.remove('hidden');
       setTimeout(() => {
