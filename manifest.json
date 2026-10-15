@@ -6,7 +6,14 @@
   "background_color": "#090d16",
   "theme_color": "#090d16",
   "description": "Personalized Fitness & Budget-Smart Nutrition Engine",
+  "id": "/HIMI/",
   "icons": [
+    {
+      "src": "./icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
     {
       "src": "./icon.png",
       "sizes": "512x512",
