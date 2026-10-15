@@ -69,13 +69,23 @@ class RtmApp {
     this.syncProfileToInputs();
     this.renderAll();
     this.syncWatchUI();
+    this.initWeighInReminder();
 
-    // Check for 24-hour daily rollover whenever app becomes active or visible
+    // Check for 24-hour daily rollover and reminders whenever app becomes active or visible
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') this.checkDailyReset();
+      if (document.visibilityState === 'visible') {
+        this.checkDailyReset();
+        this.checkWeighInReminder();
+      }
     });
-    window.addEventListener('focus', () => this.checkDailyReset());
-    setInterval(() => this.checkDailyReset(), 60000);
+    window.addEventListener('focus', () => {
+      this.checkDailyReset();
+      this.checkWeighInReminder();
+    });
+    setInterval(() => {
+      this.checkDailyReset();
+      this.checkWeighInReminder();
+    }, 60000);
 
     // Always launch the onboarding wizard on every page load / refresh
     this.openWizard();
@@ -624,7 +634,24 @@ class RtmApp {
       themeLightBtn.addEventListener('click', () => this.setTheme('light'));
     }
 
-    // Change Stats Button in 3-Line Menu (opens Change Stats modal, NOT the wizard)
+    // Weigh-In Reminder Frequency Buttons
+    document.querySelectorAll('.reminder-freq-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const freq = btn.getAttribute('data-freq');
+        if (freq) this.setWeighInReminder(freq);
+      });
+    });
+
+    // Smart Watch Options Button in Settings
+    const btnSettingsSmartwatch = document.getElementById('btnSettingsSmartwatch');
+    if (btnSettingsSmartwatch) {
+      btnSettingsSmartwatch.addEventListener('click', () => {
+        this.closeSettings();
+        this.openSmartwatchModal();
+      });
+    }
+
+    // Change Stats Button in Settings Menu (opens Change Stats modal, NOT the wizard)
     const btnChangeStats = document.getElementById('btnChangeStats');
     if (btnChangeStats) {
       btnChangeStats.addEventListener('click', () => {
@@ -889,14 +916,17 @@ class RtmApp {
     const text = document.getElementById('watchStatusText');
     const btnText = document.getElementById('addSmartwatchBtnText');
 
+    const settingsWatchSub = document.getElementById('settingsWatchSubtitle');
     if (this.pairedWatch) {
       if (dot) dot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
       if (text) text.textContent = `Connected: ${this.pairedWatch} (Streaming)`;
       if (btnText) btnText.textContent = `Change Watch`;
+      if (settingsWatchSub) settingsWatchSub.textContent = `Connected: ${this.pairedWatch} (Streaming biometrics)`;
     } else {
       if (dot) dot.className = 'w-2 h-2 rounded-full bg-slate-600';
       if (text) text.textContent = 'No wearable connected';
       if (btnText) btnText.textContent = 'Add Smart Watch';
+      if (settingsWatchSub) settingsWatchSub.textContent = 'Pair Apple Watch, Garmin, Galaxy, or sync biometrics';
     }
   }
 
@@ -1168,6 +1198,8 @@ class RtmApp {
   // ============================================
   openSettings() {
     this.updateThemeUI();
+    this.updateWeighInReminderUI();
+    this.syncWatchUI();
     this.syncProfileToInputs();
     const modal = document.getElementById('settingsModal');
     if (modal) modal.classList.remove('opacity-0', 'pointer-events-none');
@@ -1176,6 +1208,97 @@ class RtmApp {
   closeSettings() {
     const modal = document.getElementById('settingsModal');
     if (modal) modal.classList.add('opacity-0', 'pointer-events-none');
+  }
+
+  // ============================================
+  // Weigh-In Reminder Logic
+  // ============================================
+  initWeighInReminder() {
+    this.weighInReminderFreq = localStorage.getItem('rtm_weigh_in_reminder_freq') || 'daily';
+    this.updateWeighInReminderUI();
+    this.checkWeighInReminder();
+  }
+
+  setWeighInReminder(freq) {
+    this.weighInReminderFreq = freq;
+    localStorage.setItem('rtm_weigh_in_reminder_freq', freq);
+    this.updateWeighInReminderUI();
+
+    if (freq !== 'off' && 'Notification' in window && Notification.permission === 'default') {
+      try {
+        Notification.requestPermission();
+      } catch (e) {}
+    }
+  }
+
+  updateWeighInReminderUI() {
+    const badge = document.getElementById('weighInReminderBadge');
+    const freqLabels = {
+      daily: 'Daily',
+      '2days': 'Every 2 Days',
+      weekly: 'Weekly',
+      off: 'Off'
+    };
+    if (badge) {
+      badge.textContent = freqLabels[this.weighInReminderFreq] || 'Daily';
+      if (this.weighInReminderFreq === 'off') {
+        badge.className = 'text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-white/10 font-bold';
+      } else {
+        badge.className = 'text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-bold';
+      }
+    }
+
+    document.querySelectorAll('.reminder-freq-btn').forEach(btn => {
+      const f = btn.getAttribute('data-freq');
+      const isSelected = (f === this.weighInReminderFreq);
+      if (isSelected) {
+        btn.className = 'reminder-freq-btn px-2 py-2 rounded-xl text-[11px] font-bold border transition text-center cursor-pointer bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 border-emerald-400 shadow-md shadow-emerald-500/20';
+      } else {
+        btn.className = 'reminder-freq-btn px-2 py-2 rounded-xl text-[11px] font-bold border transition text-center cursor-pointer bg-slate-900/80 hover:bg-slate-800 text-slate-400 hover:text-white border-white/10';
+      }
+    });
+  }
+
+  checkWeighInReminder() {
+    if (this.weighInReminderFreq === 'off') {
+      const banner = document.getElementById('weighInReminderBanner');
+      if (banner) banner.classList.add('hidden');
+      return;
+    }
+
+    const lastWeighInTime = localStorage.getItem('rtm_last_weigh_in_timestamp');
+    const lastReminderShown = localStorage.getItem('rtm_last_reminder_shown_date');
+    const today = this.getTodayDateString();
+
+    if (lastReminderShown === today) return;
+
+    let intervalHours = 24;
+    if (this.weighInReminderFreq === '2days') intervalHours = 48;
+    if (this.weighInReminderFreq === 'weekly') intervalHours = 168;
+
+    const now = Date.now();
+    const shouldRemind = !lastWeighInTime || (now - parseInt(lastWeighInTime, 10)) >= intervalHours * 3600 * 1000;
+
+    if (shouldRemind) {
+      localStorage.setItem('rtm_last_reminder_shown_date', today);
+      this.showWeighInReminderNotification();
+    }
+  }
+
+  showWeighInReminderNotification() {
+    const banner = document.getElementById('weighInReminderBanner');
+    if (banner) {
+      banner.classList.remove('hidden');
+    }
+
+    if ('Notification' in window && Notification.permission === 'granted') {
+      try {
+        new Notification('RTM Weigh In Reminder', {
+          body: 'Tip: Measure your weight right after waking up for accurate results.',
+          icon: './icon.png'
+        });
+      } catch (e) {}
+    }
   }
 
   // ============================================
@@ -1488,6 +1611,12 @@ class RtmApp {
 
     document.getElementById('logWeight').value = '';
     document.getElementById('logNotes').value = '';
+
+    // Record last weigh in timestamp and dismiss reminder banner
+    localStorage.setItem('rtm_last_weigh_in_timestamp', Date.now().toString());
+    const reminderBanner = document.getElementById('weighInReminderBanner');
+    if (reminderBanner) reminderBanner.classList.add('hidden');
+
     this.renderAll();
   }
 
@@ -1831,32 +1960,34 @@ class RtmApp {
           : [{ name: meal.description, qty: '1 serving' }];
 
         return `
-          <div class="glass-card p-4 sm:p-4.5 mb-3 border ${isDone ? 'border-emerald-500/40 bg-emerald-500/5' : 'border-white/10'} transition-all duration-200">
+          <div class="glass-card p-4 sm:p-4.5 mb-3 border ${isDone ? 'border-white/5 bg-slate-950/40 opacity-60 grayscale-[40%]' : 'border-white/10 bg-slate-900/60 opacity-100'} transition-all duration-300">
             <!-- Meal Header with Macro badge and Done button -->
             <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-white/5 gap-2">
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 flex-wrap">
-                  <h5 class="font-extrabold text-white text-sm sm:text-base">${meal.meal}</h5>
-                  ${isDone ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Logged to Overview</span>` : ''}
+                  <h5 class="font-extrabold ${isDone ? 'text-slate-400 line-through' : 'text-white'} text-sm sm:text-base">${meal.meal}</h5>
+                  ${isDone ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-white/10">Logged to Overview</span>` : ''}
                 </div>
-                <div class="text-xs font-mono text-cyan-400 font-semibold mt-0.5">${meal.macros}</div>
+                <div class="text-xs font-mono ${isDone ? 'text-slate-500' : 'text-cyan-400 font-semibold'} mt-0.5">${meal.macros}</div>
               </div>
 
-              <!-- Done option button -->
-              <button onclick="window.rtmApp && window.rtmApp.toggleMealDone(${index})" class="shrink-0 px-3.5 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm ${isDone ? 'bg-emerald-500 text-slate-950 hover:bg-emerald-400 ring-2 ring-emerald-500/30' : 'bg-slate-800 hover:bg-emerald-500 hover:text-slate-950 text-slate-200 border border-white/10'}">
-                <svg class="w-3.5 h-3.5 ${isDone ? 'text-slate-950' : 'text-emerald-400'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
-                </svg>
-                <span>${isDone ? 'Done ✓' : 'Done'}</span>
+              <!-- Done option button: check sign disappears when done, meal greys out -->
+              <button onclick="window.rtmApp && window.rtmApp.toggleMealDone(${index})" class="shrink-0 px-3.5 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm ${isDone ? 'bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white border border-white/10' : 'bg-slate-800 hover:bg-emerald-500 hover:text-slate-950 text-slate-200 border border-white/10'}" title="${isDone ? 'Meal logged (click to undo)' : 'Log meal to macros'}">
+                ${isDone ? '' : `
+                  <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                `}
+                <span>Done</span>
               </button>
             </div>
 
             <!-- Given foods with quantity very simply put next to the food -->
             <div class="space-y-1.5">
               ${foods.map(f => `
-                <div class="flex items-center justify-between py-1.5 px-3 rounded-lg bg-slate-900/40 border border-white/5 text-xs">
-                  <span class="text-slate-200 font-medium">${f.name}</span>
-                  <span class="font-mono font-bold text-emerald-300 bg-emerald-500/15 px-2 py-0.5 rounded border border-emerald-500/25 shrink-0 ml-2">${f.qty}</span>
+                <div class="flex items-center justify-between py-1.5 px-3 rounded-lg ${isDone ? 'bg-slate-950/40 text-slate-400' : 'bg-slate-900/40 text-slate-200'} border border-white/5 text-xs">
+                  <span class="${isDone ? 'text-slate-400 line-through' : 'text-slate-200'} font-medium">${f.name}</span>
+                  <span class="font-mono font-bold ${isDone ? 'text-slate-500 bg-slate-800/40 border-white/5' : 'text-emerald-300 bg-emerald-500/15 border-emerald-500/25'} px-2 py-0.5 rounded border shrink-0 ml-2">${f.qty}</span>
                 </div>
               `).join('')}
             </div>

@@ -52,11 +52,12 @@
         </div>
       </div>
 
-      <!-- 3 Horizontal Line Icon Menu Button -->
+      <!-- Settings Icon Menu Button -->
       <div class="flex items-center gap-2.5">
-        <button id="openSettingsBtn" type="button" class="p-2.5 rounded-xl bg-slate-850 hover:bg-slate-800 text-slate-200 hover:text-white border border-white/10 hover:border-emerald-500/40 transition shadow-sm flex items-center justify-center cursor-pointer active:scale-95" title="Menu" aria-label="Menu">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 6h16M4 12h16M4 18h16"></path>
+        <button id="openSettingsBtn" type="button" class="p-2.5 rounded-xl bg-slate-850 hover:bg-slate-800 text-slate-200 hover:text-white border border-white/10 hover:border-emerald-500/40 transition shadow-sm flex items-center justify-center cursor-pointer active:scale-95" title="Settings" aria-label="Settings">
+          <svg class="w-5 h-5 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
           </svg>
         </button>
       </div>
@@ -83,6 +84,24 @@
 
   <!-- Main Content Layout (Clean & Centered) -->
   <main class="relative z-10 flex-1 max-w-5xl mx-auto w-full px-4 lg:px-8 py-4 sm:py-6">
+
+    <!-- Weigh In Reminder Alert Banner (Active when due based on user's chosen frequency) -->
+    <div id="weighInReminderBanner" class="hidden mb-4 p-3.5 rounded-2xl bg-gradient-to-r from-emerald-500/15 to-cyan-500/15 border border-emerald-500/30 flex items-center justify-between gap-3 text-xs shadow-lg">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+        <p class="text-slate-200 font-medium truncate">
+          <strong class="text-emerald-400">Reminder:</strong> Time for your weigh in! Measure right after waking up for accurate results.
+        </p>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <button onclick="window.rtmApp && window.rtmApp.switchTab('progress'); document.getElementById('weighInReminderBanner')?.classList.add('hidden')" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 font-bold text-xs hover:from-emerald-400 hover:to-cyan-400 transition cursor-pointer">
+          Weigh In Now
+        </button>
+        <button onclick="document.getElementById('weighInReminderBanner')?.classList.add('hidden')" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-xs font-bold transition cursor-pointer" title="Dismiss">
+          ✕
+        </button>
+      </div>
+    </div>
 
     <!-- TAB 1: OVERVIEW (MACRONUTRIENTS DISPLAY: PROGRESS / GOAL) -->
     <div id="pane-overview" class="tab-content space-y-4">
@@ -664,22 +683,23 @@
   </div>
 
   <!-- ======================================================== -->
-  <!-- 3-LINE ICON MENU MODAL (Theme Options & Change Stats Alone) -->
+  <!-- SETTINGS MODAL (Theme, Weigh-In Reminder, Change Stats & Smart Watch) -->
   <!-- ======================================================== -->
   <div id="settingsModal" class="fixed inset-0 bg-black/75 backdrop-blur-md z-50 flex items-center justify-center p-4 transition-all duration-200 opacity-0 pointer-events-none">
-    <div class="glass-card max-w-sm sm:max-w-md w-full p-6 sm:p-7 border border-white/15 shadow-2xl relative">
+    <div class="glass-card max-w-sm sm:max-w-md w-full p-6 sm:p-7 border border-white/15 shadow-2xl relative max-h-[90vh] overflow-y-auto">
       
       <!-- Modal Header -->
-      <div class="flex items-center justify-between pb-4 mb-5 border-b border-white/10">
+      <div class="flex items-center justify-between pb-4 mb-4 border-b border-white/10">
         <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-lg bg-slate-800 border border-white/10 flex items-center justify-center text-emerald-400">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 6h16M4 12h16M4 18h16"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
             </svg>
           </div>
           <div>
-            <h3 class="text-base font-bold text-white">Menu</h3>
-            <p class="text-[11px] text-slate-400">Display preferences & profile options</p>
+            <h3 class="text-base font-bold text-white">Settings</h3>
+            <p class="text-[11px] text-slate-400">Preferences, weigh-in reminder & wearables</p>
           </div>
         </div>
         <button id="closeSettingsBtn" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-sm font-bold transition cursor-pointer">
@@ -688,7 +708,7 @@
       </div>
 
       <!-- Settings Content -->
-      <div class="space-y-5">
+      <div class="space-y-4">
         <!-- 1. Dark Mode and Light Mode in the same place -->
         <div class="p-4 rounded-2xl bg-slate-950/60 border border-white/10 space-y-3">
           <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 text-center">Appearance</label>
@@ -719,7 +739,41 @@
           </div>
         </div>
 
-        <!-- 2. Change Stats Option Alone (Separate Card) -->
+        <!-- 2. Reminder to Weigh In with frequency selection -->
+        <div class="p-4 rounded-2xl bg-slate-950/60 border border-white/10 space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                </svg>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-white">Reminder to Weigh In</label>
+                <p class="text-[10px] text-slate-400">Choose your reminder frequency</p>
+              </div>
+            </div>
+            <span id="weighInReminderBadge" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-bold">Daily</span>
+          </div>
+
+          <div class="grid grid-cols-4 gap-1.5 pt-1" id="weighInFreqButtons">
+            <button type="button" class="reminder-freq-btn px-2 py-2 rounded-xl text-[11px] font-bold border transition text-center cursor-pointer" data-freq="daily">
+              Daily
+            </button>
+            <button type="button" class="reminder-freq-btn px-2 py-2 rounded-xl text-[11px] font-bold border transition text-center cursor-pointer" data-freq="2days">
+              2 Days
+            </button>
+            <button type="button" class="reminder-freq-btn px-2 py-2 rounded-xl text-[11px] font-bold border transition text-center cursor-pointer" data-freq="weekly">
+              Weekly
+            </button>
+            <button type="button" class="reminder-freq-btn px-2 py-2 rounded-xl text-[11px] font-bold border transition text-center cursor-pointer" data-freq="off">
+              Off
+            </button>
+          </div>
+          <p class="text-[10px] text-slate-500 italic">Tip: Best practice is to weigh in right after waking up for accurate results.</p>
+        </div>
+
+        <!-- 3. Change Stats Option Alone (Separate Card) -->
         <div class="p-4 rounded-2xl bg-slate-950/60 border border-white/10 space-y-2">
           <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">Account & Training Metrics</label>
           <button id="btnChangeStats" type="button" class="w-full p-4 rounded-xl bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 hover:from-emerald-500/20 hover:to-cyan-500/20 border border-emerald-500/30 hover:border-emerald-500/50 transition-all group flex items-center justify-between text-left cursor-pointer">
@@ -739,6 +793,28 @@
             </svg>
           </button>
         </div>
+
+        <!-- 4. Smart Watch Options in Settings -->
+        <div class="p-4 rounded-2xl bg-slate-950/60 border border-white/10 space-y-2">
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">Connected Wearables</label>
+          <button id="btnSettingsSmartwatch" type="button" class="w-full p-4 rounded-xl bg-gradient-to-r from-cyan-500/10 to-emerald-500/10 hover:from-cyan-500/20 hover:to-emerald-500/20 border border-cyan-500/30 hover:border-cyan-500/50 transition-all group flex items-center justify-between text-left cursor-pointer">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:scale-105 transition shrink-0">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <div class="min-w-0">
+                <div class="text-sm font-bold text-white group-hover:text-cyan-300 transition">Smart Watch Options</div>
+                <div id="settingsWatchSubtitle" class="text-[11px] text-slate-400 truncate">Pair Apple Watch, Garmin, Galaxy, or sync biometrics</div>
+              </div>
+            </div>
+            <svg class="w-5 h-5 text-slate-400 group-hover:text-cyan-400 group-hover:translate-x-0.5 transition shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+        </div>
+
       </div>
     </div>
   </div>
@@ -973,7 +1049,7 @@
   </div>
 
   <!-- App Scripts (Zero Dependencies with Cache-Busting) -->
-  <script src="./plan-engine.js?v=2.5.2"></script>
-  <script src="./app.js?v=2.5.2"></script>
+  <script src="./plan-engine.js?v=2.5.3"></script>
+  <script src="./app.js?v=2.5.3"></script>
 </body>
 </html>
