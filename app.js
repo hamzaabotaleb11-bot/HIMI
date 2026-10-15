@@ -987,17 +987,19 @@ class RtmApp {
     // 4. Progress Tab Render
     const historyContainer = document.getElementById('progressHistoryList');
     if (historyContainer) {
+      this.sortProgressHistory();
       if (this.progressHistory.length === 0) {
         historyContainer.innerHTML = `<p class="text-slate-400 text-xs text-center py-4">No check-ins logged yet. Add your first entry above!</p>`;
       } else {
         historyContainer.innerHTML = this.progressHistory.map(entry => `
           <div class="flex items-center justify-between p-3.5 rounded-lg bg-slate-900/60 border border-white/5">
             <div>
-              <div class="text-xs text-slate-400">${entry.date}</div>
+              <div class="text-xs text-slate-400 font-mono">${entry.date}</div>
               <div class="text-xs text-slate-300 mt-0.5 italic">"${entry.notes}"</div>
             </div>
-            <div class="text-right">
+            <div class="flex items-center gap-3">
               <span class="text-base font-bold text-white font-mono">${entry.weight} kg</span>
+              <button onclick="window.rtmApp && window.rtmApp.deleteProgressLog('${entry.id || entry.date}')" class="text-slate-500 hover:text-red-400 p-1 font-bold text-xs transition" title="Delete entry">✕</button>
             </div>
           </div>
         `).join('');
