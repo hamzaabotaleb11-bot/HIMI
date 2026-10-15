@@ -451,10 +451,10 @@
   <!-- SEQUENTIAL ONBOARDING WIZARD MODAL (STEP-BY-STEP)         -->
   <!-- ======================================================== -->
   <div id="onboardingWizardModal" class="fixed inset-0 bg-black/85 backdrop-blur-lg z-50 flex items-center justify-center p-4 transition-all duration-300 opacity-0 pointer-events-none">
-    <div class="glass-card max-w-xl w-full p-6 sm:p-8 border border-white/15 shadow-2xl relative max-h-[92vh] overflow-y-auto">
+    <div class="glass-card max-w-xl w-full p-5 sm:p-7 border border-white/15 shadow-2xl relative flex flex-col justify-between h-[540px] sm:h-[510px] max-h-[92vh] overflow-hidden">
       
       <!-- Wizard Progress Indicators (1 to 4) -->
-      <div class="mb-6">
+      <div class="mb-4 sm:mb-5 flex-shrink-0">
         <div class="flex items-center justify-between text-xs font-bold text-slate-400 mb-2">
           <span class="text-emerald-400 flex items-center gap-1.5">Welcome to RTM</span>
           <div class="flex items-center gap-3">
@@ -472,224 +472,227 @@
         </div>
       </div>
 
-      <!-- STEP 1: PHYSICAL METRICS -->
-      <div id="wizStep1" class="space-y-4">
-        <div>
-          <h3 class="text-xl font-extrabold text-white">Your Body Metrics</h3>
-          <p class="text-xs text-slate-400 mt-1">
-            Used to calculate your precise Basal Metabolic Rate (BMR) & daily calorie burn.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3 pt-2">
+      <!-- Wizard Step Content Container (Takes space consistently across all steps) -->
+      <div class="flex-1 flex flex-col justify-start overflow-y-auto min-h-0 py-1">
+        <!-- STEP 1: PHYSICAL METRICS -->
+        <div id="wizStep1" class="space-y-4">
           <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Height (cm)</label>
-            <input type="number" id="wizHeight" min="120" max="240" value="175" required class="text-sm font-mono">
+            <h3 class="text-xl font-extrabold text-white">Your Body Metrics</h3>
+            <p class="text-xs text-slate-400 mt-1">
+              Used to calculate your precise Basal Metabolic Rate (BMR) & daily calorie burn.
+            </p>
           </div>
+
+          <div class="grid grid-cols-2 gap-3 pt-2">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Height (cm)</label>
+              <input type="number" id="wizHeight" min="120" max="240" value="175" required class="text-sm font-mono">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Weight (kg)</label>
+              <input type="number" id="wizWeight" min="35" max="250" step="0.5" value="78" required class="text-sm font-mono">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Age</label>
+              <input type="number" id="wizAge" min="14" max="99" value="25" required class="text-sm font-mono">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Gender</label>
+              <select id="wizGender" class="text-sm">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2: AVAILABLE TIME / WORKOUT SCHEDULE -->
+        <div id="wizStep2" class="space-y-3 hidden">
           <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Weight (kg)</label>
-            <input type="number" id="wizWeight" min="35" max="250" step="0.5" value="78" required class="text-sm font-mono">
+            <h3 class="text-xl font-extrabold text-white">Choose Your Free Days</h3>
+            <p class="text-xs text-slate-400 mt-0.5">
+              Tap the days of the week you are free to train. RTM builds the optimal workout split around your exact weekly schedule.
+            </p>
+          </div>
+
+          <!-- 7 Days of the Week Grid -->
+          <div class="grid grid-cols-7 gap-1.5 sm:gap-2 pt-1">
+            <!-- Mon -->
+            <div class="wizard-day-checkbox selected-card p-1.5 sm:p-2.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[62px] sm:min-h-[72px]" data-day="Mon" data-full-day="Monday">
+              <span class="text-[10px] sm:text-[11px] font-mono text-slate-400 uppercase tracking-wider font-semibold">Mon</span>
+              <span class="font-bold text-xs sm:text-sm text-white mt-0.5 hidden sm:block">Monday</span>
+              <span class="text-[9px] sm:text-[10px] text-emerald-400 font-semibold mt-0.5 day-status">Free</span>
+            </div>
+
+            <!-- Tue -->
+            <div class="wizard-day-checkbox selected-card p-1.5 sm:p-2.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[62px] sm:min-h-[72px]" data-day="Tue" data-full-day="Tuesday">
+              <span class="text-[10px] sm:text-[11px] font-mono text-slate-400 uppercase tracking-wider font-semibold">Tue</span>
+              <span class="font-bold text-xs sm:text-sm text-white mt-0.5 hidden sm:block">Tuesday</span>
+              <span class="text-[9px] sm:text-[10px] text-emerald-400 font-semibold mt-0.5 day-status">Free</span>
+            </div>
+
+            <!-- Wed -->
+            <div class="wizard-day-checkbox p-1.5 sm:p-2.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[62px] sm:min-h-[72px]" data-day="Wed" data-full-day="Wednesday">
+              <span class="text-[10px] sm:text-[11px] font-mono text-slate-400 uppercase tracking-wider font-semibold">Wed</span>
+              <span class="font-bold text-xs sm:text-sm text-white mt-0.5 hidden sm:block">Wednesday</span>
+              <span class="text-[9px] sm:text-[10px] text-slate-500 font-medium mt-0.5 day-status">Rest</span>
+            </div>
+
+            <!-- Thu -->
+            <div class="wizard-day-checkbox selected-card p-1.5 sm:p-2.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[62px] sm:min-h-[72px]" data-day="Thu" data-full-day="Thursday">
+              <span class="text-[10px] sm:text-[11px] font-mono text-slate-400 uppercase tracking-wider font-semibold">Thu</span>
+              <span class="font-bold text-xs sm:text-sm text-white mt-0.5 hidden sm:block">Thursday</span>
+              <span class="text-[9px] sm:text-[10px] text-emerald-400 font-semibold mt-0.5 day-status">Free</span>
+            </div>
+
+            <!-- Fri -->
+            <div class="wizard-day-checkbox selected-card p-1.5 sm:p-2.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[62px] sm:min-h-[72px]" data-day="Fri" data-full-day="Friday">
+              <span class="text-[10px] sm:text-[11px] font-mono text-slate-400 uppercase tracking-wider font-semibold">Fri</span>
+              <span class="font-bold text-xs sm:text-sm text-white mt-0.5 hidden sm:block">Friday</span>
+              <span class="text-[9px] sm:text-[10px] text-emerald-400 font-semibold mt-0.5 day-status">Free</span>
+            </div>
+
+            <!-- Sat -->
+            <div class="wizard-day-checkbox p-1.5 sm:p-2.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[62px] sm:min-h-[72px]" data-day="Sat" data-full-day="Saturday">
+              <span class="text-[10px] sm:text-[11px] font-mono text-slate-400 uppercase tracking-wider font-semibold">Sat</span>
+              <span class="font-bold text-xs sm:text-sm text-white mt-0.5 hidden sm:block">Saturday</span>
+              <span class="text-[9px] sm:text-[10px] text-slate-500 font-medium mt-0.5 day-status">Rest</span>
+            </div>
+
+            <!-- Sun -->
+            <div class="wizard-day-checkbox p-1.5 sm:p-2.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[62px] sm:min-h-[72px]" data-day="Sun" data-full-day="Sunday">
+              <span class="text-[10px] sm:text-[11px] font-mono text-slate-400 uppercase tracking-wider font-semibold">Sun</span>
+              <span class="font-bold text-xs sm:text-sm text-white mt-0.5 hidden sm:block">Sunday</span>
+              <span class="text-[9px] sm:text-[10px] text-slate-500 font-medium mt-0.5 day-status">Rest</span>
+            </div>
+          </div>
+
+          <!-- Schedule & Recommended Split Banner -->
+          <div class="p-3 sm:p-3.5 rounded-xl bg-slate-900/80 border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-xs text-slate-400">Selected Days:</span>
+                <span id="wizardSelectedDaysCount" class="font-bold text-xs sm:text-sm text-white font-mono">4 Days (Mon, Tue, Thu, Fri)</span>
+              </div>
+              <div class="text-[11px] sm:text-xs text-slate-400 mt-0.5" id="wizardSplitDetail">
+                Optimal muscle building frequency & recovery balance.
+              </div>
+            </div>
+            <span id="wizardSplitBadge" class="badge-pill bg-emerald-500/15 text-emerald-400 text-xs px-2.5 py-1 font-semibold border border-emerald-500/30 whitespace-nowrap self-start sm:self-center">
+              Upper / Lower Split (4-Day)
+            </span>
+          </div>
+
+          <!-- Feedback notes if min/max clicked -->
+          <div id="wizScheduleToast" class="opacity-0 pointer-events-none transition-opacity duration-200 text-[11px] text-amber-400 text-center font-medium h-4">
+            Select at least 2 free days to build a complete routine.
+          </div>
+          <div id="wizScheduleToastMax" class="opacity-0 pointer-events-none transition-opacity duration-200 text-[11px] text-amber-400 text-center font-medium h-4">
+            Maximum 6 training days recommended (at least 1 rest day needed).
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
+        <!-- STEP 3: MEAL & GROCERY BUDGET -->
+        <div id="wizStep3" class="space-y-3 hidden">
           <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Age</label>
-            <input type="number" id="wizAge" min="14" max="99" value="25" required class="text-sm font-mono">
+            <h3 class="text-xl font-extrabold text-white">Your Grocery & Meal Budget</h3>
+            <p class="text-xs text-slate-400 mt-0.5">
+              Fitness shouldn’t drain your wallet. We tailor meal staples to your budget tier.
+            </p>
           </div>
+
+          <div class="space-y-2 pt-1">
+            <div class="wizard-budget-card selected-card p-3 sm:p-3.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-budget="budget">
+              <div class="flex items-center justify-between font-bold text-sm text-white">
+                <span>Smart Budget ($4 - $6 / day)</span>
+                <span class="badge-pill bg-emerald-500/15 text-emerald-400 text-[10px]">High Protein Value</span>
+              </div>
+              <p class="text-xs text-slate-400 mt-0.5">
+                Eggs, oats, tuna, cottage cheese, rice, peanut butter
+              </p>
+            </div>
+
+            <div class="wizard-budget-card p-3 sm:p-3.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-budget="moderate">
+              <div class="flex items-center justify-between font-bold text-sm text-white">
+                <span>Standard Fresh ($8 - $12 / day)</span>
+                <span class="badge-pill bg-cyan-500/15 text-cyan-400 text-[10px]">Balanced</span>
+              </div>
+              <p class="text-xs text-slate-400 mt-0.5">
+                Chicken breast, greek yogurt, sweet potatoes, berries, olive oil
+              </p>
+            </div>
+
+            <div class="wizard-budget-card p-3 sm:p-3.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-budget="premium">
+              <div class="flex items-center justify-between font-bold text-sm text-white">
+                <span>Performance ($15+ / day)</span>
+                <span class="badge-pill bg-amber-500/15 text-amber-400 text-[10px]">Gourmet & Speed</span>
+              </div>
+              <p class="text-xs text-slate-400 mt-0.5">
+                Salmon fillets, sirloin steaks, avocados, whey isolate
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 4: PRIMARY GOAL -->
+        <div id="wizStep4" class="space-y-3 hidden">
           <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Gender</label>
-            <select id="wizGender" class="text-sm">
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <!-- STEP 2: AVAILABLE TIME / WORKOUT SCHEDULE -->
-      <div id="wizStep2" class="space-y-4 hidden">
-        <div>
-          <h3 class="text-xl font-extrabold text-white">Choose Your Free Days</h3>
-          <p class="text-xs text-slate-400 mt-1">
-            Tap the days of the week you are free to train. RTM builds the optimal workout split around your exact weekly schedule.
-          </p>
-        </div>
-
-        <!-- 7 Days of the Week Grid -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2.5 pt-2">
-          <!-- Mon -->
-          <div class="wizard-day-checkbox selected-card p-3 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[82px]" data-day="Mon" data-full-day="Monday">
-            <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider font-semibold">Mon</span>
-            <span class="font-bold text-sm text-white mt-0.5">Monday</span>
-            <span class="text-[10px] text-emerald-400 font-semibold mt-1 day-status">Free</span>
-          </div>
-
-          <!-- Tue -->
-          <div class="wizard-day-checkbox selected-card p-3 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[82px]" data-day="Tue" data-full-day="Tuesday">
-            <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider font-semibold">Tue</span>
-            <span class="font-bold text-sm text-white mt-0.5">Tuesday</span>
-            <span class="text-[10px] text-emerald-400 font-semibold mt-1 day-status">Free</span>
-          </div>
-
-          <!-- Wed -->
-          <div class="wizard-day-checkbox p-3 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[82px]" data-day="Wed" data-full-day="Wednesday">
-            <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider font-semibold">Wed</span>
-            <span class="font-bold text-sm text-white mt-0.5">Wednesday</span>
-            <span class="text-[10px] text-slate-500 font-medium mt-1 day-status">Rest</span>
-          </div>
-
-          <!-- Thu -->
-          <div class="wizard-day-checkbox selected-card p-3 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[82px]" data-day="Thu" data-full-day="Thursday">
-            <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider font-semibold">Thu</span>
-            <span class="font-bold text-sm text-white mt-0.5">Thursday</span>
-            <span class="text-[10px] text-emerald-400 font-semibold mt-1 day-status">Free</span>
-          </div>
-
-          <!-- Fri -->
-          <div class="wizard-day-checkbox selected-card p-3 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[82px]" data-day="Fri" data-full-day="Friday">
-            <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider font-semibold">Fri</span>
-            <span class="font-bold text-sm text-white mt-0.5">Friday</span>
-            <span class="text-[10px] text-emerald-400 font-semibold mt-1 day-status">Free</span>
-          </div>
-
-          <!-- Sat -->
-          <div class="wizard-day-checkbox p-3 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[82px]" data-day="Sat" data-full-day="Saturday">
-            <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider font-semibold">Sat</span>
-            <span class="font-bold text-sm text-white mt-0.5">Saturday</span>
-            <span class="text-[10px] text-slate-500 font-medium mt-1 day-status">Rest</span>
-          </div>
-
-          <!-- Sun -->
-          <div class="wizard-day-checkbox p-3 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[82px]" data-day="Sun" data-full-day="Sunday">
-            <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider font-semibold">Sun</span>
-            <span class="font-bold text-sm text-white mt-0.5">Sunday</span>
-            <span class="text-[10px] text-slate-500 font-medium mt-1 day-status">Rest</span>
-          </div>
-        </div>
-
-        <!-- Schedule & Recommended Split Banner -->
-        <div class="p-4 rounded-xl bg-slate-900/80 border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <div class="flex items-center gap-2 flex-wrap">
-              <span class="text-xs text-slate-400">Selected Days:</span>
-              <span id="wizardSelectedDaysCount" class="font-bold text-sm text-white font-mono">4 Days (Mon, Tue, Thu, Fri)</span>
-            </div>
-            <div class="text-xs text-slate-400 mt-0.5" id="wizardSplitDetail">
-              Optimal muscle building frequency & recovery balance.
-            </div>
-          </div>
-          <span id="wizardSplitBadge" class="badge-pill bg-emerald-500/15 text-emerald-400 text-xs px-3 py-1 font-semibold border border-emerald-500/30 whitespace-nowrap self-start sm:self-center">
-            Upper / Lower Split (4-Day)
-          </span>
-        </div>
-
-        <!-- Feedback notes if min/max clicked -->
-        <div id="wizScheduleToast" class="opacity-0 pointer-events-none transition-opacity duration-200 text-[11px] text-amber-400 text-center font-medium">
-          Select at least 2 free days to build a complete routine.
-        </div>
-        <div id="wizScheduleToastMax" class="opacity-0 pointer-events-none transition-opacity duration-200 text-[11px] text-amber-400 text-center font-medium">
-          Maximum 6 training days recommended (at least 1 rest day needed).
-        </div>
-      </div>
-
-      <!-- STEP 3: MEAL & GROCERY BUDGET -->
-      <div id="wizStep3" class="space-y-4 hidden">
-        <div>
-          <h3 class="text-xl font-extrabold text-white">Your Grocery & Meal Budget</h3>
-          <p class="text-xs text-slate-400 mt-1">
-            Fitness shouldn’t drain your wallet. We tailor meal staples to your budget tier.
-          </p>
-        </div>
-
-        <div class="space-y-2.5 pt-2">
-          <div class="wizard-budget-card selected-card p-4 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-budget="budget">
-            <div class="flex items-center justify-between font-bold text-sm text-white">
-              <span>Smart Budget ($4 - $6 / day)</span>
-              <span class="badge-pill bg-emerald-500/15 text-emerald-400 text-[10px]">High Protein Value</span>
-            </div>
-            <p class="text-xs text-slate-400 mt-1">
-              Eggs, oats, tuna, cottage cheese, rice, peanut butter
+            <h3 class="text-xl font-extrabold text-white">Your Primary Goal</h3>
+            <p class="text-xs text-slate-400 mt-0.5">
+              Determines whether your body needs a deficit, surplus, or maintenance.
             </p>
           </div>
 
-          <div class="wizard-budget-card p-4 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-budget="moderate">
-            <div class="flex items-center justify-between font-bold text-sm text-white">
-              <span>Standard Fresh ($8 - $12 / day)</span>
-              <span class="badge-pill bg-cyan-500/15 text-cyan-400 text-[10px]">Balanced</span>
+          <div class="space-y-2 pt-1">
+            <div class="wizard-goal-card selected-card p-3 sm:p-3.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-goal="lose_weight">
+              <div class="font-bold text-sm text-white flex items-center justify-between">
+                <span>Burn Fat & Shred</span>
+                <span class="text-xs text-emerald-400 font-mono">-450 kcal deficit</span>
+              </div>
+              <p class="text-xs text-slate-400 mt-0.5">
+                Moderate caloric deficit with high protein to protect lean muscle
+              </p>
             </div>
-            <p class="text-xs text-slate-400 mt-1">
-              Chicken breast, greek yogurt, sweet potatoes, berries, olive oil
-            </p>
-          </div>
 
-          <div class="wizard-budget-card p-4 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-budget="premium">
-            <div class="flex items-center justify-between font-bold text-sm text-white">
-              <span>Performance ($15+ / day)</span>
-              <span class="badge-pill bg-amber-500/15 text-amber-400 text-[10px]">Gourmet & Speed</span>
+            <div class="wizard-goal-card p-3 sm:p-3.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-goal="gain_muscle">
+              <div class="font-bold text-sm text-white flex items-center justify-between">
+                <span>Build Lean Muscle</span>
+                <span class="text-xs text-cyan-400 font-mono">+350 kcal surplus</span>
+              </div>
+              <p class="text-xs text-slate-400 mt-0.5">
+                Lean caloric surplus optimized for muscle growth and recovery
+              </p>
             </div>
-            <p class="text-xs text-slate-400 mt-1">
-              Salmon fillets, sirloin steaks, avocados, whey isolate
-            </p>
-          </div>
-        </div>
-      </div>
 
-      <!-- STEP 4: PRIMARY GOAL -->
-      <div id="wizStep4" class="space-y-4 hidden">
-        <div>
-          <h3 class="text-xl font-extrabold text-white">Your Primary Goal</h3>
-          <p class="text-xs text-slate-400 mt-1">
-            Determines whether your body needs a deficit, surplus, or maintenance.
-          </p>
-        </div>
-
-        <div class="space-y-2.5 pt-2">
-          <div class="wizard-goal-card selected-card p-4 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-goal="lose_weight">
-            <div class="font-bold text-sm text-white flex items-center justify-between">
-              <span>Burn Fat & Shred</span>
-              <span class="text-xs text-emerald-400 font-mono">-450 kcal deficit</span>
+            <div class="wizard-goal-card p-3 sm:p-3.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-goal="maintain">
+              <div class="font-bold text-sm text-white flex items-center justify-between">
+                <span>Healthy Maintenance</span>
+                <span class="text-xs text-slate-400 font-mono">Calorie maintenance</span>
+              </div>
+              <p class="text-xs text-slate-400 mt-0.5">
+                Body recomposition and sustained lifestyle athletic energy
+              </p>
             </div>
-            <p class="text-xs text-slate-400 mt-1">
-              Moderate caloric deficit with high protein to protect lean muscle
-            </p>
-          </div>
-
-          <div class="wizard-goal-card p-4 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-goal="gain_muscle">
-            <div class="font-bold text-sm text-white flex items-center justify-between">
-              <span>Build Lean Muscle</span>
-              <span class="text-xs text-cyan-400 font-mono">+350 kcal surplus</span>
-            </div>
-            <p class="text-xs text-slate-400 mt-1">
-              Lean caloric surplus optimized for muscle growth and recovery
-            </p>
-          </div>
-
-          <div class="wizard-goal-card p-4 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-goal="maintain">
-            <div class="font-bold text-sm text-white flex items-center justify-between">
-              <span>Healthy Maintenance</span>
-              <span class="text-xs text-slate-400 font-mono">Calorie maintenance</span>
-            </div>
-            <p class="text-xs text-slate-400 mt-1">
-              Body recomposition and sustained lifestyle athletic energy
-            </p>
           </div>
         </div>
       </div>
 
       <!-- Wizard Navigation Action Buttons -->
-      <div class="flex items-center justify-between pt-6 mt-6 border-t border-white/10 gap-3">
-        <button id="wizardPrevBtn" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition hidden">
+      <div class="flex items-center justify-between pt-4 mt-auto border-t border-white/10 gap-3 flex-shrink-0">
+        <button id="wizardPrevBtn" class="h-10 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition hidden inline-flex items-center justify-center">
           <span>← Back</span>
         </button>
 
-        <div class="ml-auto">
-          <button id="wizardNextBtn" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20 transition active:scale-95">
+        <div class="ml-auto flex items-center justify-end">
+          <button id="wizardNextBtn" class="w-32 h-10 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20 transition active:scale-95 inline-flex items-center justify-center">
             <span>Next Step →</span>
           </button>
 
-          <button id="wizardFinishBtn" class="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-extrabold text-sm shadow-xl shadow-emerald-500/25 transition active:scale-95 hidden">
-            <span>Generate Workout & Build Plan</span>
+          <button id="wizardFinishBtn" class="w-32 h-10 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20 transition active:scale-95 inline-flex items-center justify-center hidden">
+            <span>Build Plan</span>
           </button>
         </div>
       </div>
@@ -797,7 +800,7 @@
   </div>
 
   <!-- App Scripts (Zero Dependencies with Cache-Busting) -->
-  <script src="./plan-engine.js?v=2.4.3"></script>
-  <script src="./app.js?v=2.4.3"></script>
+  <script src="./plan-engine.js?v=2.4.4"></script>
+  <script src="./app.js?v=2.4.4"></script>
 </body>
 </html>
