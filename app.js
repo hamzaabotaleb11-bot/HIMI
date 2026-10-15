@@ -50,6 +50,9 @@ class RtmApp {
     this.pairedWatch = localStorage.getItem('rtm_paired_watch') || null;
     this.selectedWatchDevice = 'Apple Watch';
 
+    // Active day view in Workout tab (defaults to today's day of week)
+    this.activeWorkoutDay = null;
+
     // Workout tab training days selection (synced with profile)
     this.workoutTabSelectedDays = Array.isArray(this.profile.selectedDays) && this.profile.selectedDays.length >= 2
       ? [...this.profile.selectedDays]
@@ -76,6 +79,64 @@ class RtmApp {
 
     // Always launch the onboarding wizard on every page load / refresh
     this.openWizard();
+  }
+
+  // Local day of week code ('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat')
+  getTodayDayCode() {
+    const daysMap = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    return daysMap[new Date().getDay()];
+  }
+
+  getDayFullName(code) {
+    const fullNames = {
+      Mon: 'Monday',
+      Tue: 'Tuesday',
+      Wed: 'Wednesday',
+      Thu: 'Thursday',
+      Fri: 'Friday',
+      Sat: 'Saturday',
+      Sun: 'Sunday'
+    };
+    return fullNames[code] || code;
+  }
+
+  setWorkoutDay(dayCode) {
+    this.activeWorkoutDay = dayCode;
+    this.renderAll();
+  }
+
+  toggleWorkoutDay(dayCode) {
+    if (!Array.isArray(this.profile.selectedDays)) {
+      this.profile.selectedDays = ['Mon', 'Tue', 'Thu', 'Fri'];
+    }
+    const daysOrder = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+    if (this.profile.selectedDays.includes(dayCode)) {
+      if (this.profile.selectedDays.length <= 2) {
+        alert('You must have at least 2 training days in your weekly plan.');
+        return;
+      }
+      this.profile.selectedDays = this.profile.selectedDays.filter(d => d !== dayCode);
+    } else {
+      if (this.profile.selectedDays.length >= 6) {
+        alert('Maximum 6 training days per week allowed for adequate recovery.');
+        return;
+      }
+      this.profile.selectedDays.push(dayCode);
+    }
+
+    this.profile.selectedDays.sort((a, b) => daysOrder.indexOf(a) - daysOrder.indexOf(b));
+    this.profile.freeDays = Math.min(6, Math.max(2, this.profile.selectedDays.length));
+
+    localStorage.setItem('rtm_profile', JSON.stringify(this.profile));
+    this.syncProfileToInputs();
+    this.renderAll();
+  }
+
+  openWizardAtDays() {
+    this.openWizard();
+    this.wizardStep = 2;
+    this.renderWizardStep();
   }
 
   // Local date helper (YYYY-MM-DD in user's local timezone)
@@ -1283,101 +1344,193 @@ class RtmApp {
     if (cProgBar) cProgBar.style.width = `${cProgressPct}%`;
     if (fProgBar) fProgBar.style.width = `${fProgressPct}%`;
 
-    // 2. Workout Tab Render: Clean and Simple
-    const profileBanner = document.getElementById('workoutProfileBanner');
-    if (profileBanner) {
-      const goalsMap = {
-        lose_weight: 'Burn Fat & Shred',
-        gain_muscle: 'Build Lean Muscle',
-        maintain: 'Healthy Athletic Maintenance'
-      };
-
-      profileBanner.innerHTML = `
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
-                ACTIVE SPLIT
-              </span>
-              <span class="text-xs text-slate-400 font-mono">${workoutPlan && workoutPlan.schedule ? workoutPlan.schedule.length : 0} Days / Week</span>
-            </div>
-            <h3 class="text-xl sm:text-2xl font-black text-white tracking-tight mt-1.5">
-              ${workoutPlan ? workoutPlan.splitName : 'Custom Split'}
-            </h3>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="px-3 py-1.5 rounded-xl bg-slate-900/90 border border-white/10 text-xs font-semibold text-slate-200">
-              ${goalsMap[this.profile.goal] || this.profile.goal}
-            </span>
-          </div>
-        </div>
-      `;
-    }
-
-    // Schedule Cards Render - Simple Movement, Sets, Reps, Rest list
+    // 2. Workout Tab Render: Clean & Focused on Today / Active Day
     const workoutContainer = document.getElementById('workoutScheduleContainer');
     if (workoutContainer) {
       workoutContainer.innerHTML = '';
       const cleanVal = (val) => String(val || '').replace(/\s*\(.*?\)/g, '').replace(/\s*reps?/i, '').replace(/\s*sets?/i, '').trim();
 
-      if (!workoutPlan || !workoutPlan.schedule || workoutPlan.schedule.length === 0) {
-        workoutContainer.innerHTML = `
-          <div class="glass-card p-8 text-center border border-white/10 space-y-3">
-            <div class="w-12 h-12 mx-auto rounded-full bg-slate-800 border border-white/10 flex items-center justify-center text-emerald-400 font-bold text-sm tracking-wider">RTM</div>
-            <h4 class="text-lg font-bold text-white">No Workout Generated Yet</h4>
-            <p class="text-xs text-slate-400 max-w-md mx-auto">
-              Enter your height, weight, and free time above, then tap <strong>Generate Workout</strong> to create your split.
-            </p>
-            <button onclick="window.rtmApp && window.rtmApp.quickGenerateWorkout()" class="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-lg transition">
-              Generate Now
+      const daysOrder = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      const todayCode = this.getTodayDayCode(); // e.g. "Wed"
+      const activeDay = this.activeWorkoutDay || todayCode;
+      const dayFullName = this.getDayFullName(activeDay);
+      const isToday = (activeDay === todayCode);
+      const isFreeDay = Array.isArray(this.profile.selectedDays) && this.profile.selectedDays.includes(activeDay);
+
+      // Clean 7-day pill strip (choose/view training vs rest days like the wizard)
+      const stripHtml = `
+        <div class="glass-card p-3 sm:p-4 border border-white/10 shadow-lg">
+          <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-white/5 gap-2">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-white uppercase tracking-wider">Weekly Training Days</span>
+              <span class="text-[10px] font-mono text-emerald-400 font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                ${this.profile.selectedDays ? this.profile.selectedDays.length : 0} Free Days
+              </span>
+            </div>
+            <button onclick="window.rtmApp && window.rtmApp.openWizardAtDays()" class="text-[11px] font-semibold text-slate-400 hover:text-emerald-400 transition cursor-pointer flex items-center gap-1">
+              <span>Change Days</span>
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
             </button>
+          </div>
+
+          <!-- 7-Day Selector Bar -->
+          <div class="grid grid-cols-7 gap-1.5 sm:gap-2">
+            ${daysOrder.map(dayCode => {
+              const isSelected = (dayCode === activeDay);
+              const isFree = Array.isArray(this.profile.selectedDays) && this.profile.selectedDays.includes(dayCode);
+              const isCurrentDay = (dayCode === todayCode);
+              return `
+                <button onclick="window.rtmApp && window.rtmApp.setWorkoutDay('${dayCode}')" type="button" class="p-2 sm:p-2.5 rounded-xl transition text-center select-none flex flex-col items-center justify-center min-h-[58px] cursor-pointer ${
+                  isSelected
+                    ? 'bg-emerald-500/20 border-2 border-emerald-400 shadow-md shadow-emerald-500/20 ring-2 ring-emerald-500/20'
+                    : isFree
+                      ? 'bg-slate-900/80 border border-emerald-500/30 hover:border-emerald-500/50'
+                      : 'bg-slate-900/50 border border-white/5 hover:border-white/15 opacity-70 hover:opacity-100'
+                }">
+                  <div class="flex items-center gap-1">
+                    <span class="font-extrabold text-xs sm:text-sm ${isSelected ? 'text-emerald-300' : 'text-white'}">${dayCode}</span>
+                    ${isCurrentDay ? `<span class="w-1.5 h-1.5 rounded-full bg-cyan-400" title="Today"></span>` : ''}
+                  </div>
+                  <span class="text-[10px] font-bold mt-1 ${isFree ? 'text-emerald-400' : 'text-slate-500'}">
+                    ${isFree ? 'Free' : 'Rest'}
+                  </span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+
+      let mainContentHtml = '';
+
+      if (!isFreeDay) {
+        // Active day is a REST DAY
+        mainContentHtml = `
+          <div class="glass-card p-6 sm:p-8 border border-white/10 shadow-2xl space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-white/10 gap-3">
+              <div class="flex items-center gap-3">
+                <span class="w-3 h-3 rounded-full bg-slate-500"></span>
+                <div>
+                  <h4 class="text-base sm:text-lg font-black text-white flex items-center gap-2">
+                    <span>${dayFullName}</span>
+                    ${isToday ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-mono">Today</span>` : ''}
+                  </h4>
+                  <p class="text-xs text-slate-400">Scheduled Recovery & Muscle Rebuilding</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="window.rtmApp && window.rtmApp.toggleWorkoutDay('${activeDay}')" class="px-3.5 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
+                  <span>+ Set as Training Day</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Big Rest Day Hero Card -->
+            <div class="p-6 sm:p-8 rounded-2xl bg-slate-950/70 border border-white/10 text-center space-y-4">
+              <div class="w-14 h-14 mx-auto rounded-2xl bg-slate-800/80 border border-white/10 flex items-center justify-center text-slate-400">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                </svg>
+              </div>
+              
+              <div>
+                <span class="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest">Off-Day</span>
+                <h3 class="text-2xl sm:text-3xl font-black text-white tracking-tight mt-1">Rest Day</h3>
+                <p class="text-xs sm:text-sm text-slate-400 max-w-md mx-auto mt-2 leading-relaxed">
+                  No workout scheduled for ${dayFullName}. Recovery is when muscle growth and central nervous system repair happen.
+                </p>
+              </div>
+
+              <!-- Recovery Pillars Checklist -->
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-left">
+                <div class="p-3.5 rounded-xl bg-slate-900/60 border border-white/5">
+                  <div class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+                    <span>01. Hydration</span>
+                  </div>
+                  <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">Drink 2.5 - 3.5 liters of clean water to flush lactic acid and support cellular recovery.</p>
+                </div>
+
+                <div class="p-3.5 rounded-xl bg-slate-900/60 border border-white/5">
+                  <div class="text-xs font-bold text-cyan-400 flex items-center gap-1.5">
+                    <span>02. Protein Intake</span>
+                  </div>
+                  <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">Keep protein targets consistent on rest days to supply essential amino acids for tissue repair.</p>
+                </div>
+
+                <div class="p-3.5 rounded-xl bg-slate-900/60 border border-white/5">
+                  <div class="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+                    <span>03. 7-9h Sleep</span>
+                  </div>
+                  <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">Deep sleep releases natural human growth hormone (HGH) essential for muscle recovery.</p>
+                </div>
+              </div>
+            </div>
           </div>
         `;
       } else {
-        workoutPlan.schedule.forEach((daySchedule, idx) => {
-        const card = document.createElement('div');
-        card.className = 'glass-card p-5 sm:p-6 mb-5 border border-white/10 shadow-xl';
-        const assignedDay = (this.profile.selectedDays && this.profile.selectedDays[idx]) ? `${this.profile.selectedDays[idx]} · ` : '';
-        card.innerHTML = `
-          <div class="flex items-center justify-between pb-3 mb-4 border-b border-white/10">
-            <div class="flex items-center gap-2.5">
-              <span class="text-xs uppercase tracking-wider font-extrabold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 rounded-full">
-                ${assignedDay}${daySchedule.day}
-              </span>
-              <h4 class="text-base sm:text-lg font-black text-white">${daySchedule.focus}</h4>
-            </div>
-            <span class="text-xs text-slate-400 font-mono">
-              ${daySchedule.exercises.length} Movements
-            </span>
-          </div>
+        // Active day is a TRAINING DAY
+        const dayIdx = this.profile.selectedDays.indexOf(activeDay);
+        const daySchedule = (workoutPlan && workoutPlan.schedule && workoutPlan.schedule[dayIdx])
+          ? workoutPlan.schedule[dayIdx]
+          : (workoutPlan && workoutPlan.schedule && workoutPlan.schedule[0]) || { day: 'Workout', focus: 'Training Session', exercises: [] };
 
-          <!-- Clean List Table: Movement, Sets, Reps, Rest -->
-          <div class="overflow-x-auto rounded-xl border border-white/10 bg-slate-900/60">
-            <table class="w-full text-left border-collapse">
-              <thead>
-                <tr class="bg-slate-950/70 text-[11px] uppercase tracking-wider font-bold text-slate-400 border-b border-white/10">
-                  <th class="py-3 px-4">Movement</th>
-                  <th class="py-3 px-3 text-center whitespace-nowrap">Sets</th>
-                  <th class="py-3 px-3 text-center whitespace-nowrap">Reps</th>
-                  <th class="py-3 px-4 text-right whitespace-nowrap">Rest</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-white/5 text-xs sm:text-sm">
-                ${daySchedule.exercises.map(ex => `
-                  <tr class="hover:bg-white/[0.02] transition">
-                    <td class="py-3.5 px-4 font-bold text-white">${ex.name}</td>
-                    <td class="py-3.5 px-3 text-center font-mono font-bold text-emerald-400 whitespace-nowrap">${cleanVal(ex.sets)}</td>
-                    <td class="py-3.5 px-3 text-center font-mono font-bold text-slate-200 whitespace-nowrap">${cleanVal(ex.reps)}</td>
-                    <td class="py-3.5 px-4 text-right font-mono font-bold text-cyan-400 whitespace-nowrap">${cleanVal(ex.rest)}</td>
+        mainContentHtml = `
+          <div class="glass-card p-5 sm:p-6 border border-white/10 shadow-2xl space-y-4">
+            <!-- Day Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-white/10 gap-2.5">
+              <div class="flex items-center gap-2.5 flex-wrap">
+                <span class="text-xs uppercase tracking-wider font-extrabold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 rounded-full">
+                  ${dayFullName} · ${daySchedule.day}
+                </span>
+                ${isToday ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-mono">Today</span>` : ''}
+                <h4 class="text-base sm:text-lg font-black text-white">${daySchedule.focus}</h4>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-slate-400 font-mono">
+                  ${daySchedule.exercises.length} Movements
+                </span>
+                <button onclick="window.rtmApp && window.rtmApp.toggleWorkoutDay('${activeDay}')" class="text-slate-400 hover:text-rose-400 text-xs px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-rose-500/10 border border-white/10 transition cursor-pointer" title="Switch to Rest Day">
+                  Set as Rest
+                </button>
+              </div>
+            </div>
+
+            <!-- Clean Movement Table: Movement, Sets, Reps, Rest -->
+            <div class="overflow-x-auto rounded-xl border border-white/10 bg-slate-900/60">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="bg-slate-950/70 text-[11px] uppercase tracking-wider font-bold text-slate-400 border-b border-white/10">
+                    <th class="py-3 px-4">Movement</th>
+                    <th class="py-3 px-3 text-center whitespace-nowrap">Sets</th>
+                    <th class="py-3 px-3 text-center whitespace-nowrap">Reps</th>
+                    <th class="py-3 px-4 text-right whitespace-nowrap">Rest</th>
                   </tr>
-                `).join('')}
-              </tbody>
-            </table>
+                </thead>
+                <tbody class="divide-y divide-white/5 text-xs sm:text-sm">
+                  ${daySchedule.exercises.map(ex => `
+                    <tr class="hover:bg-white/[0.02] transition">
+                      <td class="py-3.5 px-4 font-bold text-white">${ex.name}</td>
+                      <td class="py-3.5 px-3 text-center font-mono font-bold text-emerald-400 whitespace-nowrap">${cleanVal(ex.sets)}</td>
+                      <td class="py-3.5 px-3 text-center font-mono font-bold text-slate-200 whitespace-nowrap">${cleanVal(ex.reps)}</td>
+                      <td class="py-3.5 px-4 text-right font-mono font-bold text-cyan-400 whitespace-nowrap">${cleanVal(ex.rest)}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Finisher note if available -->
+            ${daySchedule.cardio ? `
+              <div class="p-3.5 rounded-xl bg-slate-950/60 border border-white/5 flex items-center justify-between text-xs gap-2">
+                <span class="text-slate-400 font-medium">Finisher / Conditioning:</span>
+                <span class="font-bold text-emerald-400 font-mono">${daySchedule.cardio}</span>
+              </div>
+            ` : ''}
           </div>
         `;
-        workoutContainer.appendChild(card);
-      });
       }
+
+      workoutContainer.innerHTML = `${stripHtml}${mainContentHtml}`;
     }
 
     // 3. Nutrition Tab Render
@@ -1474,25 +1627,37 @@ class RtmApp {
       }).join('');
     }
 
-    // 4. Progress Tab Render
+    // 4. Progress Tab Render (Swapped: number & weight on the left, note entry on the right)
     const historyContainer = document.getElementById('progressHistoryList');
     if (historyContainer) {
       this.sortProgressHistory();
       if (this.progressHistory.length === 0) {
         historyContainer.innerHTML = `<p class="text-slate-400 text-xs text-center py-4">No check-ins logged yet. Add your first entry above!</p>`;
       } else {
-        historyContainer.innerHTML = this.progressHistory.map(entry => `
-          <div class="flex items-center justify-between p-3.5 rounded-lg bg-slate-900/60 border border-white/5">
-            <div>
-              <div class="text-xs text-slate-400 font-mono">${entry.date}</div>
-              <div class="text-xs text-slate-300 mt-0.5 italic">"${entry.notes}"</div>
+        historyContainer.innerHTML = this.progressHistory.map((entry, idx) => {
+          const entryNum = this.progressHistory.length - idx;
+          const noteText = entry.notes && entry.notes !== '-' ? `"${entry.notes}"` : '';
+          return `
+            <div class="flex items-center justify-between p-3.5 rounded-xl bg-slate-900/60 border border-white/5 hover:border-emerald-500/20 transition gap-3">
+              <!-- Left: Number & Weight -->
+              <div class="flex items-center gap-2.5 shrink-0">
+                <span class="w-6 h-6 rounded-lg bg-slate-800 text-[10px] font-mono font-bold text-slate-400 flex items-center justify-center border border-white/5">
+                  #${entryNum}
+                </span>
+                <span class="text-base sm:text-lg font-black text-emerald-400 font-mono tracking-tight">${entry.weight} kg</span>
+              </div>
+
+              <!-- Right: Note entry, Date, and Delete Button -->
+              <div class="flex items-center gap-3 text-right min-w-0">
+                <div class="min-w-0">
+                  ${noteText ? `<div class="text-xs text-slate-200 truncate italic">${noteText}</div>` : ''}
+                  <div class="text-[10px] text-slate-400 font-mono mt-0.5">${entry.date}</div>
+                </div>
+                <button onclick="window.rtmApp && window.rtmApp.deleteProgressLog('${entry.id || entry.date}')" class="text-slate-500 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-500/10 font-bold text-xs transition shrink-0 cursor-pointer" title="Delete entry">✕</button>
+              </div>
             </div>
-            <div class="flex items-center gap-3">
-              <span class="text-base font-bold text-white font-mono">${entry.weight} kg</span>
-              <button onclick="window.rtmApp && window.rtmApp.deleteProgressLog('${entry.id || entry.date}')" class="text-slate-500 hover:text-red-400 p-1 font-bold text-xs transition" title="Delete entry">✕</button>
-            </div>
-          </div>
-        `).join('');
+          `;
+        }).join('');
       }
     }
   }

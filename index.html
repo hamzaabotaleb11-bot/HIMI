@@ -268,100 +268,8 @@
     </div>
 
     <!-- TAB 2: WORKOUT SPLIT -->
-    <div id="pane-workout" class="tab-content hidden space-y-6">
-      
-      <!-- Instant Workout Generator Card (Schedule, Goal, Height & Weight) -->
-      <div class="glass-card p-5 sm:p-6 border border-emerald-500/30 bg-slate-900/90 shadow-2xl space-y-4">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-white/10 gap-3">
-          <div>
-            <h3 class="text-base sm:text-lg font-black text-white flex items-center gap-2">
-              <span>Dynamic Workout Generator</span>
-            </h3>
-            <p class="text-xs text-slate-400 mt-0.5">
-              Choose your training days, metrics, and goal to immediately generate your split.
-            </p>
-          </div>
-          <button id="btnQuickGenerateWorkout" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-black text-xs shadow-lg shadow-emerald-500/25 transition active:scale-95 flex items-center gap-2 whitespace-nowrap self-start sm:self-auto cursor-pointer">
-            <span>Generate Workout</span>
-          </button>
-        </div>
-
-        <!-- Inputs Form Grid: Height, Weight, Primary Goal -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-          <div>
-            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Height (cm)</label>
-            <input type="number" id="quickWorkoutHeight" min="120" max="240" value="175" class="text-xs font-mono font-bold">
-          </div>
-          <div>
-            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Weight (kg)</label>
-            <input type="number" id="quickWorkoutWeight" min="35" max="250" step="0.5" value="78" class="text-xs font-mono font-bold">
-          </div>
-          <div>
-            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Primary Goal</label>
-            <select id="quickWorkoutGoal" class="text-xs">
-              <option value="lose_weight">Burn Fat & Shred</option>
-              <option value="gain_muscle" selected>Build Lean Muscle</option>
-              <option value="maintain">Healthy Maintenance</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Choose What Those Days Are (Like the Wizard) -->
-        <div class="space-y-2 pt-2 border-t border-white/5">
-          <div class="flex items-center justify-between flex-wrap gap-2">
-            <span class="text-[11px] font-semibold text-slate-300">Choose Your Training Days:</span>
-            <div class="flex items-center gap-2 text-xs flex-wrap">
-              <span id="tabSelectedDaysCount" class="font-bold text-emerald-400 font-mono text-xs">4 Days (Mon, Tue, Thu, Fri)</span>
-              <span id="tabSplitBadge" class="badge-pill bg-emerald-500/15 text-emerald-400 text-[10px] px-2.5 py-0.5 font-bold border border-emerald-500/30">Upper / Lower Split (4-Day)</span>
-            </div>
-          </div>
-
-          <!-- 7 Days Grid (Mon, Tue, Wed, Thu, Fri, Sat, Sun) -->
-          <div class="grid grid-cols-7 gap-1.5 sm:gap-2">
-            <div class="workout-tab-day-btn selected-card p-2 sm:p-2.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[58px]" data-day="Mon">
-              <span class="font-extrabold text-xs sm:text-sm text-white tracking-wide">Mon</span>
-              <span class="text-[10px] text-emerald-400 font-semibold mt-1 tab-day-status">Free</span>
-            </div>
-            <div class="workout-tab-day-btn selected-card p-2 sm:p-2.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[58px]" data-day="Tue">
-              <span class="font-extrabold text-xs sm:text-sm text-white tracking-wide">Tue</span>
-              <span class="text-[10px] text-emerald-400 font-semibold mt-1 tab-day-status">Free</span>
-            </div>
-            <div class="workout-tab-day-btn p-2 sm:p-2.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[58px]" data-day="Wed">
-              <span class="font-extrabold text-xs sm:text-sm text-white tracking-wide">Wed</span>
-              <span class="text-[10px] text-slate-500 font-medium mt-1 tab-day-status">Rest</span>
-            </div>
-            <div class="workout-tab-day-btn selected-card p-2 sm:p-2.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[58px]" data-day="Thu">
-              <span class="font-extrabold text-xs sm:text-sm text-white tracking-wide">Thu</span>
-              <span class="text-[10px] text-emerald-400 font-semibold mt-1 tab-day-status">Free</span>
-            </div>
-            <div class="workout-tab-day-btn selected-card p-2 sm:p-2.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[58px]" data-day="Fri">
-              <span class="font-extrabold text-xs sm:text-sm text-white tracking-wide">Fri</span>
-              <span class="text-[10px] text-emerald-400 font-semibold mt-1 tab-day-status">Free</span>
-            </div>
-            <div class="workout-tab-day-btn p-2 sm:p-2.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[58px]" data-day="Sat">
-              <span class="font-extrabold text-xs sm:text-sm text-white tracking-wide">Sat</span>
-              <span class="text-[10px] text-slate-500 font-medium mt-1 tab-day-status">Rest</span>
-            </div>
-            <div class="workout-tab-day-btn p-2 sm:p-2.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[58px]" data-day="Sun">
-              <span class="font-extrabold text-xs sm:text-sm text-white tracking-wide">Sun</span>
-              <span class="text-[10px] text-slate-500 font-medium mt-1 tab-day-status">Rest</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Quick Generator Feedback Toast -->
-        <div id="quickWorkoutToast" class="hidden p-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center justify-between">
-          <span id="quickWorkoutToastMsg">Workout generated based on your metrics!</span>
-          <span class="text-[10px] text-emerald-400 font-mono">Updated</span>
-        </div>
-      </div>
-
-      <!-- Personalized Plan Parameters Banner -->
-      <div id="workoutProfileBanner" class="glass-card p-6 border border-white/10 space-y-4">
-        <!-- Rendered dynamically by app.js -->
-      </div>
-
-      <!-- Schedule Cards Container -->
+    <div id="pane-workout" class="tab-content hidden space-y-4">
+      <!-- Schedule Cards Container (Renders 7-day strip, active day focus, or Rest Day) -->
       <div id="workoutScheduleContainer" class="space-y-4"></div>
     </div>
 
@@ -824,7 +732,7 @@
   </div>
 
   <!-- App Scripts (Zero Dependencies with Cache-Busting) -->
-  <script src="./plan-engine.js?v=2.4.8"></script>
-  <script src="./app.js?v=2.4.8"></script>
+  <script src="./plan-engine.js?v=2.4.9"></script>
+  <script src="./app.js?v=2.4.9"></script>
 </body>
 </html>
