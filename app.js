@@ -541,7 +541,7 @@ class RtmApp {
     if (profileBanner) {
       const goalsMap = {
         lose_weight: 'Burn Fat & Shred',
-        gain_muscle: 'Build Lean Muscle (Hypertrophy)',
+        gain_muscle: 'Build Lean Muscle',
         maintain: 'Healthy Athletic Maintenance'
       };
 
