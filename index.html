@@ -52,10 +52,12 @@
         </div>
       </div>
 
-      <!-- Action items in header: Settings Only -->
+      <!-- 3 Horizontal Line Icon Menu Button -->
       <div class="flex items-center gap-2.5">
-        <button id="openSettingsBtn" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-white/10 transition shadow-sm hover:border-emerald-500/40">
-          <span>Settings</span>
+        <button id="openSettingsBtn" type="button" class="p-2.5 rounded-xl bg-slate-850 hover:bg-slate-800 text-slate-200 hover:text-white border border-white/10 hover:border-emerald-500/40 transition shadow-sm flex items-center justify-center cursor-pointer active:scale-95" title="Menu" aria-label="Menu">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
         </button>
       </div>
     </div>
@@ -662,52 +664,54 @@
   </div>
 
   <!-- ======================================================== -->
-  <!-- SETTINGS MODAL (Theme Selection & Change Stats)           -->
+  <!-- 3-LINE ICON MENU MODAL (Theme Options & Change Stats Alone) -->
   <!-- ======================================================== -->
   <div id="settingsModal" class="fixed inset-0 bg-black/75 backdrop-blur-md z-50 flex items-center justify-center p-4 transition-all duration-200 opacity-0 pointer-events-none">
     <div class="glass-card max-w-sm sm:max-w-md w-full p-6 sm:p-7 border border-white/15 shadow-2xl relative">
       
       <!-- Modal Header -->
-      <div class="flex items-center justify-between pb-4 mb-6 border-b border-white/10">
-        <div>
-          <h3 class="text-lg font-bold text-white flex items-center gap-2">
-            Settings
-          </h3>
-          <p class="text-xs text-slate-400 mt-0.5">
-            Display preferences & profile settings
-          </p>
+      <div class="flex items-center justify-between pb-4 mb-5 border-b border-white/10">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-slate-800 border border-white/10 flex items-center justify-center text-emerald-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white">Menu</h3>
+            <p class="text-[11px] text-slate-400">Display preferences & profile options</p>
+          </div>
         </div>
-        <button id="closeSettingsBtn" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-sm font-bold transition">
+        <button id="closeSettingsBtn" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-sm font-bold transition cursor-pointer">
           ✕
         </button>
       </div>
 
-      <!-- Settings Content: Theme Circles -->
-      <div class="space-y-6">
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 text-center mb-4">Appearance</label>
-          <div class="flex items-center justify-center gap-6 sm:gap-8">
+      <!-- Settings Content -->
+      <div class="space-y-5">
+        <!-- 1. Dark Mode and Light Mode in the same place -->
+        <div class="p-4 rounded-2xl bg-slate-950/60 border border-white/10 space-y-3">
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 text-center">Appearance</label>
+          <div class="flex items-center justify-center gap-6 sm:gap-8 pt-1">
             
             <!-- Dark Mode Circle Option -->
-            <button id="themeDarkBtn" type="button" class="group flex flex-col items-center gap-2.5 focus:outline-none">
-              <div class="theme-circle w-24 h-24 sm:w-28 sm:h-28 rounded-full border-2 border-emerald-400 bg-slate-900 shadow-lg shadow-emerald-500/25 flex flex-col items-center justify-center transition-all duration-200 ring-4 ring-emerald-500/20 relative">
-                <!-- Moon icon -->
-                <svg class="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button id="themeDarkBtn" type="button" class="group flex flex-col items-center gap-2.5 focus:outline-none cursor-pointer">
+              <div class="theme-circle w-20 h-20 sm:w-24 sm:h-24 rounded-full border-2 border-emerald-400 bg-slate-900 shadow-lg shadow-emerald-500/25 flex flex-col items-center justify-center transition-all duration-200 ring-4 ring-emerald-500/20 relative">
+                <svg class="w-7 h-7 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
                 </svg>
-                <span class="theme-active-badge absolute -bottom-1 px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-500 text-slate-950 font-mono shadow">Active</span>
+                <span class="theme-active-badge absolute -bottom-1 px-2 py-0.5 text-[9px] font-bold rounded-full bg-emerald-500 text-slate-950 font-mono shadow">Active</span>
               </div>
               <span class="theme-label text-xs font-bold text-emerald-400 transition">Dark Mode</span>
             </button>
 
             <!-- Light Mode Circle Option -->
-            <button id="themeLightBtn" type="button" class="group flex flex-col items-center gap-2.5 focus:outline-none">
-              <div class="theme-circle w-24 h-24 sm:w-28 sm:h-28 rounded-full border-2 border-white/10 bg-slate-800/60 shadow-md flex flex-col items-center justify-center transition-all duration-200 relative">
-                <!-- Sun icon -->
-                <svg class="w-8 h-8 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button id="themeLightBtn" type="button" class="group flex flex-col items-center gap-2.5 focus:outline-none cursor-pointer">
+              <div class="theme-circle w-20 h-20 sm:w-24 sm:h-24 rounded-full border-2 border-white/10 bg-slate-800/60 shadow-md flex flex-col items-center justify-center transition-all duration-200 relative">
+                <svg class="w-7 h-7 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
                 </svg>
-                <span class="theme-active-badge hidden absolute -bottom-1 px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-500 text-slate-950 font-mono shadow">Active</span>
+                <span class="theme-active-badge hidden absolute -bottom-1 px-2 py-0.5 text-[9px] font-bold rounded-full bg-emerald-500 text-slate-950 font-mono shadow">Active</span>
               </div>
               <span class="theme-label text-xs font-semibold text-slate-400 transition">Light Mode</span>
             </button>
@@ -715,24 +719,228 @@
           </div>
         </div>
 
-        <!-- Divider and Change Stats Option -->
-        <div class="border-t border-white/10 pt-4 space-y-2">
-          <button id="btnChangeStats" type="button" class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-bold text-sm shadow-lg shadow-emerald-500/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2.5">
-            <svg class="w-4 h-4 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+        <!-- 2. Change Stats Option Alone (Separate Card) -->
+        <div class="p-4 rounded-2xl bg-slate-950/60 border border-white/10 space-y-2">
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">Account & Training Metrics</label>
+          <button id="btnChangeStats" type="button" class="w-full p-4 rounded-xl bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 hover:from-emerald-500/20 hover:to-cyan-500/20 border border-emerald-500/30 hover:border-emerald-500/50 transition-all group flex items-center justify-between text-left cursor-pointer">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-105 transition shrink-0">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+              </div>
+              <div class="min-w-0">
+                <div class="text-sm font-bold text-white group-hover:text-emerald-300 transition">Change Stats</div>
+                <div class="text-[11px] text-slate-400 truncate">Height, weight, training days, goals & workout generator</div>
+              </div>
+            </div>
+            <svg class="w-5 h-5 text-slate-400 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>
-            <span>Change Stats</span>
           </button>
-          <p class="text-[11px] text-center text-slate-400 leading-relaxed">
-            Change your height, weight, age, available days, meal budget, or primary goal.
-          </p>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- ======================================================== -->
+  <!-- CHANGE STATS MENU MODAL                                   -->
+  <!-- (Wizard copy without Welcome or Steps, with Workout Gen)  -->
+  <!-- ======================================================== -->
+  <div id="changeStatsModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-4 transition-all duration-200 opacity-0 pointer-events-none">
+    <div class="glass-card max-w-2xl w-full max-h-[90vh] flex flex-col p-5 sm:p-7 border border-white/15 shadow-2xl relative">
+      
+      <!-- Modal Header: Change Stats only (NO 'Welcome to RTM') -->
+      <div class="flex items-center justify-between pb-4 mb-4 border-b border-white/10 flex-shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-lg sm:text-xl font-black text-white tracking-tight">Change Stats</h3>
+            <p class="text-xs text-slate-400 mt-0.5">
+              Dynamic workout generator & personalized plan configuration
+            </p>
+          </div>
+        </div>
+        <button id="closeChangeStatsBtn" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-sm font-bold transition cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <!-- Scrollable Body (NO steps 1 2 3 4: all options accessible directly) -->
+      <div class="flex-1 overflow-y-auto space-y-4 pr-1 py-1">
+        
+        <!-- 1. Dynamic Workout Generator & Body Metrics -->
+        <div class="p-4 sm:p-5 rounded-2xl bg-slate-950/70 border border-white/10 space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-white/5">
+            <h4 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span>Body Metrics (Dynamic Workout Generator)</span>
+            </h4>
+            <span class="text-[10px] text-slate-400 font-mono">Real-Time Calibration</span>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+            <div>
+              <label for="csHeight" class="block text-[11px] font-semibold text-slate-300 mb-1">Height (cm)</label>
+              <input type="number" id="csHeight" min="120" max="240" class="w-full text-xs font-mono font-bold">
+            </div>
+            <div>
+              <label for="csWeight" class="block text-[11px] font-semibold text-slate-300 mb-1">Weight (kg)</label>
+              <input type="number" id="csWeight" min="35" max="250" step="0.5" class="w-full text-xs font-mono font-bold">
+            </div>
+            <div>
+              <label for="csAge" class="block text-[11px] font-semibold text-slate-300 mb-1">Age</label>
+              <input type="number" id="csAge" min="14" max="100" class="w-full text-xs font-mono font-bold">
+            </div>
+            <div>
+              <label for="csGender" class="block text-[11px] font-semibold text-slate-300 mb-1">Gender</label>
+              <select id="csGender" class="w-full text-xs font-semibold">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Choose Your Free Days (Workout Schedule Split) -->
+        <div class="p-4 sm:p-5 rounded-2xl bg-slate-950/70 border border-white/10 space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-white/5 flex-wrap gap-2">
+            <h4 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span>Choose Your Free Days</span>
+            </h4>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span id="csSelectedDaysCount" class="text-xs font-bold text-emerald-400 font-mono">4 Days (Mon, Tue, Thu, Fri)</span>
+              <span id="csSplitBadge" class="badge-pill bg-emerald-500/15 text-emerald-400 text-[10px] px-2.5 py-0.5 font-bold border border-emerald-500/30">Upper / Lower Split (4-Day)</span>
+            </div>
+          </div>
+          <p class="text-[11px] text-slate-400">
+            Tap days to toggle between Free and Rest. RTM automatically balances your split volume.
+          </p>
+
+          <!-- 7 Days Grid with abbreviations only -->
+          <div class="grid grid-cols-7 gap-1.5 sm:gap-2 pt-1">
+            <div class="cs-day-checkbox selected-card p-2 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[58px]" data-day="Mon">
+              <span class="font-extrabold text-xs sm:text-sm text-white tracking-wide">Mon</span>
+              <span class="text-[10px] text-emerald-400 font-semibold mt-1 cs-day-status">Free</span>
+            </div>
+            <div class="cs-day-checkbox selected-card p-2 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[58px]" data-day="Tue">
+              <span class="font-extrabold text-xs sm:text-sm text-white tracking-wide">Tue</span>
+              <span class="text-[10px] text-emerald-400 font-semibold mt-1 cs-day-status">Free</span>
+            </div>
+            <div class="cs-day-checkbox p-2 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[58px]" data-day="Wed">
+              <span class="font-extrabold text-xs sm:text-sm text-white tracking-wide">Wed</span>
+              <span class="text-[10px] text-slate-500 font-medium mt-1 cs-day-status">Rest</span>
+            </div>
+            <div class="cs-day-checkbox selected-card p-2 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[58px]" data-day="Thu">
+              <span class="font-extrabold text-xs sm:text-sm text-white tracking-wide">Thu</span>
+              <span class="text-[10px] text-emerald-400 font-semibold mt-1 cs-day-status">Free</span>
+            </div>
+            <div class="cs-day-checkbox selected-card p-2 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[58px]" data-day="Fri">
+              <span class="font-extrabold text-xs sm:text-sm text-white tracking-wide">Fri</span>
+              <span class="text-[10px] text-emerald-400 font-semibold mt-1 cs-day-status">Free</span>
+            </div>
+            <div class="cs-day-checkbox p-2 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[58px]" data-day="Sat">
+              <span class="font-extrabold text-xs sm:text-sm text-white tracking-wide">Sat</span>
+              <span class="text-[10px] text-slate-500 font-medium mt-1 cs-day-status">Rest</span>
+            </div>
+            <div class="cs-day-checkbox p-2 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[58px]" data-day="Sun">
+              <span class="font-extrabold text-xs sm:text-sm text-white tracking-wide">Sun</span>
+              <span class="text-[10px] text-slate-500 font-medium mt-1 cs-day-status">Rest</span>
+            </div>
+          </div>
+          <div id="csScheduleToast" class="hidden text-[11px] text-amber-400 text-center font-medium">
+            Please select between 2 and 6 training days.
+          </div>
+        </div>
+
+        <!-- 3. Primary Goal -->
+        <div class="p-4 sm:p-5 rounded-2xl bg-slate-950/70 border border-white/10 space-y-3">
+          <div class="pb-2 border-b border-white/5">
+            <h4 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span>Primary Goal</span>
+            </h4>
+          </div>
+          <div class="space-y-2 pt-1">
+            <div class="cs-goal-card selected-card p-3 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-goal="lose_weight">
+              <div class="font-bold text-xs sm:text-sm text-white flex items-center justify-between">
+                <span>Burn Fat & Shred</span>
+                <span class="text-[11px] text-emerald-400 font-mono">-450 kcal deficit</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-0.5">Moderate caloric deficit with high protein to protect lean muscle</p>
+            </div>
+            <div class="cs-goal-card p-3 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-goal="gain_muscle">
+              <div class="font-bold text-xs sm:text-sm text-white flex items-center justify-between">
+                <span>Build Lean Muscle</span>
+                <span class="text-[11px] text-cyan-400 font-mono">+350 kcal surplus</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-0.5">Lean caloric surplus optimized for muscle growth and recovery</p>
+            </div>
+            <div class="cs-goal-card p-3 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-goal="maintain">
+              <div class="font-bold text-xs sm:text-sm text-white flex items-center justify-between">
+                <span>Healthy Maintenance</span>
+                <span class="text-[11px] text-slate-400 font-mono">Calorie maintenance</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-0.5">Body recomposition and sustained lifestyle athletic energy</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Grocery & Meal Budget -->
+        <div class="p-4 sm:p-5 rounded-2xl bg-slate-950/70 border border-white/10 space-y-3">
+          <div class="pb-2 border-b border-white/5">
+            <h4 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span>Grocery & Meal Budget</span>
+            </h4>
+          </div>
+          <div class="space-y-2 pt-1">
+            <div class="cs-budget-card selected-card p-3 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-budget="budget">
+              <div class="flex items-center justify-between font-bold text-xs sm:text-sm text-white">
+                <span>Smart Budget ($4 - $6 / day)</span>
+                <span class="badge-pill bg-emerald-500/15 text-emerald-400 text-[10px]">High Protein Value</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-0.5">Eggs, oats, tuna, cottage cheese, rice, peanut butter</p>
+            </div>
+            <div class="cs-budget-card p-3 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-budget="moderate">
+              <div class="flex items-center justify-between font-bold text-xs sm:text-sm text-white">
+                <span>Standard Fresh ($8 - $12 / day)</span>
+                <span class="badge-pill bg-cyan-500/15 text-cyan-400 text-[10px]">Balanced</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-0.5">Chicken breast, greek yogurt, sweet potatoes, berries, olive oil</p>
+            </div>
+            <div class="cs-budget-card p-3 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-budget="premium">
+              <div class="flex items-center justify-between font-bold text-xs sm:text-sm text-white">
+                <span>Performance ($15+ / day)</span>
+                <span class="badge-pill bg-amber-500/15 text-amber-400 text-[10px]">Gourmet & Speed</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-0.5">Salmon fillets, sirloin steaks, avocados, whey isolate</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer: Save & Generate Workout -->
+      <div class="pt-4 mt-2 border-t border-white/10 flex-shrink-0">
+        <button id="btnSaveChangeStats" type="button" class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-black text-sm shadow-lg shadow-emerald-500/25 transition-all active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer">
+          <svg class="w-4 h-4 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+          <span>Generate Workout & Save Stats</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- App Scripts (Zero Dependencies with Cache-Busting) -->
-  <script src="./plan-engine.js?v=2.4.9"></script>
-  <script src="./app.js?v=2.4.9"></script>
+  <script src="./plan-engine.js?v=2.5.0"></script>
+  <script src="./app.js?v=2.5.0"></script>
 </body>
 </html>

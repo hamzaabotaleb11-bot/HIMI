@@ -134,9 +134,7 @@ class RtmApp {
   }
 
   openWizardAtDays() {
-    this.openWizard();
-    this.wizardStep = 2;
-    this.renderWizardStep();
+    this.openChangeStats();
   }
 
   // Local date helper (YYYY-MM-DD in user's local timezone)
@@ -586,14 +584,86 @@ class RtmApp {
       themeLightBtn.addEventListener('click', () => this.setTheme('light'));
     }
 
-    // Change Stats Button in Settings Modal (opens wizard with current stats)
+    // Change Stats Button in 3-Line Menu (opens Change Stats modal, NOT the wizard)
     const btnChangeStats = document.getElementById('btnChangeStats');
     if (btnChangeStats) {
       btnChangeStats.addEventListener('click', () => {
         this.closeSettings();
-        this.openWizard();
+        this.openChangeStats();
       });
     }
+
+    // Change Stats Modal Close & Backdrop
+    const closeChangeStatsBtn = document.getElementById('closeChangeStatsBtn');
+    if (closeChangeStatsBtn) {
+      closeChangeStatsBtn.addEventListener('click', () => this.closeChangeStats());
+    }
+
+    const changeStatsModal = document.getElementById('changeStatsModal');
+    if (changeStatsModal) {
+      changeStatsModal.addEventListener('click', (e) => {
+        if (e.target === changeStatsModal) this.closeChangeStats();
+      });
+    }
+
+    // Save Change Stats & Generate Workout
+    const btnSaveChangeStats = document.getElementById('btnSaveChangeStats');
+    if (btnSaveChangeStats) {
+      btnSaveChangeStats.addEventListener('click', () => this.saveChangeStats());
+    }
+
+    // Change Stats Day Checkboxes
+    document.querySelectorAll('.cs-day-checkbox').forEach(card => {
+      card.addEventListener('click', () => {
+        const day = card.getAttribute('data-day');
+        if (!Array.isArray(this.csSelectedDays)) {
+          this.csSelectedDays = ['Mon', 'Tue', 'Thu', 'Fri'];
+        }
+
+        if (this.csSelectedDays.includes(day)) {
+          if (this.csSelectedDays.length <= 2) {
+            const toast = document.getElementById('csScheduleToast');
+            if (toast) {
+              toast.textContent = 'Please select at least 2 training days!';
+              toast.classList.remove('hidden');
+              setTimeout(() => toast.classList.add('hidden'), 2000);
+            }
+            return;
+          }
+          this.csSelectedDays = this.csSelectedDays.filter(d => d !== day);
+        } else {
+          if (this.csSelectedDays.length >= 6) {
+            const toast = document.getElementById('csScheduleToast');
+            if (toast) {
+              toast.textContent = 'Maximum 6 training days recommended (at least 1 rest day)!';
+              toast.classList.remove('hidden');
+              setTimeout(() => toast.classList.add('hidden'), 2000);
+            }
+            return;
+          }
+          this.csSelectedDays.push(day);
+        }
+        this.updateChangeStatsDaysUI();
+      });
+    });
+
+    // Change Stats Goal Cards
+    document.querySelectorAll('.cs-goal-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.cs-goal-card').forEach(c => c.classList.remove('selected-card'));
+        card.classList.add('selected-card');
+        this.csGoal = card.getAttribute('data-goal');
+      });
+    });
+
+    // Change Stats Budget Cards
+    document.querySelectorAll('.cs-budget-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.cs-budget-card').forEach(c => c.classList.remove('selected-card'));
+        card.classList.add('selected-card');
+        this.csBudgetTier = card.getAttribute('data-budget');
+      });
+    });
 
     // Profile Settings Form (legacy fallback)
     const form = document.getElementById('profileForm');
@@ -1066,6 +1136,122 @@ class RtmApp {
   closeSettings() {
     const modal = document.getElementById('settingsModal');
     if (modal) modal.classList.add('opacity-0', 'pointer-events-none');
+  }
+
+  // ============================================
+  // Change Stats Modal Logic (Dynamic Workout Generator)
+  // ============================================
+  openChangeStats() {
+    this.csSelectedDays = Array.isArray(this.profile.selectedDays) && this.profile.selectedDays.length >= 2
+      ? [...this.profile.selectedDays]
+      : ['Mon', 'Tue', 'Thu', 'Fri'];
+    this.csBudgetTier = this.profile.budgetTier || 'budget';
+    this.csGoal = this.profile.goal || 'gain_muscle';
+
+    const h = document.getElementById('csHeight');
+    const w = document.getElementById('csWeight');
+    const a = document.getElementById('csAge');
+    const g = document.getElementById('csGender');
+
+    if (h) h.value = this.profile.heightCm;
+    if (w) w.value = this.profile.weightKg;
+    if (a) a.value = this.profile.age;
+    if (g) g.value = this.profile.gender || 'male';
+
+    this.updateChangeStatsDaysUI();
+
+    document.querySelectorAll('.cs-budget-card').forEach(c => {
+      c.classList.toggle('selected-card', c.getAttribute('data-budget') === this.csBudgetTier);
+    });
+
+    document.querySelectorAll('.cs-goal-card').forEach(c => {
+      c.classList.toggle('selected-card', c.getAttribute('data-goal') === this.csGoal);
+    });
+
+    const modal = document.getElementById('changeStatsModal');
+    if (modal) modal.classList.remove('opacity-0', 'pointer-events-none');
+  }
+
+  closeChangeStats() {
+    const modal = document.getElementById('changeStatsModal');
+    if (modal) modal.classList.add('opacity-0', 'pointer-events-none');
+  }
+
+  updateChangeStatsDaysUI() {
+    const daysOrder = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    if (!Array.isArray(this.csSelectedDays)) {
+      this.csSelectedDays = ['Mon', 'Tue', 'Thu', 'Fri'];
+    }
+    this.csSelectedDays.sort((a, b) => daysOrder.indexOf(a) - daysOrder.indexOf(b));
+
+    document.querySelectorAll('.cs-day-checkbox').forEach(card => {
+      const day = card.getAttribute('data-day');
+      const isSelected = this.csSelectedDays.includes(day);
+      card.classList.toggle('selected-card', isSelected);
+      const statusEl = card.querySelector('.cs-day-status');
+      if (statusEl) {
+        statusEl.textContent = isSelected ? 'Free' : 'Rest';
+        statusEl.className = isSelected
+          ? 'text-[10px] text-emerald-400 font-semibold mt-1 cs-day-status'
+          : 'text-[10px] text-slate-500 font-medium mt-1 cs-day-status';
+      }
+    });
+
+    const count = this.csSelectedDays.length;
+    const countLabel = document.getElementById('csSelectedDaysCount');
+    if (countLabel) {
+      countLabel.textContent = `${count} ${count === 1 ? 'Day' : 'Days'} (${this.csSelectedDays.join(', ')})`;
+    }
+
+    const badge = document.getElementById('csSplitBadge');
+    const splitInfo = {
+      2: 'Full Body A/B (2-Day)',
+      3: 'Push / Pull / Legs (3-Day)',
+      4: 'Upper / Lower Split (4-Day)',
+      5: 'Upper / Lower + PPL (5-Day)',
+      6: 'Push / Pull / Legs x 2 (6-Day)'
+    };
+    if (badge) {
+      badge.textContent = splitInfo[Math.min(6, Math.max(2, count))] || 'Upper / Lower Split (4-Day)';
+    }
+  }
+
+  saveChangeStats() {
+    const hInput = document.getElementById('csHeight');
+    const wInput = document.getElementById('csWeight');
+    const aInput = document.getElementById('csAge');
+    const gInput = document.getElementById('csGender');
+
+    const h = parseFloat(hInput ? hInput.value : this.profile.heightCm) || 175;
+    const w = parseFloat(wInput ? wInput.value : this.profile.weightKg) || 78;
+    const a = parseInt(aInput ? aInput.value : this.profile.age, 10) || 25;
+    const g = gInput ? gInput.value : (this.profile.gender || 'male');
+
+    if (!Array.isArray(this.csSelectedDays) || this.csSelectedDays.length < 2) {
+      alert('Please select at least 2 training days!');
+      return;
+    }
+
+    const count = this.csSelectedDays.length;
+    const days = Math.min(6, Math.max(2, count));
+
+    this.profile = {
+      heightCm: h,
+      weightKg: w,
+      age: a,
+      gender: g,
+      selectedDays: [...this.csSelectedDays],
+      freeDays: days,
+      budgetTier: this.csBudgetTier || 'budget',
+      goal: this.csGoal || 'gain_muscle'
+    };
+
+    localStorage.setItem('rtm_profile', JSON.stringify(this.profile));
+    localStorage.setItem('rtm_onboarded', 'true');
+
+    this.closeChangeStats();
+    this.syncProfileToInputs();
+    this.renderAll();
   }
 
   switchTab(tabName) {
