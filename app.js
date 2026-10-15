@@ -151,16 +151,6 @@ class RtmApp {
         document.querySelectorAll('.wizard-day-card').forEach(c => c.classList.remove('selected-card'));
         card.classList.add('selected-card');
         this.wizardFreeDays = parseInt(card.getAttribute('data-days'), 10);
-
-        // Instant live feedback in Step 2: routine generated as soon as free days selected
-        const h = parseFloat(document.getElementById('wizHeight').value) || this.profile.heightCm;
-        const w = parseFloat(document.getElementById('wizWeight').value) || this.profile.weightKg;
-        const notice = document.getElementById('wizWorkoutGeneratedNotice');
-        const noticeText = document.getElementById('wizWorkoutGeneratedText');
-        if (notice && noticeText) {
-          noticeText.textContent = `⚡ Workout Generated: ${this.wizardFreeDays}-Day routine customized for ${h} cm & ${w} kg!`;
-          notice.classList.remove('hidden');
-        }
       });
     });
 
@@ -308,14 +298,6 @@ class RtmApp {
       this.profile.age = a;
       const gEl = document.getElementById('wizGender');
       if (gEl) this.profile.gender = gEl.value || 'male';
-
-      // Update live generation notice for step 2
-      const notice = document.getElementById('wizWorkoutGeneratedNotice');
-      const noticeText = document.getElementById('wizWorkoutGeneratedText');
-      if (notice && noticeText) {
-        noticeText.textContent = `⚡ Custom ${this.wizardFreeDays || 4}-Day routine ready for ${h} cm & ${w} kg. Select your schedule below:`;
-        notice.classList.remove('hidden');
-      }
     }
     if (this.wizardStep < 4) {
       this.wizardStep++;
