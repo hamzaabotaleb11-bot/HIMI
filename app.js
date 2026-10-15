@@ -25,7 +25,8 @@ class RtmApp {
       weightKg: Number(saved.weightKg) || 78,
       age: Number(saved.age) || 25,
       gender: saved.gender || 'male',
-      freeDays: Math.min(6, Math.max(2, Number(saved.freeDays) || 4)),
+      selectedDays: Array.isArray(saved.selectedDays) && saved.selectedDays.length >= 2 ? saved.selectedDays : ['Mon', 'Tue', 'Thu', 'Fri'],
+      freeDays: Math.min(6, Math.max(2, (saved.selectedDays ? saved.selectedDays.length : Number(saved.freeDays)) || 4)),
       budgetTier: saved.budgetTier || 'budget',
       goal: (saved.goal === 'strength' ? 'gain_muscle' : (saved.goal || 'gain_muscle'))
     };
@@ -366,12 +367,36 @@ class RtmApp {
       wizardFinishBtn.addEventListener('click', () => this.finishWizard());
     }
 
-    // Wizard Option Card Selectors (Days, Budget, Goal)
-    document.querySelectorAll('.wizard-day-card').forEach(card => {
+    // Wizard Day-of-Week Checkboxes (Choose Free Days)
+    document.querySelectorAll('.wizard-day-checkbox').forEach(card => {
       card.addEventListener('click', () => {
-        document.querySelectorAll('.wizard-day-card').forEach(c => c.classList.remove('selected-card'));
-        card.classList.add('selected-card');
-        this.wizardFreeDays = parseInt(card.getAttribute('data-days'), 10);
+        const day = card.getAttribute('data-day');
+        if (!Array.isArray(this.wizardSelectedDays)) {
+          this.wizardSelectedDays = ['Mon', 'Tue', 'Thu', 'Fri'];
+        }
+
+        if (this.wizardSelectedDays.includes(day)) {
+          if (this.wizardSelectedDays.length <= 2) {
+            const toast = document.getElementById('wizScheduleToast');
+            if (toast) {
+              toast.classList.remove('opacity-0', 'pointer-events-none');
+              setTimeout(() => toast.classList.add('opacity-0', 'pointer-events-none'), 2000);
+            }
+            return;
+          }
+          this.wizardSelectedDays = this.wizardSelectedDays.filter(d => d !== day);
+        } else {
+          if (this.wizardSelectedDays.length >= 6) {
+            const toastMax = document.getElementById('wizScheduleToastMax');
+            if (toastMax) {
+              toastMax.classList.remove('opacity-0', 'pointer-events-none');
+              setTimeout(() => toastMax.classList.add('opacity-0', 'pointer-events-none'), 2000);
+            }
+            return;
+          }
+          this.wizardSelectedDays.push(day);
+        }
+        this.updateWizardDayUI();
       });
     });
 
@@ -469,7 +494,10 @@ class RtmApp {
   // ============================================
   openWizard() {
     this.wizardStep = 1;
-    this.wizardFreeDays = this.profile.freeDays || 4;
+    this.wizardSelectedDays = Array.isArray(this.profile.selectedDays) && this.profile.selectedDays.length >= 2
+      ? [...this.profile.selectedDays]
+      : ['Mon', 'Tue', 'Thu', 'Fri'];
+    this.wizardFreeDays = Math.min(6, Math.max(2, this.wizardSelectedDays.length));
     this.wizardBudgetTier = this.profile.budgetTier || 'budget';
     this.wizardGoal = this.profile.goal || 'lose_weight';
 
@@ -484,10 +512,9 @@ class RtmApp {
     if (wAge) wAge.value = this.profile.age;
     if (wGender) wGender.value = this.profile.gender;
 
-    // Select matching cards in steps 2, 3, 4
-    document.querySelectorAll('.wizard-day-card').forEach(c => {
-      c.classList.toggle('selected-card', parseInt(c.getAttribute('data-days'), 10) === this.wizardFreeDays);
-    });
+    // Select matching days and cards in steps 2, 3, 4
+    this.updateWizardDayUI();
+
     document.querySelectorAll('.wizard-budget-card').forEach(c => {
       c.classList.toggle('selected-card', c.getAttribute('data-budget') === this.wizardBudgetTier);
     });
@@ -498,6 +525,61 @@ class RtmApp {
     this.renderWizardStep();
     const modal = document.getElementById('onboardingWizardModal');
     if (modal) modal.classList.remove('opacity-0', 'pointer-events-none');
+  }
+
+  updateWizardDayUI() {
+    const daysOrder = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    if (!Array.isArray(this.wizardSelectedDays)) {
+      this.wizardSelectedDays = ['Mon', 'Tue', 'Thu', 'Fri'];
+    }
+    this.wizardSelectedDays.sort((a, b) => daysOrder.indexOf(a) - daysOrder.indexOf(b));
+
+    document.querySelectorAll('.wizard-day-checkbox').forEach(card => {
+      const day = card.getAttribute('data-day');
+      const isSelected = this.wizardSelectedDays.includes(day);
+      card.classList.toggle('selected-card', isSelected);
+      const statusEl = card.querySelector('.day-status');
+      if (statusEl) {
+        statusEl.textContent = isSelected ? 'Free' : 'Rest';
+        statusEl.className = isSelected
+          ? 'text-[10px] text-emerald-400 font-semibold mt-1 day-status'
+          : 'text-[10px] text-slate-500 font-medium mt-1 day-status';
+      }
+    });
+
+    const count = this.wizardSelectedDays.length;
+    this.wizardFreeDays = Math.min(6, Math.max(2, count));
+
+    const countLabel = document.getElementById('wizardSelectedDaysCount');
+    if (countLabel) {
+      countLabel.textContent = `${count} ${count === 1 ? 'Day' : 'Days'} (${this.wizardSelectedDays.join(', ')})`;
+    }
+
+    const badge = document.getElementById('wizardSplitBadge');
+    const detail = document.getElementById('wizardSplitDetail');
+
+    const splitInfo = {
+      2: { name: 'Full Body A/B (2-Day)', detail: 'High-efficiency compound strength with maximum recovery.' },
+      3: { name: 'Push / Pull / Legs (3-Day)', detail: 'Classic athletic balance targeting all muscle groups.' },
+      4: { name: 'Upper / Lower Split (4-Day)', detail: 'Optimal muscle building frequency & recovery balance.' },
+      5: { name: 'Upper / Lower + PPL (5-Day)', detail: 'High volume athletic conditioning for advanced progression.' },
+      6: { name: 'Push / Pull / Legs x 2 (6-Day)', detail: 'Maximum volume dedicated bodybuilding routine.' }
+    };
+
+    if (count < 2) {
+      if (badge) {
+        badge.textContent = 'Select at least 2 days';
+        badge.className = 'badge-pill bg-amber-500/15 text-amber-400 text-xs px-3 py-1 font-semibold border border-amber-500/30 whitespace-nowrap self-start sm:self-center';
+      }
+      if (detail) detail.textContent = 'Please select at least 2 free days to build a complete routine.';
+    } else {
+      const info = splitInfo[Math.min(6, count)] || splitInfo[4];
+      if (badge) {
+        badge.textContent = info.name;
+        badge.className = 'badge-pill bg-emerald-500/15 text-emerald-400 text-xs px-3 py-1 font-semibold border border-emerald-500/30 whitespace-nowrap self-start sm:self-center';
+      }
+      if (detail) detail.textContent = info.detail;
+    }
   }
 
   closeWizard() {
@@ -520,6 +602,18 @@ class RtmApp {
       const gEl = document.getElementById('wizGender');
       if (gEl) this.profile.gender = gEl.value || 'male';
     }
+
+    if (this.wizardStep === 2) {
+      if (!this.wizardSelectedDays || this.wizardSelectedDays.length < 2) {
+        const toast = document.getElementById('wizScheduleToast');
+        if (toast) {
+          toast.classList.remove('opacity-0', 'pointer-events-none');
+          setTimeout(() => toast.classList.add('opacity-0', 'pointer-events-none'), 2000);
+        }
+        return;
+      }
+    }
+
     if (this.wizardStep < 4) {
       this.wizardStep++;
       this.renderWizardStep();
@@ -572,12 +666,16 @@ class RtmApp {
     const a = parseInt(document.getElementById('wizAge').value, 10) || 25;
     const g = document.getElementById('wizGender').value || 'male';
 
+    const count = this.wizardSelectedDays ? this.wizardSelectedDays.length : 4;
+    const days = Math.min(6, Math.max(2, count));
+
     this.profile = {
       heightCm: h,
       weightKg: w,
       age: a,
       gender: g,
-      freeDays: this.wizardFreeDays || 4,
+      selectedDays: this.wizardSelectedDays || ['Mon', 'Tue', 'Thu', 'Fri'],
+      freeDays: days,
       budgetTier: this.wizardBudgetTier || 'budget',
       goal: this.wizardGoal || 'lose_weight'
     };
@@ -882,14 +980,15 @@ class RtmApp {
           </div>
         `;
       } else {
-        workoutPlan.schedule.forEach((daySchedule) => {
+        workoutPlan.schedule.forEach((daySchedule, idx) => {
         const card = document.createElement('div');
         card.className = 'glass-card p-5 sm:p-6 mb-5 border border-white/10 shadow-xl';
+        const assignedDay = (this.profile.selectedDays && this.profile.selectedDays[idx]) ? `${this.profile.selectedDays[idx]} · ` : '';
         card.innerHTML = `
           <div class="flex items-center justify-between pb-3 mb-4 border-b border-white/10">
             <div class="flex items-center gap-2.5">
               <span class="text-xs uppercase tracking-wider font-extrabold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 rounded-full">
-                ${daySchedule.day}
+                ${assignedDay}${daySchedule.day}
               </span>
               <h4 class="text-base sm:text-lg font-black text-white">${daySchedule.focus}</h4>
             </div>

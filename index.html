@@ -501,52 +501,86 @@
       <!-- STEP 2: AVAILABLE TIME / WORKOUT SCHEDULE -->
       <div id="wizStep2" class="space-y-4 hidden">
         <div>
-          <h3 class="text-xl font-extrabold text-white">Your Available Schedule</h3>
+          <h3 class="text-xl font-extrabold text-white">Choose Your Free Days</h3>
           <p class="text-xs text-slate-400 mt-1">
-            We never force an unrealistic routine. RTM builds the optimal split around your free days.
+            Tap the days of the week you are free to train. RTM builds the optimal workout split around your exact weekly schedule.
           </p>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2">
-          <div class="wizard-day-card p-3.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-days="2">
-            <div class="flex items-center justify-between font-bold text-sm text-white">
-              <span>2 Days / Week</span>
-              <span class="text-emerald-400 text-xs">Full Body A/B</span>
-            </div>
-            <p class="text-[11px] text-slate-400 mt-1">High-efficiency compound strength</p>
+        <!-- 7 Days of the Week Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2.5 pt-2">
+          <!-- Mon -->
+          <div class="wizard-day-checkbox selected-card p-3 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[82px]" data-day="Mon" data-full-day="Monday">
+            <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider font-semibold">Mon</span>
+            <span class="font-bold text-sm text-white mt-0.5">Monday</span>
+            <span class="text-[10px] text-emerald-400 font-semibold mt-1 day-status">Free</span>
           </div>
 
-          <div class="wizard-day-card p-3.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-days="3">
-            <div class="flex items-center justify-between font-bold text-sm text-white">
-              <span>3 Days / Week</span>
-              <span class="text-emerald-400 text-xs">Push / Pull / Legs</span>
-            </div>
-            <p class="text-[11px] text-slate-400 mt-1">Classic athletic recovery balance</p>
+          <!-- Tue -->
+          <div class="wizard-day-checkbox selected-card p-3 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[82px]" data-day="Tue" data-full-day="Tuesday">
+            <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider font-semibold">Tue</span>
+            <span class="font-bold text-sm text-white mt-0.5">Tuesday</span>
+            <span class="text-[10px] text-emerald-400 font-semibold mt-1 day-status">Free</span>
           </div>
 
-          <div class="wizard-day-card selected-card p-3.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-days="4">
-            <div class="flex items-center justify-between font-bold text-sm text-white">
-              <span>4 Days / Week</span>
-              <span class="text-emerald-400 text-xs">Upper / Lower (2x)</span>
-            </div>
-            <p class="text-[11px] text-slate-400 mt-1">Optimal muscle frequency & recovery</p>
+          <!-- Wed -->
+          <div class="wizard-day-checkbox p-3 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[82px]" data-day="Wed" data-full-day="Wednesday">
+            <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider font-semibold">Wed</span>
+            <span class="font-bold text-sm text-white mt-0.5">Wednesday</span>
+            <span class="text-[10px] text-slate-500 font-medium mt-1 day-status">Rest</span>
           </div>
 
-          <div class="wizard-day-card p-3.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-days="5">
-            <div class="flex items-center justify-between font-bold text-sm text-white">
-              <span>5 Days / Week</span>
-              <span class="text-emerald-400 text-xs">Upper/Lower + PPL</span>
-            </div>
-            <p class="text-[11px] text-slate-400 mt-1">High volume athletic conditioning</p>
+          <!-- Thu -->
+          <div class="wizard-day-checkbox selected-card p-3 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[82px]" data-day="Thu" data-full-day="Thursday">
+            <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider font-semibold">Thu</span>
+            <span class="font-bold text-sm text-white mt-0.5">Thursday</span>
+            <span class="text-[10px] text-emerald-400 font-semibold mt-1 day-status">Free</span>
           </div>
 
-          <div class="wizard-day-card sm:col-span-2 p-3.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-days="6">
-            <div class="flex items-center justify-between font-bold text-sm text-white">
-              <span>6 Days / Week</span>
-              <span class="text-emerald-400 text-xs">Push / Pull / Legs x 2</span>
-            </div>
-            <p class="text-[11px] text-slate-400 mt-1">Maximum volume dedicated bodybuilding routine</p>
+          <!-- Fri -->
+          <div class="wizard-day-checkbox selected-card p-3 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[82px]" data-day="Fri" data-full-day="Friday">
+            <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider font-semibold">Fri</span>
+            <span class="font-bold text-sm text-white mt-0.5">Friday</span>
+            <span class="text-[10px] text-emerald-400 font-semibold mt-1 day-status">Free</span>
           </div>
+
+          <!-- Sat -->
+          <div class="wizard-day-checkbox p-3 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[82px]" data-day="Sat" data-full-day="Saturday">
+            <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider font-semibold">Sat</span>
+            <span class="font-bold text-sm text-white mt-0.5">Saturday</span>
+            <span class="text-[10px] text-slate-500 font-medium mt-1 day-status">Rest</span>
+          </div>
+
+          <!-- Sun -->
+          <div class="wizard-day-checkbox p-3 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition text-center select-none hover:border-emerald-500/40 flex flex-col items-center justify-center min-h-[82px]" data-day="Sun" data-full-day="Sunday">
+            <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider font-semibold">Sun</span>
+            <span class="font-bold text-sm text-white mt-0.5">Sunday</span>
+            <span class="text-[10px] text-slate-500 font-medium mt-1 day-status">Rest</span>
+          </div>
+        </div>
+
+        <!-- Schedule & Recommended Split Banner -->
+        <div class="p-4 rounded-xl bg-slate-900/80 border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-xs text-slate-400">Selected Days:</span>
+              <span id="wizardSelectedDaysCount" class="font-bold text-sm text-white font-mono">4 Days (Mon, Tue, Thu, Fri)</span>
+            </div>
+            <div class="text-xs text-slate-400 mt-0.5" id="wizardSplitDetail">
+              Optimal muscle building frequency & recovery balance.
+            </div>
+          </div>
+          <span id="wizardSplitBadge" class="badge-pill bg-emerald-500/15 text-emerald-400 text-xs px-3 py-1 font-semibold border border-emerald-500/30 whitespace-nowrap self-start sm:self-center">
+            Upper / Lower Split (4-Day)
+          </span>
+        </div>
+
+        <!-- Feedback notes if min/max clicked -->
+        <div id="wizScheduleToast" class="opacity-0 pointer-events-none transition-opacity duration-200 text-[11px] text-amber-400 text-center font-medium">
+          Select at least 2 free days to build a complete routine.
+        </div>
+        <div id="wizScheduleToastMax" class="opacity-0 pointer-events-none transition-opacity duration-200 text-[11px] text-amber-400 text-center font-medium">
+          Maximum 6 training days recommended (at least 1 rest day needed).
         </div>
       </div>
 
