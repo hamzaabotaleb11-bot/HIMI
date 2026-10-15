@@ -195,6 +195,59 @@
     <!-- TAB 2: WORKOUT SPLIT -->
     <div id="pane-workout" class="tab-content hidden space-y-6">
       
+      <!-- Instant Workout Generator Card (Schedule, Goal, Height & Weight) -->
+      <div class="glass-card p-5 sm:p-6 border border-emerald-500/30 bg-slate-900/90 shadow-2xl space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-white/10 gap-3">
+          <div>
+            <h3 class="text-base sm:text-lg font-black text-white flex items-center gap-2">
+              <span>⚡ Dynamic Workout Generator</span>
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">
+              Insert your height, weight, and schedule to immediately generate your split.
+            </p>
+          </div>
+          <button id="btnQuickGenerateWorkout" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-black text-xs shadow-lg shadow-emerald-500/25 transition active:scale-95 flex items-center gap-2 whitespace-nowrap self-start sm:self-auto cursor-pointer">
+            <span>Generate Workout</span> ⚡
+          </button>
+        </div>
+
+        <!-- Inputs Form Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Height (cm)</label>
+            <input type="number" id="quickWorkoutHeight" min="120" max="240" value="175" class="text-xs font-mono font-bold">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Weight (kg)</label>
+            <input type="number" id="quickWorkoutWeight" min="35" max="250" step="0.5" value="78" class="text-xs font-mono font-bold">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Free Time (Schedule)</label>
+            <select id="quickWorkoutDays" class="text-xs">
+              <option value="2">2 Days (Full Body)</option>
+              <option value="3">3 Days (Push / Pull / Legs)</option>
+              <option value="4" selected>4 Days (Upper / Lower)</option>
+              <option value="5">5 Days (U/L + PPL)</option>
+              <option value="6">6 Days (PPL x 2)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Primary Goal</label>
+            <select id="quickWorkoutGoal" class="text-xs">
+              <option value="lose_weight">Burn Fat & Shred</option>
+              <option value="gain_muscle" selected>Build Lean Muscle</option>
+              <option value="maintain">Healthy Maintenance</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Quick Generator Feedback Toast -->
+        <div id="quickWorkoutToast" class="hidden p-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center justify-between">
+          <span id="quickWorkoutToastMsg">✓ Workout generated based on your metrics!</span>
+          <span class="text-[10px] text-emerald-400 font-mono">Updated</span>
+        </div>
+      </div>
+
       <!-- Personalized Plan Parameters Banner -->
       <div id="workoutProfileBanner" class="glass-card p-6 border border-white/10 space-y-4">
         <!-- Rendered dynamically by app.js -->
@@ -339,7 +392,12 @@
       <div class="mb-6">
         <div class="flex items-center justify-between text-xs font-bold text-slate-400 mb-2">
           <span class="text-emerald-400 flex items-center gap-1.5">Welcome to RTM</span>
-          <span id="wizStepIndicatorText" class="font-mono text-slate-300">Step 1 of 4</span>
+          <div class="flex items-center gap-3">
+            <span id="wizStepIndicatorText" class="font-mono text-slate-300">Step 1 of 4</span>
+            <button id="closeWizardBtn" class="w-6 h-6 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-xs font-bold transition">
+              ✕
+            </button>
+          </div>
         </div>
         <div class="flex gap-2 w-full">
           <div id="wizIndicator1" class="h-2 flex-1 rounded-full bg-emerald-400"></div>
@@ -500,7 +558,7 @@
 
           <div class="wizard-goal-card p-4 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-goal="gain_muscle">
             <div class="font-bold text-sm text-white flex items-center justify-between">
-              <span class="flex items-center gap-2">💪 <span>Build Lean Muscle (Hypertrophy)</span></span>
+              <span class="flex items-center gap-2">💪 <span>Build Lean Muscle</span></span>
               <span class="text-xs text-cyan-400 font-mono">+350 kcal surplus</span>
             </div>
             <p class="text-xs text-slate-400 mt-1">
@@ -619,7 +677,7 @@
           <label class="block text-xs font-semibold text-slate-300 mb-1">Primary Goal:</label>
           <select id="inputGoal" class="text-sm">
             <option value="lose_weight">Burn Fat & Shred</option>
-            <option value="gain_muscle">Build Lean Muscle (Hypertrophy)</option>
+            <option value="gain_muscle">Build Lean Muscle</option>
             <option value="maintain">Healthy Athletic Maintenance</option>
           </select>
         </div>
@@ -644,8 +702,8 @@
     </div>
   </div>
 
-  <!-- App Scripts (Zero Dependencies) -->
-  <script src="./plan-engine.js"></script>
-  <script src="./app.js"></script>
+  <!-- App Scripts (Zero Dependencies with Cache-Busting) -->
+  <script src="./plan-engine.js?v=2.2.0"></script>
+  <script src="./app.js?v=2.2.0"></script>
 </body>
 </html>

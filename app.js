@@ -11,26 +11,38 @@ class RtmApp {
     this.currentTab = 'overview';
     this.wizardStep = 1;
 
-    // Load or default user profile
-    this.profile = JSON.parse(localStorage.getItem('rtm_profile')) || {
-      heightCm: 175,
-      weightKg: 78,
-      age: 25,
-      gender: 'male',
-      freeDays: 4,
-      budgetTier: 'budget',
-      goal: 'gain_muscle'
-    };
-    if (this.profile.goal === 'strength') {
-      this.profile.goal = 'gain_muscle';
+    // Load or default user profile with fail-safe sanitization
+    let saved = null;
+    try {
+      saved = JSON.parse(localStorage.getItem('rtm_profile'));
+    } catch (e) {
+      saved = null;
     }
+    saved = (saved && typeof saved === 'object') ? saved : {};
 
-    // Load progress history
-    this.progressHistory = JSON.parse(localStorage.getItem('rtm_history')) || [
-      { date: '2026-10-01', weight: 79.5, notes: 'Day 1: Started RTM journey' },
-      { date: '2026-10-08', weight: 78.8, notes: 'Feeling stronger, hit protein target' },
-      { date: '2026-10-13', weight: 78.0, notes: 'Hit all 4 workout days, meals on budget' }
-    ];
+    this.profile = {
+      heightCm: Number(saved.heightCm) || 175,
+      weightKg: Number(saved.weightKg) || 78,
+      age: Number(saved.age) || 25,
+      gender: saved.gender || 'male',
+      freeDays: Math.min(6, Math.max(2, Number(saved.freeDays) || 4)),
+      budgetTier: saved.budgetTier || 'budget',
+      goal: (saved.goal === 'strength' ? 'gain_muscle' : (saved.goal || 'gain_muscle'))
+    };
+
+    // Load progress history safely
+    try {
+      this.progressHistory = JSON.parse(localStorage.getItem('rtm_history')) || [];
+    } catch (e) {
+      this.progressHistory = [];
+    }
+    if (!Array.isArray(this.progressHistory) || this.progressHistory.length === 0) {
+      this.progressHistory = [
+        { date: '2026-10-01', weight: 79.5, notes: 'Day 1: Started RTM journey' },
+        { date: '2026-10-08', weight: 78.8, notes: 'Feeling stronger, hit protein target' },
+        { date: '2026-10-13', weight: 78.0, notes: 'Hit all 4 workout days, meals on budget' }
+      ];
+    }
 
     // Paired smartwatch device
     this.pairedWatch = localStorage.getItem('rtm_paired_watch') || null;
@@ -88,6 +100,24 @@ class RtmApp {
         this.closeSettings();
         this.openWizard();
       });
+    }
+
+    // Wizard Close Button & Modal Backdrop Click
+    const closeWizardBtn = document.getElementById('closeWizardBtn');
+    if (closeWizardBtn) {
+      closeWizardBtn.addEventListener('click', () => this.closeWizard());
+    }
+    const wizardModal = document.getElementById('onboardingWizardModal');
+    if (wizardModal) {
+      wizardModal.addEventListener('click', (e) => {
+        if (e.target === wizardModal) this.closeWizard();
+      });
+    }
+
+    // Quick Workout Generator Button (Workout Tab)
+    const btnQuickGen = document.getElementById('btnQuickGenerateWorkout');
+    if (btnQuickGen) {
+      btnQuickGen.addEventListener('click', () => this.quickGenerateWorkout());
     }
 
     // Navigation Tabs delegation
@@ -413,6 +443,50 @@ class RtmApp {
       freeDaysDisplay.textContent = `${this.profile.freeDays} Days a week`;
     }
 
+    // Also sync the Quick Workout Generator inputs in the Workout tab
+    const qh = document.getElementById('quickWorkoutHeight');
+    const qw = document.getElementById('quickWorkoutWeight');
+    const qd = document.getElementById('quickWorkoutDays');
+    const qg = document.getElementById('quickWorkoutGoal');
+    if (qh) qh.value = this.profile.heightCm;
+    if (qw) qw.value = this.profile.weightKg;
+    if (qd) qd.value = this.profile.freeDays;
+    if (qg) qg.value = this.profile.goal;
+  }
+
+  quickGenerateWorkout() {
+    const hInput = document.getElementById('quickWorkoutHeight');
+    const wInput = document.getElementById('quickWorkoutWeight');
+    const dInput = document.getElementById('quickWorkoutDays');
+    const gInput = document.getElementById('quickWorkoutGoal');
+
+    const h = parseFloat(hInput ? hInput.value : this.profile.heightCm) || 175;
+    const w = parseFloat(wInput ? wInput.value : this.profile.weightKg) || 78;
+    const days = parseInt(dInput ? dInput.value : this.profile.freeDays, 10) || 4;
+    const goal = (gInput ? gInput.value : this.profile.goal) || 'gain_muscle';
+
+    this.profile.heightCm = h;
+    this.profile.weightKg = w;
+    this.profile.freeDays = days;
+    this.profile.goal = goal;
+
+    localStorage.setItem('rtm_profile', JSON.stringify(this.profile));
+    localStorage.setItem('rtm_onboarded', 'true');
+
+    this.syncProfileToInputs();
+    this.renderAll();
+
+    const toast = document.getElementById('quickWorkoutToast');
+    const toastMsg = document.getElementById('quickWorkoutToastMsg');
+    if (toast) {
+      if (toastMsg) {
+        toastMsg.textContent = `✓ Generated ${days}-Day routine for ${h} cm & ${w} kg!`;
+      }
+      toast.classList.remove('hidden');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 3000);
+    }
   }
 
   saveProfileFromInputs() {
@@ -427,7 +501,10 @@ class RtmApp {
     };
 
     localStorage.setItem('rtm_profile', JSON.stringify(this.profile));
+    localStorage.setItem('rtm_onboarded', 'true');
+    this.syncProfileToInputs();
     this.renderAll();
+    this.switchTab('workout');
 
     const toast = document.getElementById('saveToast');
     if (toast) {
@@ -541,7 +618,7 @@ class RtmApp {
     if (profileBanner) {
       const goalsMap = {
         lose_weight: 'Burn Fat & Shred',
-        gain_muscle: 'Build Lean Muscle (Hypertrophy)',
+        gain_muscle: 'Build Lean Muscle',
         maintain: 'Healthy Athletic Maintenance'
       };
 
@@ -552,10 +629,10 @@ class RtmApp {
               <span class="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
                 ACTIVE SPLIT
               </span>
-              <span class="text-xs text-slate-400 font-mono">${workoutPlan.schedule.length} Days / Week</span>
+              <span class="text-xs text-slate-400 font-mono">${workoutPlan && workoutPlan.schedule ? workoutPlan.schedule.length : 0} Days / Week</span>
             </div>
             <h3 class="text-xl sm:text-2xl font-black text-white tracking-tight mt-1.5">
-              ${workoutPlan.splitName}
+              ${workoutPlan ? workoutPlan.splitName : 'Custom Split'}
             </h3>
           </div>
           <div class="flex items-center gap-2">
@@ -573,7 +650,21 @@ class RtmApp {
       workoutContainer.innerHTML = '';
       const cleanVal = (val) => String(val || '').replace(/\s*\(.*?\)/g, '').replace(/\s*reps?/i, '').replace(/\s*sets?/i, '').trim();
 
-      workoutPlan.schedule.forEach((daySchedule) => {
+      if (!workoutPlan || !workoutPlan.schedule || workoutPlan.schedule.length === 0) {
+        workoutContainer.innerHTML = `
+          <div class="glass-card p-8 text-center border border-white/10 space-y-3">
+            <div class="text-3xl">🏋️</div>
+            <h4 class="text-lg font-bold text-white">No Workout Generated Yet</h4>
+            <p class="text-xs text-slate-400 max-w-md mx-auto">
+              Enter your height, weight, and free time above, then tap <strong>Generate Workout</strong> to create your split.
+            </p>
+            <button onclick="window.rtmApp && window.rtmApp.quickGenerateWorkout()" class="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-lg transition">
+              Generate Now ⚡
+            </button>
+          </div>
+        `;
+      } else {
+        workoutPlan.schedule.forEach((daySchedule) => {
         const card = document.createElement('div');
         card.className = 'glass-card p-5 sm:p-6 mb-5 border border-white/10 shadow-xl';
         card.innerHTML = `
@@ -615,6 +706,7 @@ class RtmApp {
         `;
         workoutContainer.appendChild(card);
       });
+      }
     }
 
     // 3. Nutrition Tab Render

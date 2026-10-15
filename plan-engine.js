@@ -151,7 +151,7 @@ var PlanEngine = {
           },
           {
             day: 'Day 2',
-            focus: 'Full Body B (Hypertrophy & Conditioning)',
+            focus: 'Full Body B',
             duration: '50-60 min',
             exercises: [
               { name: 'Leg Press or Walking Lunges', sets: defaultSets, reps: repScheme, rest: restTime, target: 'Legs', formCue: 'Maintain even knee alignment over second toe' },
@@ -238,7 +238,7 @@ var PlanEngine = {
           },
           {
             day: 'Day 3',
-            focus: 'Upper Body B (Hypertrophy & Pump)',
+            focus: 'Upper Body B',
             duration: '50-60 min',
             exercises: [
               { name: 'Incline Dumbbell Press', sets: defaultSets, reps: repScheme, rest: restTime, target: 'Upper Chest', formCue: 'Lower weights under control with open ribcage' },
@@ -292,7 +292,7 @@ var PlanEngine = {
           },
           {
             day: 'Day 3',
-            focus: 'Push Hypertrophy',
+            focus: 'Push',
             duration: '50 min',
             exercises: [
               { name: 'Incline DB Press', sets: '3', reps: '10-12', rest: '60s', target: 'Upper Chest', formCue: 'Controlled 2s descent' },
@@ -304,7 +304,7 @@ var PlanEngine = {
           },
           {
             day: 'Day 4',
-            focus: 'Pull Hypertrophy',
+            focus: 'Pull',
             duration: '50 min',
             exercises: [
               { name: 'Lat Pulldowns', sets: '3', reps: '10-12', rest: '60s', target: 'Lats', formCue: 'Drive elbows down to ribs' },
@@ -316,7 +316,7 @@ var PlanEngine = {
           },
           {
             day: 'Day 5',
-            focus: 'Legs & Core Hypertrophy',
+            focus: 'Legs & Core',
             duration: '55 min',
             exercises: [
               { name: 'Leg Press', sets: '4', reps: '12-15', rest: '60s', target: 'Quads', formCue: 'Keep knees tracking over toes' },
