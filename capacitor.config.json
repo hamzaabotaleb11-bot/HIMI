@@ -1,0 +1,6 @@
+{
+  "appId": "com.rtm.fitness",
+  "appName": "RTM Fitness",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}

@@ -1,0 +1,14 @@
+{
+  "name": "rtm-fitness",
+  "version": "1.0.0",
+  "description": "RTM - Personalized Fitness & Budget-Smart Nutrition",
+  "private": true,
+  "scripts": {
+    "build": "echo 'Web assets ready in root'"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/cli": "^6.1.2",
+    "@capacitor/core": "^6.1.2"
+  }
+}

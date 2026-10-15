@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.rtm.fitness",
+        "sha256_cert_fingerprints": ["B5:A6:4B:B1:F5:77:90:DA:C0:C9:68:D1:69:95:E9:57:4F:BF:D9:EE:2B:AE:77:11:15:E4:18:03:2F:F5:29:15"]
+      }
+    }]
