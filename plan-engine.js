@@ -563,6 +563,70 @@ var PlanEngine = {
     };
 
     return plans[budgetTier] || plans.budget;
+  },
+
+  // Food Database with accurate nutritional breakdown per 100g
+  foodDatabase: [
+    // Meat & Poultry
+    { id: 'beef', name: 'Red Meat / Lean Beef (Cooked)', category: 'Meat & Poultry', protein: 26, carbs: 0, fats: 10, calories: 194 },
+    { id: 'ground_beef_extra_lean', name: 'Extra Lean Ground Beef (95/5)', category: 'Meat & Poultry', protein: 26, carbs: 0, fats: 5, calories: 149 },
+    { id: 'sirloin_steak', name: 'Sirloin Steak (Trimmed)', category: 'Meat & Poultry', protein: 29, carbs: 0, fats: 8, calories: 190 },
+    { id: 'chicken_breast', name: 'Chicken Breast (Cooked, Skinless)', category: 'Meat & Poultry', protein: 31, carbs: 0, fats: 3.6, calories: 165 },
+    { id: 'chicken_thigh', name: 'Chicken Thigh (Cooked, Skinless)', category: 'Meat & Poultry', protein: 24, carbs: 0, fats: 9, calories: 185 },
+    { id: 'turkey_breast', name: 'Turkey Breast (Cooked)', category: 'Meat & Poultry', protein: 29, carbs: 0, fats: 2, calories: 135 },
+    
+    // Fish & Seafood
+    { id: 'salmon', name: 'Salmon Fillet (Cooked)', category: 'Fish & Seafood', protein: 25, carbs: 0, fats: 12, calories: 208 },
+    { id: 'canned_tuna', name: 'Canned Tuna (in Water, Drained)', category: 'Fish & Seafood', protein: 26, carbs: 0, fats: 1, calories: 116 },
+    { id: 'white_fish', name: 'White Fish (Tilapia / Cod, Cooked)', category: 'Fish & Seafood', protein: 22, carbs: 0, fats: 1.5, calories: 102 },
+    { id: 'shrimp', name: 'Shrimp / Prawns (Cooked)', category: 'Fish & Seafood', protein: 24, carbs: 0.2, fats: 0.3, calories: 99 },
+
+    // Dairy & Eggs
+    { id: 'whole_eggs', name: 'Whole Eggs (Boiled / Scrambled)', category: 'Dairy & Eggs', protein: 13, carbs: 1.1, fats: 10.5, calories: 155 },
+    { id: 'egg_whites', name: 'Egg Whites (Liquid / Cooked)', category: 'Dairy & Eggs', protein: 11, carbs: 0.7, fats: 0.2, calories: 52 },
+    { id: 'greek_yogurt', name: 'Greek Yogurt (Plain 0% Non-Fat)', category: 'Dairy & Eggs', protein: 10, carbs: 3.6, fats: 0.4, calories: 59 },
+    { id: 'cottage_cheese', name: 'Cottage Cheese (Low-Fat 2%)', category: 'Dairy & Eggs', protein: 12, carbs: 3.4, fats: 2, calories: 81 },
+    { id: 'whey_protein', name: 'Whey Protein Powder', category: 'Dairy & Eggs', protein: 78, carbs: 4.5, fats: 3.5, calories: 375 },
+    { id: 'whole_milk', name: 'Whole Milk', category: 'Dairy & Eggs', protein: 3.3, carbs: 4.8, fats: 3.3, calories: 61 },
+
+    // Grains, Carbs & Legumes
+    { id: 'white_rice', name: 'White Rice (Cooked)', category: 'Grains & Carbs', protein: 2.7, carbs: 28, fats: 0.3, calories: 130 },
+    { id: 'brown_rice', name: 'Brown Rice (Cooked)', category: 'Grains & Carbs', protein: 2.6, carbs: 23, fats: 0.9, calories: 112 },
+    { id: 'rolled_oats', name: 'Rolled Oats (Dry Raw)', category: 'Grains & Carbs', protein: 13.5, carbs: 68, fats: 6.5, calories: 389 },
+    { id: 'potatoes', name: 'Potatoes (Boiled / Baked with skin)', category: 'Grains & Carbs', protein: 2, carbs: 20, fats: 0.1, calories: 87 },
+    { id: 'sweet_potatoes', name: 'Sweet Potatoes (Baked)', category: 'Grains & Carbs', protein: 2, carbs: 21, fats: 0.2, calories: 90 },
+    { id: 'pasta', name: 'Pasta (Cooked)', category: 'Grains & Carbs', protein: 5.5, carbs: 31, fats: 1.1, calories: 158 },
+    { id: 'whole_wheat_bread', name: 'Whole Wheat Bread', category: 'Grains & Carbs', protein: 9, carbs: 45, fats: 3.5, calories: 250 },
+    { id: 'lentils', name: 'Lentils (Cooked)', category: 'Grains & Carbs', protein: 9, carbs: 20, fats: 0.4, calories: 116 },
+    { id: 'black_beans', name: 'Black Beans (Cooked)', category: 'Grains & Carbs', protein: 8.9, carbs: 24, fats: 0.5, calories: 132 },
+
+    // Fruits & Vegetables
+    { id: 'banana', name: 'Banana (Raw)', category: 'Fruits & Vegetables', protein: 1.1, carbs: 23, fats: 0.3, calories: 89 },
+    { id: 'apple', name: 'Apple (Raw)', category: 'Fruits & Vegetables', protein: 0.3, carbs: 14, fats: 0.2, calories: 52 },
+    { id: 'berries', name: 'Mixed Berries (Fresh / Frozen)', category: 'Fruits & Vegetables', protein: 0.8, carbs: 12, fats: 0.4, calories: 57 },
+    { id: 'broccoli', name: 'Broccoli (Steamed / Raw)', category: 'Fruits & Vegetables', protein: 2.8, carbs: 7, fats: 0.4, calories: 34 },
+    { id: 'spinach', name: 'Spinach (Raw / Steamed)', category: 'Fruits & Vegetables', protein: 2.9, carbs: 3.6, fats: 0.4, calories: 23 },
+
+    // Healthy Fats & Nuts
+    { id: 'peanut_butter', name: 'Peanut Butter (Natural)', category: 'Healthy Fats', protein: 25, carbs: 20, fats: 50, calories: 588 },
+    { id: 'olive_oil', name: 'Olive Oil / Avocado Oil', category: 'Healthy Fats', protein: 0, carbs: 0, fats: 100, calories: 884 },
+    { id: 'almonds', name: 'Almonds / Raw Nuts', category: 'Healthy Fats', protein: 21, carbs: 22, fats: 49, calories: 579 },
+    { id: 'avocado', name: 'Avocado (Fresh)', category: 'Healthy Fats', protein: 2, carbs: 8.5, fats: 15, calories: 160 }
+  ],
+
+  // Calculate nutrition for specific food & grams
+  calculateFoodMacros(foodId, grams) {
+    const food = this.foodDatabase.find(f => f.id === foodId) || this.foodDatabase[0];
+    const factor = Math.max(0, grams) / 100;
+    return {
+      id: food.id,
+      name: food.name,
+      grams: Math.round(grams),
+      protein: Math.round(food.protein * factor * 10) / 10,
+      carbs: Math.round(food.carbs * factor * 10) / 10,
+      fats: Math.round(food.fats * factor * 10) / 10,
+      calories: Math.round(food.calories * factor)
+    };
   }
 };
 

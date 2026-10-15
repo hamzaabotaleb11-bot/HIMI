@@ -55,7 +55,6 @@
       <!-- Action items in header: Settings Only -->
       <div class="flex items-center gap-2.5">
         <button id="openSettingsBtn" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-white/10 transition shadow-sm hover:border-emerald-500/40">
-          <span>⚙️</span>
           <span>Settings</span>
         </button>
       </div>
@@ -66,16 +65,16 @@
   <nav class="relative z-10 border-b border-white/5 bg-[#090d16]/95 backdrop-blur px-4 lg:px-8 py-2">
     <div class="max-w-5xl mx-auto flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
       <button class="nav-tab active flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border border-transparent text-slate-400 hover:text-white" data-tab="overview" onclick="window.rtmApp && window.rtmApp.switchTab('overview')">
-        <span>📊</span> <span>Overview</span>
+        <span>Overview</span>
       </button>
       <button class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border border-transparent text-slate-400 hover:text-white" data-tab="workout" onclick="window.rtmApp && window.rtmApp.switchTab('workout')">
-        <span>🏋️</span> <span>Workout Split</span>
+        <span>Workout Split</span>
       </button>
       <button class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border border-transparent text-slate-400 hover:text-white" data-tab="nutrition" onclick="window.rtmApp && window.rtmApp.switchTab('nutrition')">
-        <span>🥗</span> <span>Meal & Budget</span>
+        <span>Meals</span>
       </button>
       <button class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border border-transparent text-slate-400 hover:text-white" data-tab="progress" onclick="window.rtmApp && window.rtmApp.switchTab('progress')">
-        <span>📈</span> <span>Progress Log</span>
+        <span>Progress Log</span>
       </button>
     </div>
   </nav>
@@ -95,7 +94,7 @@
             </h2>
           </div>
           
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 flex-wrap">
             <!-- Calorie Progress / Target Pill -->
             <div class="px-4 py-2 rounded-2xl bg-slate-900/90 border border-emerald-500/30 flex items-center gap-2">
               <span class="text-xs text-slate-400">Calories:</span>
@@ -103,6 +102,59 @@
                 <span class="text-white">0</span> / <span class="text-emerald-400">-- kcal</span>
               </span>
             </div>
+
+            <!-- Add to Macros Trigger Button -->
+            <button id="toggleAddMacroBtn" type="button" class="px-4 py-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-extrabold text-xs shadow-lg shadow-emerald-500/20 transition active:scale-95 flex items-center gap-1.5 cursor-pointer">
+              <span>+ Add to Macros</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Add to Macros Dropdown & Grams Input Section -->
+        <div id="addMacroSection" class="hidden mb-6 p-5 sm:p-6 rounded-2xl bg-slate-900/90 border border-emerald-500/30 shadow-2xl space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-white/10">
+            <div>
+              <h3 class="text-sm font-extrabold text-white">Log Food to Macros</h3>
+              <p class="text-xs text-slate-400 mt-0.5">Select a food and enter the weight in grams to calculate and add its macros directly to your overview.</p>
+            </div>
+            <button id="closeAddMacroBtn" type="button" class="w-6 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-xs font-bold transition">✕</button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+            <div class="sm:col-span-6">
+              <label for="macroFoodSelect" class="block text-[11px] font-semibold text-slate-300 mb-1">Select Food</label>
+              <select id="macroFoodSelect" class="w-full text-xs font-semibold bg-slate-950 border border-white/15 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-emerald-500">
+              </select>
+            </div>
+            <div class="sm:col-span-3">
+              <label for="macroFoodGrams" class="block text-[11px] font-semibold text-slate-300 mb-1">Weight (Grams)</label>
+              <input type="number" id="macroFoodGrams" min="1" max="5000" value="100" class="w-full text-xs font-mono font-bold bg-slate-950 border border-white/15 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-emerald-500" placeholder="100">
+            </div>
+            <div class="sm:col-span-3">
+              <button id="btnAddFoodToMacros" type="button" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-black text-xs shadow-lg shadow-emerald-500/20 transition active:scale-95 cursor-pointer">
+                Add to Overview
+              </button>
+            </div>
+          </div>
+
+          <!-- Dynamic Real-Time Macro Calculation Preview -->
+          <div id="macroLivePreview" class="p-3 rounded-xl bg-slate-950/80 border border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs">
+            <span class="text-slate-400 font-medium">Nutritional values for <span id="previewGramsLabel" class="text-white font-mono font-bold">100g</span>:</span>
+            <div class="flex items-center gap-3 font-mono text-[11px]">
+              <span class="text-emerald-400 font-bold"><span id="prevProtein">26</span>g Protein</span>
+              <span class="text-cyan-400 font-bold"><span id="prevCarbs">0</span>g Carbs</span>
+              <span class="text-amber-400 font-bold"><span id="prevFats">10</span>g Fats</span>
+              <span class="text-white font-bold"><span id="prevCalories">194</span> kcal</span>
+            </div>
+          </div>
+
+          <!-- Logged items list for today -->
+          <div id="todayFoodLogSection" class="pt-2 border-t border-white/5 hidden">
+            <div class="flex items-center justify-between text-[11px] text-slate-400 font-semibold mb-2">
+              <span>Logged Foods Today</span>
+              <button id="resetDailyMacrosBtn" type="button" class="text-red-400 hover:text-red-300 text-[10px] transition">Reset Daily Intake</button>
+            </div>
+            <div id="todayFoodLogList" class="space-y-1.5 max-h-36 overflow-y-auto pr-1 text-xs"></div>
           </div>
         </div>
 
@@ -200,14 +252,14 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-white/10 gap-3">
           <div>
             <h3 class="text-base sm:text-lg font-black text-white flex items-center gap-2">
-              <span>⚡ Dynamic Workout Generator</span>
+              <span>Dynamic Workout Generator</span>
             </h3>
             <p class="text-xs text-slate-400 mt-0.5">
               Insert your height, weight, and schedule to immediately generate your split.
             </p>
           </div>
           <button id="btnQuickGenerateWorkout" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-black text-xs shadow-lg shadow-emerald-500/25 transition active:scale-95 flex items-center gap-2 whitespace-nowrap self-start sm:self-auto cursor-pointer">
-            <span>Generate Workout</span> ⚡
+            <span>Generate Workout</span>
           </button>
         </div>
 
@@ -243,7 +295,7 @@
 
         <!-- Quick Generator Feedback Toast -->
         <div id="quickWorkoutToast" class="hidden p-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center justify-between">
-          <span id="quickWorkoutToastMsg">✓ Workout generated based on your metrics!</span>
+          <span id="quickWorkoutToastMsg">Workout generated based on your metrics!</span>
           <span class="text-[10px] text-emerald-400 font-mono">Updated</span>
         </div>
       </div>
@@ -262,7 +314,7 @@
       <!-- Grocery List Card -->
       <div class="glass-card p-6 border border-white/10 space-y-4">
         <h4 class="text-sm font-bold text-emerald-400 flex items-center gap-2">
-          🛒 Core Grocery Staples (High-Value Protein & Carbs)
+          Core Grocery Staples (High-Value Protein & Carbs)
         </h4>
         <div id="groceryListContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
       </div>
@@ -295,7 +347,7 @@
             <input type="text" id="logNotes" placeholder="e.g. Great energy today" class="w-full text-sm rounded-xl bg-slate-900/80 border border-white/10 px-3 py-2.5 text-white">
           </div>
           <button type="submit" class="py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-md transition">
-            <span>Add Entry</span> 📝
+            <span>Add Entry</span>
           </button>
         </form>
       </div>
@@ -310,14 +362,14 @@
   </main>
 
   <!-- ======================================================== -->
-  <!-- ⌚ SMART WATCH PAIRING MODAL                             -->
+  <!-- SMART WATCH PAIRING MODAL                                 -->
   <!-- ======================================================== -->
   <div id="smartwatchModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 transition-all duration-200 opacity-0 pointer-events-none">
     <div class="glass-card max-w-md w-full p-6 sm:p-7 border border-white/15 shadow-2xl relative">
       <div class="flex items-center justify-between pb-4 mb-4 border-b border-white/10">
         <div>
           <h3 class="text-lg font-bold text-white flex items-center gap-2">
-            <span>Connect Smart Watch ⌚</span>
+            <span>Connect Smart Watch</span>
           </h3>
           <p class="text-xs text-slate-400 mt-0.5">
             Pair your watch to automatically stream active calorie burn and heart rate.
@@ -332,7 +384,7 @@
       <div class="space-y-2.5 mb-5">
         <div class="watch-device-card selected-card p-3.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40 flex items-center justify-between" data-device="Apple Watch">
           <div class="flex items-center gap-3">
-            <span class="text-2xl">🍎</span>
+            <span class="w-8 h-8 rounded-lg bg-slate-800 text-slate-300 flex items-center justify-center font-bold text-xs">iOS</span>
             <div>
               <div class="font-bold text-sm text-white">Apple Watch</div>
               <div class="text-[11px] text-slate-400">HealthKit live stream</div>
@@ -343,7 +395,7 @@
 
         <div class="watch-device-card p-3.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40 flex items-center justify-between" data-device="Samsung Galaxy Watch / WearOS">
           <div class="flex items-center gap-3">
-            <span class="text-2xl">⌚</span>
+            <span class="w-8 h-8 rounded-lg bg-slate-800 text-slate-300 flex items-center justify-center font-bold text-xs">OS</span>
             <div>
               <div class="font-bold text-sm text-white">Samsung Galaxy Watch / WearOS</div>
               <div class="text-[11px] text-slate-400">Health Connect sync</div>
@@ -354,7 +406,7 @@
 
         <div class="watch-device-card p-3.5 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40 flex items-center justify-between" data-device="Garmin">
           <div class="flex items-center gap-3">
-            <span class="text-2xl">🏃</span>
+            <span class="w-8 h-8 rounded-lg bg-slate-800 text-slate-300 flex items-center justify-center font-bold text-xs">GPS</span>
             <div>
               <div class="font-bold text-sm text-white">Garmin</div>
               <div class="text-[11px] text-slate-400">Garmin Connect sensor feed</div>
@@ -370,13 +422,13 @@
 
       <!-- Action Button -->
       <button id="btnConnectWatch" onclick="window.rtmApp && window.rtmApp.pairSelectedWatch()" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-bold text-sm shadow-lg shadow-emerald-500/20 transition active:scale-95">
-        Pair Device Now ⌚
+        Pair Device Now
       </button>
     </div>
   </div>
 
   <!-- ======================================================== -->
-  <!-- 🌟 SEQUENTIAL ONBOARDING WIZARD MODAL (STEP-BY-STEP)     -->
+  <!-- SEQUENTIAL ONBOARDING WIZARD MODAL (STEP-BY-STEP)         -->
   <!-- ======================================================== -->
   <div id="onboardingWizardModal" class="fixed inset-0 bg-black/85 backdrop-blur-lg z-50 flex items-center justify-center p-4 transition-all duration-300 opacity-0 pointer-events-none">
     <div class="glass-card max-w-xl w-full p-6 sm:p-8 border border-white/15 shadow-2xl relative max-h-[92vh] overflow-y-auto">
@@ -541,7 +593,7 @@
         <div class="space-y-2.5 pt-2">
           <div class="wizard-goal-card selected-card p-4 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-goal="lose_weight">
             <div class="font-bold text-sm text-white flex items-center justify-between">
-              <span class="flex items-center gap-2">🔥 <span>Burn Fat & Shred</span></span>
+              <span>Burn Fat & Shred</span>
               <span class="text-xs text-emerald-400 font-mono">-450 kcal deficit</span>
             </div>
             <p class="text-xs text-slate-400 mt-1">
@@ -551,7 +603,7 @@
 
           <div class="wizard-goal-card p-4 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-goal="gain_muscle">
             <div class="font-bold text-sm text-white flex items-center justify-between">
-              <span class="flex items-center gap-2">💪 <span>Build Lean Muscle</span></span>
+              <span>Build Lean Muscle</span>
               <span class="text-xs text-cyan-400 font-mono">+350 kcal surplus</span>
             </div>
             <p class="text-xs text-slate-400 mt-1">
@@ -561,7 +613,7 @@
 
           <div class="wizard-goal-card p-4 rounded-xl bg-slate-900/80 border border-white/10 cursor-pointer transition hover:border-emerald-500/40" data-goal="maintain">
             <div class="font-bold text-sm text-white flex items-center justify-between">
-              <span class="flex items-center gap-2">⚖️ <span>Healthy Maintenance</span></span>
+              <span>Healthy Maintenance</span>
               <span class="text-xs text-slate-400 font-mono">Calorie maintenance</span>
             </div>
             <p class="text-xs text-slate-400 mt-1">
@@ -583,7 +635,7 @@
           </button>
 
           <button id="wizardFinishBtn" class="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-extrabold text-sm shadow-xl shadow-emerald-500/25 transition active:scale-95 hidden">
-            <span>Generate Workout & Build Plan 🚀</span>
+            <span>Generate Workout & Build Plan</span>
           </button>
         </div>
       </div>
@@ -601,7 +653,7 @@
       <div class="flex items-center justify-between pb-4 mb-5 border-b border-white/10">
         <div>
           <h3 class="text-lg font-bold text-white flex items-center gap-2">
-            Settings & Workout Generator ⚙️
+            Settings & Workout Generator
           </h3>
           <p class="text-xs text-slate-400 mt-0.5">
             Adjust your metrics, schedule, and goal to generate your workout split and nutrition plan.
@@ -677,26 +729,26 @@
 
         <!-- Submit Button -->
         <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-bold text-sm shadow-lg shadow-emerald-500/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
-          <span>Generate Workout & Save Plan</span> ⚡
+          <span>Generate Workout & Save Plan</span>
         </button>
 
         <!-- Re-launch Wizard Option -->
         <div class="pt-2 text-center">
           <button type="button" id="restartWizardBtn" class="text-xs text-emerald-400 hover:text-emerald-300 font-semibold transition">
-            <span>Run Setup Wizard Again 🔄</span>
+            <span>Run Setup Wizard Again</span>
           </button>
         </div>
       </form>
 
       <!-- Save feedback toast inside modal -->
       <div id="saveToast" class="opacity-0 pointer-events-none transition-opacity duration-300 mt-3 p-2 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs text-center font-medium">
-        ✓ Workout generated and plan saved!
+        Workout generated and plan saved!
       </div>
     </div>
   </div>
 
   <!-- App Scripts (Zero Dependencies with Cache-Busting) -->
-  <script src="./plan-engine.js?v=2.2.1"></script>
-  <script src="./app.js?v=2.2.1"></script>
+  <script src="./plan-engine.js?v=2.3.0"></script>
+  <script src="./app.js?v=2.3.0"></script>
 </body>
 </html>

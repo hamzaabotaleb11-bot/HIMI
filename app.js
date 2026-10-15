@@ -53,6 +53,7 @@ class RtmApp {
 
   init() {
     this.bindEvents();
+    this.initFoodMacroTracker();
     this.syncProfileToInputs();
     this.renderAll();
     this.syncWatchUI();
@@ -66,9 +67,210 @@ class RtmApp {
     return 'rtm_intake_' + new Date().toISOString().split('T')[0];
   }
 
+  getFoodLogKey() {
+    return 'rtm_food_log_' + new Date().toISOString().split('T')[0];
+  }
+
   getDailyIntake() {
     const saved = localStorage.getItem(this.getTodayKey());
     return saved ? JSON.parse(saved) : { protein: 0, carbs: 0, fats: 0, calories: 0 };
+  }
+
+  getDailyFoodLog() {
+    const saved = localStorage.getItem(this.getFoodLogKey());
+    return saved ? JSON.parse(saved) : [];
+  }
+
+  saveDailyFoodLog(list) {
+    localStorage.setItem(this.getFoodLogKey(), JSON.stringify(list));
+  }
+
+  initFoodMacroTracker() {
+    const foodSelect = document.getElementById('macroFoodSelect');
+    const gramsInput = document.getElementById('macroFoodGrams');
+    const toggleBtn = document.getElementById('toggleAddMacroBtn');
+    const closeBtn = document.getElementById('closeAddMacroBtn');
+    const addBtn = document.getElementById('btnAddFoodToMacros');
+    const resetBtn = document.getElementById('resetDailyMacrosBtn');
+    const addSection = document.getElementById('addMacroSection');
+
+    // Populate food select with grouped categories
+    if (foodSelect && window.PlanEngine && window.PlanEngine.foodDatabase) {
+      foodSelect.innerHTML = '';
+      const categories = {};
+      window.PlanEngine.foodDatabase.forEach(item => {
+        if (!categories[item.category]) categories[item.category] = [];
+        categories[item.category].push(item);
+      });
+
+      Object.keys(categories).forEach(cat => {
+        const optgroup = document.createElement('optgroup');
+        optgroup.label = cat;
+        categories[cat].forEach(food => {
+          const opt = document.createElement('option');
+          opt.value = food.id;
+          opt.textContent = `${food.name} (${food.protein}g P / ${food.carbs}g C / ${food.fats}g F)`;
+          optgroup.appendChild(opt);
+        });
+        foodSelect.appendChild(optgroup);
+      });
+    }
+
+    // Toggle panel
+    if (toggleBtn && addSection) {
+      toggleBtn.addEventListener('click', () => {
+        addSection.classList.toggle('hidden');
+        if (!addSection.classList.contains('hidden')) {
+          this.updateFoodMacroPreview();
+          if (gramsInput) gramsInput.focus();
+        }
+      });
+    }
+
+    if (closeBtn && addSection) {
+      closeBtn.addEventListener('click', () => {
+        addSection.classList.add('hidden');
+      });
+    }
+
+    // Live preview update
+    if (foodSelect) {
+      foodSelect.addEventListener('change', () => this.updateFoodMacroPreview());
+    }
+    if (gramsInput) {
+      gramsInput.addEventListener('input', () => this.updateFoodMacroPreview());
+    }
+
+    // Add button
+    if (addBtn) {
+      addBtn.addEventListener('click', () => {
+        const foodId = foodSelect ? foodSelect.value : 'beef';
+        const grams = parseFloat(gramsInput ? gramsInput.value : 100) || 100;
+        this.addFoodToDailyMacros(foodId, grams);
+      });
+    }
+
+    // Reset button
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        this.resetDailyMacros();
+      });
+    }
+
+    this.renderFoodLog();
+    this.updateFoodMacroPreview();
+  }
+
+  updateFoodMacroPreview() {
+    const foodSelect = document.getElementById('macroFoodSelect');
+    const gramsInput = document.getElementById('macroFoodGrams');
+    if (!foodSelect || !gramsInput || !window.PlanEngine || !window.PlanEngine.calculateFoodMacros) return;
+
+    const foodId = foodSelect.value || 'beef';
+    const grams = parseFloat(gramsInput.value) || 100;
+    const macros = window.PlanEngine.calculateFoodMacros(foodId, grams);
+
+    const prevGrams = document.getElementById('previewGramsLabel');
+    const prevP = document.getElementById('prevProtein');
+    const prevC = document.getElementById('prevCarbs');
+    const prevF = document.getElementById('prevFats');
+    const prevCal = document.getElementById('prevCalories');
+
+    if (prevGrams) prevGrams.textContent = `${macros.grams}g`;
+    if (prevP) prevP.textContent = `${macros.protein}`;
+    if (prevC) prevC.textContent = `${macros.carbs}`;
+    if (prevF) prevF.textContent = `${macros.fats}`;
+    if (prevCal) prevCal.textContent = `${macros.calories}`;
+  }
+
+  addFoodToDailyMacros(foodId, grams) {
+    if (!window.PlanEngine || !window.PlanEngine.calculateFoodMacros) return;
+    const computed = window.PlanEngine.calculateFoodMacros(foodId, grams);
+
+    // 1. Update intake totals
+    const intake = this.getDailyIntake();
+    intake.protein = Math.max(0, Math.round(intake.protein + computed.protein));
+    intake.carbs = Math.max(0, Math.round(intake.carbs + computed.carbs));
+    intake.fats = Math.max(0, Math.round(intake.fats + computed.fats));
+    intake.calories = Math.max(0, Math.round(intake.calories + computed.calories));
+    localStorage.setItem(this.getTodayKey(), JSON.stringify(intake));
+
+    // 2. Append to daily food log
+    const log = this.getDailyFoodLog();
+    log.unshift({
+      id: 'log_' + Date.now(),
+      name: computed.name,
+      grams: computed.grams,
+      protein: computed.protein,
+      carbs: computed.carbs,
+      fats: computed.fats,
+      calories: computed.calories,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    });
+    this.saveDailyFoodLog(log);
+
+    // 3. Re-render UI
+    this.renderAll();
+    this.renderFoodLog();
+  }
+
+  removeFoodLogItem(logId) {
+    const log = this.getDailyFoodLog();
+    const index = log.findIndex(item => item.id === logId);
+    if (index === -1) return;
+
+    const [removed] = log.splice(index, 1);
+    this.saveDailyFoodLog(log);
+
+    // Deduct from intake
+    const intake = this.getDailyIntake();
+    intake.protein = Math.max(0, Math.round(intake.protein - removed.protein));
+    intake.carbs = Math.max(0, Math.round(intake.carbs - removed.carbs));
+    intake.fats = Math.max(0, Math.round(intake.fats - removed.fats));
+    intake.calories = Math.max(0, Math.round(intake.calories - removed.calories));
+    localStorage.setItem(this.getTodayKey(), JSON.stringify(intake));
+
+    this.renderAll();
+    this.renderFoodLog();
+  }
+
+  resetDailyMacros() {
+    localStorage.setItem(this.getTodayKey(), JSON.stringify({ protein: 0, carbs: 0, fats: 0, calories: 0 }));
+    this.saveDailyFoodLog([]);
+    this.renderAll();
+    this.renderFoodLog();
+  }
+
+  renderFoodLog() {
+    const container = document.getElementById('todayFoodLogList');
+    const section = document.getElementById('todayFoodLogSection');
+    if (!container || !section) return;
+
+    const log = this.getDailyFoodLog();
+    if (log.length === 0) {
+      section.classList.add('hidden');
+      container.innerHTML = '';
+      return;
+    }
+
+    section.classList.remove('hidden');
+    container.innerHTML = log.map(item => `
+      <div class="flex items-center justify-between p-2 rounded-lg bg-slate-950/60 border border-white/5 text-[11px]">
+        <div class="flex-1 pr-2">
+          <div class="font-bold text-white">${item.name} (${item.grams}g)</div>
+          <div class="text-[10px] text-slate-400 font-mono">
+            <span class="text-emerald-400 font-semibold">${item.protein}g P</span> • 
+            <span class="text-cyan-400 font-semibold">${item.carbs}g C</span> • 
+            <span class="text-amber-400 font-semibold">${item.fats}g F</span> • 
+            <span class="text-slate-300 font-semibold">${item.calories} kcal</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] text-slate-500 font-mono">${item.time}</span>
+          <button onclick="window.rtmApp && window.rtmApp.removeFoodLogItem('${item.id}')" class="text-slate-500 hover:text-red-400 p-1 font-bold text-xs transition">✕</button>
+        </div>
+      </div>
+    `).join('');
   }
 
   // Event bindings
@@ -239,7 +441,7 @@ class RtmApp {
       localStorage.setItem('rtm_paired_watch', this.pairedWatch);
 
       if (statusBox) {
-        statusBox.textContent = `✓ Successfully Paired with ${this.pairedWatch}!`;
+        statusBox.textContent = `Successfully Paired with ${this.pairedWatch}!`;
       }
 
       setTimeout(() => {
@@ -477,7 +679,7 @@ class RtmApp {
     const toastMsg = document.getElementById('quickWorkoutToastMsg');
     if (toast) {
       if (toastMsg) {
-        toastMsg.textContent = `✓ Generated ${days}-Day routine for ${h} cm & ${w} kg!`;
+        toastMsg.textContent = `Generated ${days}-Day routine for ${h} cm & ${w} kg!`;
       }
       toast.classList.remove('hidden');
       setTimeout(() => {
@@ -634,7 +836,7 @@ class RtmApp {
           </div>
           <div class="flex items-center gap-2">
             <span class="px-3 py-1.5 rounded-xl bg-slate-900/90 border border-white/10 text-xs font-semibold text-slate-200">
-              🎯 ${goalsMap[this.profile.goal] || this.profile.goal}
+              ${goalsMap[this.profile.goal] || this.profile.goal}
             </span>
           </div>
         </div>
@@ -650,13 +852,13 @@ class RtmApp {
       if (!workoutPlan || !workoutPlan.schedule || workoutPlan.schedule.length === 0) {
         workoutContainer.innerHTML = `
           <div class="glass-card p-8 text-center border border-white/10 space-y-3">
-            <div class="text-3xl">🏋️</div>
+            <div class="w-12 h-12 mx-auto rounded-full bg-slate-800 border border-white/10 flex items-center justify-center text-emerald-400 font-bold text-sm tracking-wider">RTM</div>
             <h4 class="text-lg font-bold text-white">No Workout Generated Yet</h4>
             <p class="text-xs text-slate-400 max-w-md mx-auto">
               Enter your height, weight, and free time above, then tap <strong>Generate Workout</strong> to create your split.
             </p>
             <button onclick="window.rtmApp && window.rtmApp.quickGenerateWorkout()" class="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-lg transition">
-              Generate Now ⚡
+              Generate Now
             </button>
           </div>
         `;
@@ -712,7 +914,7 @@ class RtmApp {
       groceryContainer.innerHTML = mealPlan.groceryList.map(item => `
         <div class="flex items-start justify-between p-3.5 rounded-lg bg-slate-900/60 border border-white/5">
           <div>
-            <div class="font-semibold text-white text-sm">🥗 ${item.item}</div>
+            <div class="font-semibold text-white text-sm">${item.item}</div>
             <div class="text-xs text-slate-400 mt-0.5">${item.reason}</div>
           </div>
           <span class="badge-pill bg-emerald-500/10 text-emerald-400 text-xs">High Value</span>
