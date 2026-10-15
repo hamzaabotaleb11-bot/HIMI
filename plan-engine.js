@@ -62,172 +62,396 @@ const PlanEngine = {
     };
   },
 
-  // Generate a tailored training split matching exactly the user's free days (2 to 6 days)
-  generateWorkoutSplit(daysPerWeek, goal) {
-    const days = parseInt(daysPerWeek, 10);
+  // Generate a tailored training split depending on schedule (free days), goal, height and weight
+  generateWorkoutSplit(daysPerWeek, goal = 'lose_weight', heightCm = 175, weightKg = 78) {
+    const days = Math.min(6, Math.max(2, parseInt(daysPerWeek, 10) || 4));
+    const userGoal = goal || 'lose_weight';
+    const height = parseFloat(heightCm) || 175;
+    const weight = parseFloat(weightKg) || 78;
+
+    // Body Mass Index & Anthropometrics
+    const heightM = height / 100;
+    const bmi = parseFloat((weight / (heightM * heightM)).toFixed(1));
+
+    let bmiCategory = 'Normal / Athletic';
+    if (bmi < 18.5) bmiCategory = 'Underweight';
+    else if (bmi < 25) bmiCategory = 'Normal / Athletic';
+    else if (bmi < 30) bmiCategory = 'Overweight (Cut Focus)';
+    else bmiCategory = 'High Mass (Joint-Friendly Focus)';
+
+    // Biomechanical leverage assessment based on height
+    const isTall = height >= 182;
+    const isCompact = height <= 168;
+    let leverageNote = '';
+    if (isTall) {
+      leverageNote = 'Longer limb levers detected: routine emphasizes hip-hinge mechanics and angled presses to reduce spinal/joint shear.';
+    } else if (isCompact) {
+      leverageNote = 'Compact limb levers detected: natural mechanical advantage for deep compound squats and high-torque bench press power.';
+    } else {
+      leverageNote = 'Balanced biomechanical proportions: ideal structural leverage for progressive overload across full-body compound lifts.';
+    }
+
+    // Weight and Goal-specific intensity, rep scheme, rest interval & tempo
+    let repScheme = '8-12 reps';
+    let defaultSets = '3-4';
+    let restTime = '75-90s';
+    let pacingStrategy = 'Controlled 2-second eccentric tempo';
+    let cardioProtocol = null;
+
+    if (userGoal === 'lose_weight') {
+      repScheme = bmi >= 26 ? '12-15 reps (Metabolic joint-friendly)' : '10-14 reps (Hypertrophic fat-burn)';
+      defaultSets = '3-4';
+      restTime = '45-60s (Shorter rest for elevated calorie burn)';
+      pacingStrategy = 'High-density supersets with continuous muscular tension';
+      cardioProtocol = {
+        title: 'Post-Workout Fat Oxidation Finisher',
+        duration: '12-15 mins',
+        description: bmi >= 27
+          ? 'Low-impact steep incline treadmill walk (10-12% incline @ 4.2-4.8 km/h) to accelerate fat oxidation while protecting knees and joints.'
+          : 'High-intensity interval rowing or stair sprints (40s work / 20s recovery) to maximize post-exercise oxygen consumption.'
+      };
+    } else if (userGoal === 'gain_muscle') {
+      repScheme = '8-12 reps (Hypertrophy volume)';
+      defaultSets = '3-4';
+      restTime = '75-90s (Adequate ATP replenishment for volume)';
+      pacingStrategy = 'Strict 3-second eccentric descent for maximum micro-trauma';
+      cardioProtocol = {
+        title: 'Active Recovery & Flexibility',
+        duration: '5-8 mins',
+        description: 'Light incline walk cool-down followed by loaded thoracic spine and hip flexor stretches to optimize nutrient delivery.'
+      };
+    } else if (userGoal === 'strength') {
+      repScheme = '4-6 reps (Heavy compound) / 8-10 reps (Accessories)';
+      defaultSets = '4-5';
+      restTime = '120-180s (Full central nervous system recovery)';
+      pacingStrategy = 'Maximum explosive concentric drive with strict isometric brace';
+      cardioProtocol = {
+        title: 'CNS Decompression & Core Stability',
+        duration: '5 mins',
+        description: 'Dead hangs from pull-up bar (3 sets of 45s) for spinal decompression and diaphragmatic box breathing.'
+      };
+    } else { // maintain
+      repScheme = '10-12 reps (Athletic conditioning)';
+      defaultSets = '3';
+      restTime = '60-75s';
+      pacingStrategy = 'Smooth continuous rhythm through full joint range of motion';
+      cardioProtocol = {
+        title: 'Aerobic Base Conditioning',
+        duration: '10 mins',
+        description: 'Zone 2 steady-state jogging or stationary bike at a smooth conversational pace.'
+      };
+    }
+
+    // Exercise tailoring helpers based on height & weight
+    const squatEx = isTall ? 'Barbell Box Squat or Leg Press' : (isCompact ? 'Full-Depth Olympic Back Squat' : 'Barbell Back Squat / Goblet Squat');
+    const squatCue = isTall ? 'Widen stance slightly and hinge hips back to minimize lower back rounding' : 'Maintain an upright torso and drive hard through mid-foot';
+
+    const deadliftEx = isTall ? 'Trap-Bar or Romanian Deadlift' : 'Conventional Barbell Deadlift';
+    const deadliftCue = isTall ? 'Keeps center of mass closer to hips to reduce tall lever torque' : 'Drive heels through the floor, keeping bar pinned to shins';
+
+    const benchEx = (bmi >= 28) ? 'Incline Dumbbell Press / Neutral Grip Press' : 'Flat Barbell Bench Press';
+    const benchCue = 'Tuck elbows at 45 degrees to preserve rotator cuffs under loading';
+
+    const rowEx = (weight >= 90) ? 'Chest-Supported Row or Cable Row' : 'Bent-Over Barbell Row';
+    const rowCue = (weight >= 90) ? 'Chest pad eliminates lower back fatigue for heavier bodyweights' : 'Brace core, pull elbows back toward hips';
+
+    let splitName = '';
+    let schedule = [];
+
     switch (days) {
       case 2:
-        return {
-          splitName: 'Full Body Split (2-Day)',
-          splitNameAr: 'تقسيم الجسم الكامل (يومان)',
-          schedule: [
-            {
-              day: 'Day 1',
-              dayAr: 'اليوم الأول',
-              focus: 'Full Body A (Strength & Core)',
-              focusAr: 'جسم كامل أ (قوة وجذع)',
-              exercises: [
-                { name: 'Barbell/Goblet Squat', sets: '3-4', reps: '8-10', target: 'Quads & Glutes' },
-                { name: 'Dumbbell Bench Press', sets: '3', reps: '8-12', target: 'Chest & Triceps' },
-                { name: 'Bent-Over Dumbbell Row', sets: '3', reps: '10-12', target: 'Upper Back & Lats' },
-                { name: 'Romanian Deadlift', sets: '3', reps: '10', target: 'Hamstrings' },
-                { name: 'Plank Holds', sets: '3', reps: '45-60s', target: 'Core' }
-              ]
-            },
-            {
-              day: 'Day 2',
-              dayAr: 'اليوم الثاني',
-              focus: 'Full Body B (Hypertrophy & Endurance)',
-              focusAr: 'جسم كامل ب (بناء عضلي وتحمل)',
-              exercises: [
-                { name: 'Leg Press or Lunges', sets: '3', reps: '12-15', target: 'Legs' },
-                { name: 'Overhead Shoulder Press', sets: '3', reps: '8-10', target: 'Delts' },
-                { name: 'Lat Pulldown / Pull-ups', sets: '3', reps: '10-12', target: 'Back & Biceps' },
-                { name: 'Push-Ups to Failure', sets: '3', reps: 'Max', target: 'Chest/Triceps' },
-                { name: 'Hanging Leg Raises', sets: '3', reps: '12-15', target: 'Abs' }
-              ]
-            }
-          ]
-        };
+        splitName = 'Full Body Split (2-Day)';
+        schedule = [
+          {
+            day: 'Day 1',
+            focus: 'Full Body A (Strength & Posture)',
+            duration: '50-60 min',
+            exercises: [
+              { name: squatEx, sets: defaultSets, reps: repScheme, rest: restTime, target: 'Quads & Glutes', formCue: squatCue },
+              { name: benchEx, sets: defaultSets, reps: repScheme, rest: restTime, target: 'Chest & Front Delts', formCue: benchCue },
+              { name: rowEx, sets: defaultSets, reps: repScheme, rest: restTime, target: 'Upper Back & Lats', formCue: rowCue },
+              { name: 'Romanian Deadlift (RDL)', sets: '3', reps: '10-12', rest: restTime, target: 'Hamstrings & Posterior Chain', formCue: 'Soft knees, push hips directly back to stretch hamstrings' },
+              { name: 'Plank Holds or Deadbugs', sets: '3', reps: '45-60s', rest: '45s', target: 'Deep Core & Stability', formCue: 'Squeeze glutes and brace abdominal wall tight' }
+            ],
+            finisher: cardioProtocol
+          },
+          {
+            day: 'Day 2',
+            focus: 'Full Body B (Hypertrophy & Conditioning)',
+            duration: '50-60 min',
+            exercises: [
+              { name: 'Leg Press or Walking Lunges', sets: defaultSets, reps: repScheme, rest: restTime, target: 'Legs', formCue: 'Maintain even knee alignment over second toe' },
+              { name: 'Overhead Dumbbell Press', sets: defaultSets, reps: repScheme, rest: restTime, target: 'Shoulders & Triceps', formCue: 'Press in natural scapular plane, do not arch lower back' },
+              { name: 'Lat Pulldown or Assisted Pull-ups', sets: defaultSets, reps: repScheme, rest: restTime, target: 'Back & Biceps', formCue: 'Drive elbows down to waist, squeeze shoulder blades' },
+              { name: 'Push-Ups or Dips', sets: '3', reps: '12-15', rest: '60s', target: 'Chest & Triceps', formCue: 'Lock core in a straight plank line' },
+              { name: 'Hanging Knee Raises', sets: '3', reps: '12-15', rest: '45s', target: 'Abs & Core', formCue: 'Curl pelvis upward without swinging momentum' }
+            ],
+            finisher: cardioProtocol
+          }
+        ];
+        break;
 
       case 3:
-        return {
-          splitName: 'Push / Pull / Legs (3-Day)',
-          splitNameAr: 'دفع / سحب / أرجل (3 أيام)',
-          schedule: [
-            {
-              day: 'Day 1',
-              dayAr: 'اليوم الأول',
-              focus: 'Push (Chest, Shoulders, Triceps)',
-              focusAr: 'دفع (صدر، أكتاف، ترايسبس)',
-              exercises: [
-                { name: 'Incline Dumbbell Press', sets: '4', reps: '8-10', target: 'Upper Chest' },
-                { name: 'Dips / Cable Flys', sets: '3', reps: '12', target: 'Chest' },
-                { name: 'Dumbbell Lateral Raises', sets: '4', reps: '12-15', target: 'Side Delts' },
-                { name: 'Triceps Rope Pushdown', sets: '3', reps: '12-15', target: 'Triceps' }
-              ]
-            },
-            {
-              day: 'Day 2',
-              dayAr: 'اليوم الثاني',
-              focus: 'Pull (Back, Rear Delts, Biceps)',
-              focusAr: 'سحب (ظهر، أكتاف خلفية، بايسبس)',
-              exercises: [
-                { name: 'Seated Cable Row', sets: '4', reps: '10', target: 'Mid-Back' },
-                { name: 'Lat Pulldown', sets: '3', reps: '10-12', target: 'Lats' },
-                { name: 'Face Pulls', sets: '3', reps: '15', target: 'Rear Delts' },
-                { name: 'Incline Dumbbell Curls', sets: '3', reps: '10-12', target: 'Biceps' }
-              ]
-            },
-            {
-              day: 'Day 3',
-              dayAr: 'اليوم الثالث',
-              focus: 'Legs & Core',
-              focusAr: 'أرجل وجذع',
-              exercises: [
-                { name: 'Barbell or Dumbbell Squats', sets: '4', reps: '8-10', target: 'Quads' },
-                { name: 'Romanian Deadlift', sets: '3', reps: '10-12', target: 'Hamstrings' },
-                { name: 'Walking Lunges', sets: '3', reps: '12 each', target: 'Glutes & Legs' },
-                { name: 'Calf Raises & Ab Crunches', sets: '3', reps: '15-20', target: 'Calves & Core' }
-              ]
-            }
-          ]
-        };
+        splitName = 'Push / Pull / Legs (3-Day)';
+        schedule = [
+          {
+            day: 'Day 1',
+            focus: 'Push (Chest, Shoulders, Triceps)',
+            duration: '55-65 min',
+            exercises: [
+              { name: benchEx, sets: defaultSets, reps: repScheme, rest: restTime, target: 'Upper/Mid Chest', formCue: benchCue },
+              { name: 'Incline Dumbbell Press', sets: defaultSets, reps: repScheme, rest: restTime, target: 'Clavicular Chest Head', formCue: '30-degree incline maximizes upper pec activation' },
+              { name: 'Standing DB Lateral Raises', sets: '4', reps: '12-15', rest: '45s', target: 'Lateral Deltoids (Shoulder Width)', formCue: 'Lead with elbows, pause 1s at top of movement' },
+              { name: 'Triceps Rope Pushdown', sets: '3', reps: '12-15', rest: '45s', target: 'Triceps Lateral/Long Head', formCue: 'Flare rope outward at bottom for full contraction' }
+            ],
+            finisher: cardioProtocol
+          },
+          {
+            day: 'Day 2',
+            focus: 'Pull (Lats, Upper Back, Biceps)',
+            duration: '55-65 min',
+            exercises: [
+              { name: rowEx, sets: defaultSets, reps: repScheme, rest: restTime, target: 'Rhomboids & Mid-Back Thickness', formCue: rowCue },
+              { name: 'Lat Pulldown (Neutral Grip)', sets: defaultSets, reps: repScheme, rest: restTime, target: 'Latissimus Dorsi (V-Taper)', formCue: 'Pull through elbows down towards your back pockets' },
+              { name: 'Face Pulls with External Rotation', sets: '3', reps: '15', rest: '45s', target: 'Rear Delts & Rotator Cuff', formCue: 'Pull rope toward eye level, externally rotate wrists' },
+              { name: 'Incline Dumbbell Curls', sets: '3', reps: '10-12', rest: '60s', target: 'Biceps Long Head', formCue: 'Full stretch at bottom, curl without swinging shoulders' }
+            ],
+            finisher: cardioProtocol
+          },
+          {
+            day: 'Day 3',
+            focus: 'Legs & Core (Quads, Hamstrings, Abs)',
+            duration: '55-65 min',
+            exercises: [
+              { name: squatEx, sets: defaultSets, reps: repScheme, rest: restTime, target: 'Quads & Core', formCue: squatCue },
+              { name: deadliftEx, sets: defaultSets, reps: repScheme, rest: restTime, target: 'Hamstrings & Glutes', formCue: deadliftCue },
+              { name: 'Walking DB Lunges', sets: '3', reps: '10-12 each leg', rest: '60s', target: 'Single-Leg Balance & Glutes', formCue: 'Keep front shin vertical, drive off front heel' },
+              { name: 'Standing Calf Raises & Core Circuit', sets: '4', reps: '15-20', rest: '45s', target: 'Calves & Rectus Abdominis', formCue: 'Hold 2s peak contraction at top on calves' }
+            ],
+            finisher: cardioProtocol
+          }
+        ];
+        break;
 
       case 4:
-        return {
-          splitName: 'Upper / Lower Split (4-Day)',
-          splitNameAr: 'علوي / سفلي (4 أيام)',
-          schedule: [
-            {
-              day: 'Day 1',
-              dayAr: 'اليوم الأول',
-              focus: 'Upper Body A (Strength)',
-              focusAr: 'علوي أ (قوة)',
-              exercises: [
-                { name: 'Flat Bench Press', sets: '4', reps: '6-8', target: 'Chest' },
-                { name: 'Barbell or Dumbbell Row', sets: '4', reps: '8-10', target: 'Back' },
-                { name: 'Standing Overhead Press', sets: '3', reps: '8', target: 'Shoulders' },
-                { name: 'Bicep & Tricep Supersets', sets: '3', reps: '12', target: 'Arms' }
-              ]
-            },
-            {
-              day: 'Day 2',
-              dayAr: 'اليوم الثاني',
-              focus: 'Lower Body A (Quad-Dominant)',
-              focusAr: 'سفلي أ (تركيز عضلات الفخذ الأمامية)',
-              exercises: [
-                { name: 'Back Squat / Leg Press', sets: '4', reps: '8-10', target: 'Quads' },
-                { name: 'Bulgarian Split Squat', sets: '3', reps: '10 each', target: 'Quads & Glutes' },
-                { name: 'Leg Extensions', sets: '3', reps: '12-15', target: 'Quads' },
-                { name: 'Hanging Knee Raises', sets: '3', reps: '15', target: 'Core' }
-              ]
-            },
-            {
-              day: 'Day 3',
-              dayAr: 'اليوم الثالث',
-              focus: 'Upper Body B (Hypertrophy)',
-              focusAr: 'علوي ب (بناء عضلي وتحديد)',
-              exercises: [
-                { name: 'Incline Dumbbell Press', sets: '3', reps: '10-12', target: 'Chest' },
-                { name: 'Lat Pulldowns', sets: '3', reps: '10-12', target: 'Lats' },
-                { name: 'Lateral Cable Raises', sets: '4', reps: '15', target: 'Delts' },
-                { name: 'Hammer Curls & Skullcrushers', sets: '3', reps: '12', target: 'Arms' }
-              ]
-            },
-            {
-              day: 'Day 4',
-              dayAr: 'اليوم الرابع',
-              focus: 'Lower Body B (Posterior Chain)',
-              focusAr: 'سفلي ب (عضلات الفخذ الخلفية والظهر السفلي)',
-              exercises: [
-                { name: 'Deadlift or RDL', sets: '4', reps: '8', target: 'Hamstrings & Glutes' },
-                { name: 'Hamstring Leg Curls', sets: '3', reps: '12', target: 'Hamstrings' },
-                { name: 'Calf Raises', sets: '4', reps: '15', target: 'Calves' },
-                { name: 'Cable Woodchoppers / Plank', sets: '3', reps: '12 each', target: 'Obliques' }
-              ]
-            }
-          ]
-        };
+        splitName = 'Upper / Lower Split (4-Day)';
+        schedule = [
+          {
+            day: 'Day 1',
+            focus: 'Upper Body A (Power & Heavy Compounds)',
+            duration: '50-60 min',
+            exercises: [
+              { name: benchEx, sets: defaultSets, reps: repScheme, rest: restTime, target: 'Chest & Triceps', formCue: benchCue },
+              { name: rowEx, sets: defaultSets, reps: repScheme, rest: restTime, target: 'Mid-Back & Lats', formCue: rowCue },
+              { name: 'Standing Overhead Press', sets: defaultSets, reps: repScheme, rest: restTime, target: 'Deltoids & Core', formCue: 'Brace abs and glutes to prevent hyperextending lumbar spine' },
+              { name: 'Dumbbell Hammer Curls', sets: '3', reps: '10-12', rest: '45s', target: 'Brachialis & Forearms', formCue: 'Keep elbows locked at sides throughout range' },
+              { name: 'Overhead Cable Tricep Extension', sets: '3', reps: '12-15', rest: '45s', target: 'Triceps Long Head', formCue: 'Full deep elbow flexion stretch at bottom' }
+            ],
+            finisher: cardioProtocol
+          },
+          {
+            day: 'Day 2',
+            focus: 'Lower Body A (Quad-Dominant & Calves)',
+            duration: '50-60 min',
+            exercises: [
+              { name: squatEx, sets: defaultSets, reps: repScheme, rest: restTime, target: 'Quads & Core', formCue: squatCue },
+              { name: 'Bulgarian Split Squats', sets: '3', reps: '8-10 each leg', rest: '60s', target: 'Quads & Glute Medius', formCue: 'Slight torso forward lean loaded on working heel' },
+              { name: 'Leg Extensions', sets: '3', reps: '12-15', rest: '45s', target: 'Rectus Femoris Isolation', formCue: 'Pause 1s at top lockout with controlled 2s descent' },
+              { name: 'Standing Calf Raises', sets: '4', reps: '12-15', rest: '45s', target: 'Gastrocnemius', formCue: 'Full deep stretch on the bottom step' },
+              { name: 'Hanging Leg Raises', sets: '3', reps: '12-15', rest: '45s', target: 'Abdominal Wall', formCue: 'Avoid swinging; initiate movement by tilting hips' }
+            ],
+            finisher: cardioProtocol
+          },
+          {
+            day: 'Day 3',
+            focus: 'Upper Body B (Hypertrophy & Pump)',
+            duration: '50-60 min',
+            exercises: [
+              { name: 'Incline Dumbbell Press', sets: defaultSets, reps: repScheme, rest: restTime, target: 'Upper Chest', formCue: 'Lower weights under control with open ribcage' },
+              { name: 'Lat Pulldown (Wide Grip)', sets: defaultSets, reps: repScheme, rest: restTime, target: 'Lats & Upper Back', formCue: 'Pull bar down to upper clavicle with chest puffed up' },
+              { name: 'Dumbbell Lateral Raises', sets: '4', reps: '12-15', rest: '45s', target: 'Side Delts', formCue: 'Control the descent, do not use body momentum' },
+              { name: 'Incline Dumbbell Bicep Curls', sets: '3', reps: '10-12', rest: '45s', target: 'Biceps Long Head', formCue: 'Supinate wrists at top for maximum peak contraction' },
+              { name: 'Rope Pushdown', sets: '3', reps: '12-15', rest: '45s', target: 'Triceps Lateral Head', formCue: 'Pin elbows to ribs' }
+            ],
+            finisher: cardioProtocol
+          },
+          {
+            day: 'Day 4',
+            focus: 'Lower Body B (Posterior Chain & Hamstrings)',
+            duration: '50-60 min',
+            exercises: [
+              { name: deadliftEx, sets: defaultSets, reps: repScheme, rest: restTime, target: 'Hamstrings & Glutes', formCue: deadliftCue },
+              { name: 'Lying or Seated Hamstring Curls', sets: '3', reps: '10-12', rest: '60s', target: 'Hamstrings Knee Flexion', formCue: 'Point toes toward shins to emphasize hamstring recruitment' },
+              { name: 'Leg Press (High & Wide Foot Placement)', sets: '3', reps: '12-15', rest: '60s', target: 'Glutes & Adductors', formCue: 'Keep lower back glued firmly against seat' },
+              { name: 'Seated Calf Raises', sets: '4', reps: '15', rest: '45s', target: 'Soleus', formCue: 'Slow controlled 3s negative' },
+              { name: 'Cable Woodchoppers', sets: '3', reps: '12 each side', rest: '45s', target: 'Obliques & Rotary Core', formCue: 'Rotate through thoracic spine, keep hips locked forward' }
+            ],
+            finisher: cardioProtocol
+          }
+        ];
+        break;
 
       case 5:
-        return {
-          splitName: 'Upper / Lower + Push / Pull / Legs (5-Day)',
-          splitNameAr: 'علوي / سفلي + دفع / سحب / أرجل (5 أيام)',
-          schedule: [
-            { day: 'Day 1', dayAr: 'اليوم الأول', focus: 'Upper Strength', focusAr: 'قوة الجزء العلوي', exercises: [{ name: 'Heavy Bench Press', sets: '4', reps: '6' }, { name: 'Weighted Pull-ups', sets: '4', reps: '6-8' }, { name: 'OHP', sets: '3', reps: '8' }] },
-            { day: 'Day 2', dayAr: 'اليوم الثاني', focus: 'Lower Strength', focusAr: 'قوة الجزء السفلي', exercises: [{ name: 'Barbell Squats', sets: '4', reps: '6-8' }, { name: 'RDLs', sets: '3', reps: '8' }, { name: 'Calves', sets: '4', reps: '12' }] },
-            { day: 'Day 3', dayAr: 'اليوم الثالث', focus: 'Push Hypertrophy', focusAr: 'دفع وبناء عضلي', exercises: [{ name: 'Incline DB Press', sets: '3', reps: '10' }, { name: 'Dips', sets: '3', reps: '12' }, { name: 'Lateral Raises', sets: '4', reps: '15' }] },
-            { day: 'Day 4', dayAr: 'اليوم الرابع', focus: 'Pull Hypertrophy', focusAr: 'سحب وبناء عضلي', exercises: [{ name: 'Chest-Supported Row', sets: '3', reps: '12' }, { name: 'Lat Pulldowns', sets: '3', reps: '10' }, { name: 'Rear Delt Flys', sets: '3', reps: '15' }] },
-            { day: 'Day 5', dayAr: 'اليوم الخامس', focus: 'Legs & Abs Hypertrophy', focusAr: 'أرجل وجذع', exercises: [{ name: 'Leg Press', sets: '4', reps: '12' }, { name: 'Lying Leg Curls', sets: '3', reps: '12' }, { name: 'Abs Circuit', sets: '3', reps: '15' }] }
-          ]
-        };
+        splitName = 'Upper / Lower + Push / Pull / Legs (5-Day)';
+        schedule = [
+          {
+            day: 'Day 1',
+            focus: 'Upper Power',
+            duration: '55 min',
+            exercises: [
+              { name: benchEx, sets: defaultSets, reps: repScheme, rest: restTime, target: 'Chest', formCue: benchCue },
+              { name: rowEx, sets: defaultSets, reps: repScheme, rest: restTime, target: 'Back Thickness', formCue: rowCue },
+              { name: 'Overhead Press', sets: '3', reps: '8', rest: restTime, target: 'Shoulders', formCue: 'Squeeze glutes and abs tight' }
+            ],
+            finisher: cardioProtocol
+          },
+          {
+            day: 'Day 2',
+            focus: 'Lower Power',
+            duration: '55 min',
+            exercises: [
+              { name: squatEx, sets: defaultSets, reps: repScheme, rest: restTime, target: 'Quads', formCue: squatCue },
+              { name: deadliftEx, sets: defaultSets, reps: repScheme, rest: restTime, target: 'Posterior Chain', formCue: deadliftCue },
+              { name: 'Standing Calf Raises', sets: '4', reps: '12', rest: '45s', target: 'Calves', formCue: 'Hold 2s contraction at top' }
+            ],
+            finisher: cardioProtocol
+          },
+          {
+            day: 'Day 3',
+            focus: 'Push Hypertrophy',
+            duration: '50 min',
+            exercises: [
+              { name: 'Incline DB Press', sets: '3', reps: '10-12', rest: '60s', target: 'Upper Chest', formCue: 'Controlled 2s descent' },
+              { name: 'Cable Chest Flys', sets: '3', reps: '12-15', rest: '45s', target: 'Inner Chest Stretch', formCue: 'Emphasize deep horizontal adduction stretch' },
+              { name: 'Dumbbell Lateral Raises', sets: '4', reps: '15', rest: '45s', target: 'Side Delts', formCue: 'Lead with elbows' },
+              { name: 'Overhead Triceps Extension', sets: '3', reps: '12-15', rest: '45s', target: 'Triceps', formCue: 'Full stretch' }
+            ],
+            finisher: cardioProtocol
+          },
+          {
+            day: 'Day 4',
+            focus: 'Pull Hypertrophy',
+            duration: '50 min',
+            exercises: [
+              { name: 'Lat Pulldowns', sets: '3', reps: '10-12', rest: '60s', target: 'Lats', formCue: 'Drive elbows down to ribs' },
+              { name: 'Seated Cable Row', sets: '3', reps: '10-12', rest: '60s', target: 'Mid-Back', formCue: 'Squeeze shoulder blades together' },
+              { name: 'Face Pulls', sets: '3', reps: '15', rest: '45s', target: 'Rear Delts', formCue: 'External rotation at top' },
+              { name: 'Incline Bicep Curls', sets: '3', reps: '10-12', rest: '45s', target: 'Biceps', formCue: 'Supinate wrists' }
+            ],
+            finisher: cardioProtocol
+          },
+          {
+            day: 'Day 5',
+            focus: 'Legs & Core Hypertrophy',
+            duration: '55 min',
+            exercises: [
+              { name: 'Leg Press', sets: '4', reps: '12-15', rest: '60s', target: 'Quads', formCue: 'Keep knees tracking over toes' },
+              { name: 'Hamstring Leg Curls', sets: '3', reps: '12', rest: '45s', target: 'Hamstrings', formCue: 'Controlled negative' },
+              { name: 'Walking Lunges', sets: '3', reps: '12 each', rest: '60s', target: 'Glutes & Legs', formCue: 'Step deep' },
+              { name: 'Hanging Leg Raises & Plank', sets: '3', reps: '15 reps', rest: '45s', target: 'Core', formCue: 'Brace core' }
+            ],
+            finisher: cardioProtocol
+          }
+        ];
+        break;
 
       case 6:
       default:
-        return {
-          splitName: 'Push / Pull / Legs x 2 (6-Day)',
-          splitNameAr: 'دفع / سحب / أرجل مرتين أسبوعياً (6 أيام)',
-          schedule: [
-            { day: 'Day 1', dayAr: 'اليوم الأول', focus: 'Push A', focusAr: 'دفع أ', exercises: [{ name: 'Flat Bench', sets: '4', reps: '8' }, { name: 'Incline DB', sets: '3', reps: '10' }, { name: 'Shoulder Press', sets: '3', reps: '10' }, { name: 'Lateral Raises', sets: '4', reps: '15' }, { name: 'Triceps', sets: '3', reps: '12' }] },
-            { day: 'Day 2', dayAr: 'اليوم الثاني', focus: 'Pull A', focusAr: 'سحب أ', exercises: [{ name: 'Barbell Rows', sets: '4', reps: '8' }, { name: 'Lat Pulldown', sets: '3', reps: '10' }, { name: 'Face Pulls', sets: '3', reps: '15' }, { name: 'Bicep Curls', sets: '3', reps: '12' }] },
-            { day: 'Day 3', dayAr: 'اليوم الثالث', focus: 'Legs A', focusAr: 'أرجل أ', exercises: [{ name: 'Squats', sets: '4', reps: '8' }, { name: 'RDLs', sets: '3', reps: '10' }, { name: 'Leg Extensions', sets: '3', reps: '12' }, { name: 'Calves', sets: '4', reps: '15' }] },
-            { day: 'Day 4', dayAr: 'اليوم الرابع', focus: 'Push B', focusAr: 'دفع ب', exercises: [{ name: 'Overhead Press', sets: '4', reps: '8' }, { name: 'Incline Bench', sets: '3', reps: '10' }, { name: 'Chest Flys', sets: '3', reps: '12' }, { name: 'Lateral Raises', sets: '4', reps: '15' }] },
-            { day: 'Day 5', dayAr: 'اليوم الخامس', focus: 'Pull B', focusAr: 'سحب ب', exercises: [{ name: 'Deadlifts or Heavy Rows', sets: '3', reps: '6-8' }, { name: 'Close-Grip Pulldown', sets: '3', reps: '12' }, { name: 'Hammer Curls', sets: '3', reps: '12' }] },
-            { day: 'Day 6', dayAr: 'اليوم السادس', focus: 'Legs B', focusAr: 'أرجل ب', exercises: [{ name: 'Hack Squat / Leg Press', sets: '4', reps: '10' }, { name: 'Hamstring Curls', sets: '3', reps: '12' }, { name: 'Lunges', sets: '3', reps: '12' }, { name: 'Ab Crunches', sets: '3', reps: '15' }] }
-          ]
-        };
+        splitName = 'Push / Pull / Legs x 2 (6-Day Dedicated)';
+        schedule = [
+          {
+            day: 'Day 1',
+            focus: 'Push A (Chest & Triceps Focus)',
+            duration: '55 min',
+            exercises: [
+              { name: benchEx, sets: defaultSets, reps: repScheme, rest: restTime, target: 'Chest', formCue: benchCue },
+              { name: 'Incline DB Press', sets: '3', reps: '10', rest: '60s', target: 'Upper Chest', formCue: '30-degree angle' },
+              { name: 'Dips or Cable Flys', sets: '3', reps: '12', rest: '45s', target: 'Lower Chest', formCue: 'Slight forward lean' },
+              { name: 'Lateral Raises', sets: '4', reps: '15', rest: '45s', target: 'Delts', formCue: 'Smooth tempo' },
+              { name: 'Triceps Pushdown', sets: '3', reps: '12', rest: '45s', target: 'Triceps', formCue: 'Lock elbows' }
+            ],
+            finisher: cardioProtocol
+          },
+          {
+            day: 'Day 2',
+            focus: 'Pull A (Lats & Biceps Focus)',
+            duration: '55 min',
+            exercises: [
+              { name: rowEx, sets: defaultSets, reps: repScheme, rest: restTime, target: 'Back Thickness', formCue: rowCue },
+              { name: 'Lat Pulldowns', sets: '3', reps: '10', rest: '60s', target: 'Lats Width', formCue: 'Pull to upper chest' },
+              { name: 'Chest Supported Rear Delt Flys', sets: '3', reps: '15', rest: '45s', target: 'Rear Delts', formCue: 'Lead with pinkies' },
+              { name: 'Barbell or DB Bicep Curls', sets: '3', reps: '10', rest: '45s', target: 'Biceps', formCue: 'Strict form' }
+            ],
+            finisher: cardioProtocol
+          },
+          {
+            day: 'Day 3',
+            focus: 'Legs A (Quad Dominant)',
+            duration: '55 min',
+            exercises: [
+              { name: squatEx, sets: defaultSets, reps: repScheme, rest: restTime, target: 'Quads', formCue: squatCue },
+              { name: 'Bulgarian Split Squats', sets: '3', reps: '10 each', rest: '60s', target: 'Quads & Glutes', formCue: 'Deep knee bend' },
+              { name: 'Leg Extensions', sets: '3', reps: '15', rest: '45s', target: 'Quads Isolation', formCue: 'Squeeze at top' },
+              { name: 'Standing Calf Raises', sets: '4', reps: '15', rest: '45s', target: 'Calves', formCue: 'Full stretch' }
+            ],
+            finisher: cardioProtocol
+          },
+          {
+            day: 'Day 4',
+            focus: 'Push B (Shoulders & Upper Chest)',
+            duration: '55 min',
+            exercises: [
+              { name: 'Overhead Press', sets: defaultSets, reps: repScheme, rest: restTime, target: 'Shoulders', formCue: 'Brace abs tight' },
+              { name: 'Incline Bench Press', sets: '3', reps: '10', rest: '60s', target: 'Upper Chest', formCue: 'Controlled tempo' },
+              { name: 'Cable Lateral Raises', sets: '4', reps: '15', rest: '45s', target: 'Lateral Delts', formCue: 'Continuous tension' },
+              { name: 'Skull Crushers', sets: '3', reps: '12', rest: '45s', target: 'Triceps', formCue: 'Keep upper arms fixed' }
+            ],
+            finisher: cardioProtocol
+          },
+          {
+            day: 'Day 5',
+            focus: 'Pull B (Upper Back & Posterior Chain)',
+            duration: '55 min',
+            exercises: [
+              { name: deadliftEx, sets: defaultSets, reps: repScheme, rest: restTime, target: 'Hamstrings & Lats', formCue: deadliftCue },
+              { name: 'Seated Cable Row', sets: '3', reps: '10', rest: '60s', target: 'Mid-Back', formCue: 'Full scapular retraction' },
+              { name: 'Face Pulls', sets: '3', reps: '15', rest: '45s', target: 'Rotator Cuff', formCue: 'High pull' },
+              { name: 'Incline Hammer Curls', sets: '3', reps: '12', rest: '45s', target: 'Brachialis', formCue: 'Neutral grip' }
+            ],
+            finisher: cardioProtocol
+          },
+          {
+            day: 'Day 6',
+            focus: 'Legs B (Hamstrings, Glutes & Abs)',
+            duration: '55 min',
+            exercises: [
+              { name: 'Leg Press (High Foot Stance)', sets: defaultSets, reps: repScheme, rest: restTime, target: 'Glutes & Hamstrings', formCue: 'Press through heels' },
+              { name: 'Lying Leg Curls', sets: '3', reps: '12', rest: '45s', target: 'Hamstrings', formCue: 'Full knee flexion' },
+              { name: 'Walking Dumbbell Lunges', sets: '3', reps: '12 each', rest: '60s', target: 'Glutes', formCue: 'Long stride' },
+              { name: 'Hanging Leg Raises & Ab Crunch', sets: '4', reps: '15', rest: '45s', target: 'Core', formCue: 'Controlled curl' }
+            ],
+            finisher: cardioProtocol
+          }
+        ];
+        break;
     }
+
+    return {
+      splitName,
+      daysPerWeek: days,
+      goal: userGoal,
+      heightCm: height,
+      weightKg: weight,
+      bmi,
+      bmiCategory,
+      leverageNote,
+      repScheme,
+      defaultSets,
+      restTime,
+      pacingStrategy,
+      cardioProtocol,
+      schedule
+    };
   },
 
   // Generate budget-optimized nutrition & grocery plan
@@ -370,4 +594,7 @@ const PlanEngine = {
 
 if (typeof window !== 'undefined') {
   window.PlanEngine = PlanEngine;
+}
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = PlanEngine;
 }

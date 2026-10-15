@@ -123,6 +123,12 @@ class RtmApp {
       });
     }
 
+    // Quick Workout Generator (Workout Tab)
+    const btnQuickGen = document.getElementById('btnQuickGenerateWorkout');
+    if (btnQuickGen) {
+      btnQuickGen.addEventListener('click', () => this.quickGenerateWorkout());
+    }
+
     // Wizard Controls
     const wizardNextBtn = document.getElementById('wizardNextBtn');
     if (wizardNextBtn) {
@@ -145,6 +151,16 @@ class RtmApp {
         document.querySelectorAll('.wizard-day-card').forEach(c => c.classList.remove('selected-card'));
         card.classList.add('selected-card');
         this.wizardFreeDays = parseInt(card.getAttribute('data-days'), 10);
+
+        // Instant live feedback in Step 2: routine generated as soon as free days selected
+        const h = parseFloat(document.getElementById('wizHeight').value) || this.profile.heightCm;
+        const w = parseFloat(document.getElementById('wizWeight').value) || this.profile.weightKg;
+        const notice = document.getElementById('wizWorkoutGeneratedNotice');
+        const noticeText = document.getElementById('wizWorkoutGeneratedText');
+        if (notice && noticeText) {
+          noticeText.textContent = `⚡ Workout Generated: ${this.wizardFreeDays}-Day routine customized for ${h} cm & ${w} kg!`;
+          notice.classList.remove('hidden');
+        }
       });
     });
 
@@ -287,6 +303,19 @@ class RtmApp {
         alert('Please enter height, weight, and age to proceed');
         return;
       }
+      this.profile.heightCm = h;
+      this.profile.weightKg = w;
+      this.profile.age = a;
+      const gEl = document.getElementById('wizGender');
+      if (gEl) this.profile.gender = gEl.value || 'male';
+
+      // Update live generation notice for step 2
+      const notice = document.getElementById('wizWorkoutGeneratedNotice');
+      const noticeText = document.getElementById('wizWorkoutGeneratedText');
+      if (notice && noticeText) {
+        noticeText.textContent = `⚡ Custom ${this.wizardFreeDays || 4}-Day routine ready for ${h} cm & ${w} kg. Select your schedule below:`;
+        notice.classList.remove('hidden');
+      }
     }
     if (this.wizardStep < 4) {
       this.wizardStep++;
@@ -404,6 +433,51 @@ class RtmApp {
     if (freeDaysDisplay) {
       freeDaysDisplay.textContent = `${this.profile.freeDays} Days a week`;
     }
+
+    // Also sync the Quick Workout Generator inputs in the Workout tab
+    const qh = document.getElementById('quickWorkoutHeight');
+    const qw = document.getElementById('quickWorkoutWeight');
+    const qd = document.getElementById('quickWorkoutDays');
+    const qg = document.getElementById('quickWorkoutGoal');
+    if (qh) qh.value = this.profile.heightCm;
+    if (qw) qw.value = this.profile.weightKg;
+    if (qd) qd.value = this.profile.freeDays;
+    if (qg) qg.value = this.profile.goal;
+  }
+
+  quickGenerateWorkout() {
+    const hInput = document.getElementById('quickWorkoutHeight');
+    const wInput = document.getElementById('quickWorkoutWeight');
+    const dInput = document.getElementById('quickWorkoutDays');
+    const gInput = document.getElementById('quickWorkoutGoal');
+
+    if (!hInput || !wInput || !dInput || !gInput) return;
+
+    const h = parseFloat(hInput.value) || this.profile.heightCm;
+    const w = parseFloat(wInput.value) || this.profile.weightKg;
+    const days = parseInt(dInput.value, 10) || this.profile.freeDays;
+    const goal = gInput.value || this.profile.goal;
+
+    this.profile.heightCm = h;
+    this.profile.weightKg = w;
+    this.profile.freeDays = days;
+    this.profile.goal = goal;
+
+    localStorage.setItem('rtm_profile', JSON.stringify(this.profile));
+    this.syncProfileToInputs();
+    this.renderAll();
+
+    const toast = document.getElementById('quickWorkoutToast');
+    const toastMsg = document.getElementById('quickWorkoutToastMsg');
+    if (toast) {
+      if (toastMsg) {
+        toastMsg.textContent = `✓ Generated ${days}-Day routine for ${h} cm & ${w} kg!`;
+      }
+      toast.classList.remove('hidden');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 3000);
+    }
   }
 
   saveProfileFromInputs() {
@@ -462,7 +536,12 @@ class RtmApp {
     const bmr = PlanEngine.calculateBMR(this.profile.weightKg, this.profile.heightCm, this.profile.age, this.profile.gender);
     const tdee = PlanEngine.calculateTDEE(bmr, this.profile.freeDays);
     const macros = PlanEngine.calculateMacros(tdee, this.profile.weightKg, this.profile.goal);
-    const workoutPlan = PlanEngine.generateWorkoutSplit(this.profile.freeDays, this.profile.goal);
+    const workoutPlan = PlanEngine.generateWorkoutSplit(
+      this.profile.freeDays,
+      this.profile.goal,
+      this.profile.heightCm,
+      this.profile.weightKg
+    );
     const mealPlan = PlanEngine.generateBudgetMealPlan(this.profile.budgetTier, macros);
 
     // Current daily intake progress
@@ -523,37 +602,143 @@ class RtmApp {
     if (cProgBar) cProgBar.style.width = `${cProgressPct}%`;
     if (fProgBar) fProgBar.style.width = `${fProgressPct}%`;
 
-    // 2. Workout Tab Render
+    // 2. Workout Tab Render: Dynamic Profile & Biomechanics Banner
+    const profileBanner = document.getElementById('workoutProfileBanner');
+    if (profileBanner) {
+      const goalsMap = {
+        lose_weight: 'Burn Fat & Shred',
+        gain_muscle: 'Build Lean Muscle (Hypertrophy)',
+        strength: 'Maximize Strength & Power',
+        maintain: 'Healthy Athletic Maintenance'
+      };
+
+      profileBanner.innerHTML = `
+        <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-white/10 gap-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                ACTIVE SPLIT
+              </span>
+              <span class="text-xs text-slate-400 font-mono">${workoutPlan.schedule.length} Training Days / Week</span>
+            </div>
+            <h3 class="text-xl sm:text-2xl font-black text-white tracking-tight mt-1">
+              ${workoutPlan.splitName}
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-300 mt-1">
+              Personalized for your <strong class="text-white">${this.profile.heightCm} cm</strong> height, <strong class="text-white">${this.profile.weightKg} kg</strong> weight, and <strong class="text-emerald-400">${this.profile.freeDays}-day</strong> weekly schedule.
+            </p>
+          </div>
+
+          <!-- Parameter Summary Badges -->
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="px-3 py-1.5 rounded-xl bg-slate-900/90 border border-white/10 text-xs font-semibold text-slate-200">
+              🎯 ${goalsMap[this.profile.goal] || this.profile.goal}
+            </span>
+            <span class="px-3 py-1.5 rounded-xl bg-slate-900/90 border border-emerald-500/30 text-xs font-semibold text-emerald-400 font-mono">
+              BMI: ${workoutPlan.bmi} (${workoutPlan.bmiCategory})
+            </span>
+          </div>
+        </div>
+
+        <!-- Biomechanical & Training Protocol Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+          <!-- Leverage & Joint Physics -->
+          <div class="p-3.5 rounded-xl bg-slate-900/60 border border-white/5 space-y-1">
+            <div class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+              <span>🦴</span> <span>Biomechanical Leverage</span>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              ${workoutPlan.leverageNote}
+            </p>
+          </div>
+
+          <!-- Reps & Rest Strategy -->
+          <div class="p-3.5 rounded-xl bg-slate-900/60 border border-white/5 space-y-1">
+            <div class="text-[11px] font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
+              <span>⏱️</span> <span>Sets & Rest Intervals</span>
+            </div>
+            <div class="text-xs text-slate-200 font-semibold">
+              ${workoutPlan.defaultSets} sets • ${workoutPlan.repScheme}
+            </div>
+            <div class="text-[11px] text-slate-400">
+              Rest: <span class="text-cyan-400 font-mono font-medium">${workoutPlan.restTime}</span>
+            </div>
+          </div>
+
+          <!-- Pacing & Execution Tempo -->
+          <div class="p-3.5 rounded-xl bg-slate-900/60 border border-white/5 space-y-1">
+            <div class="text-[11px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+              <span>⚡</span> <span>Tempo & Execution</span>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              ${workoutPlan.pacingStrategy}
+            </p>
+          </div>
+        </div>
+      `;
+    }
+
+    // Schedule Cards Render
     const workoutContainer = document.getElementById('workoutScheduleContainer');
     if (workoutContainer) {
       workoutContainer.innerHTML = '';
       workoutPlan.schedule.forEach((daySchedule) => {
         const card = document.createElement('div');
-        card.className = 'glass-card p-5 mb-4 border border-white/5';
+        card.className = 'glass-card p-5 sm:p-6 mb-5 border border-white/10 shadow-xl';
         card.innerHTML = `
-          <div class="flex items-center justify-between pb-3 mb-3 border-b border-white/10">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-4 border-b border-white/10 gap-2">
             <div>
-              <span class="text-xs uppercase tracking-wider font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full">
-                ${daySchedule.day}
-              </span>
-              <h4 class="text-lg font-bold text-white mt-1">${daySchedule.focus}</h4>
+              <div class="flex items-center gap-2">
+                <span class="text-xs uppercase tracking-wider font-extrabold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 rounded-full">
+                  ${daySchedule.day}
+                </span>
+                <span class="text-xs text-slate-400 font-mono">⏱️ ${daySchedule.duration || '55 min'}</span>
+              </div>
+              <h4 class="text-lg sm:text-xl font-black text-white mt-2">${daySchedule.focus}</h4>
             </div>
-            <span class="text-xs text-gray-400">${daySchedule.exercises.length} Exercises</span>
+            <span class="text-xs text-slate-400 bg-slate-900/80 px-3 py-1.5 rounded-xl border border-white/5">
+              ${daySchedule.exercises.length} Exercises + Finisher
+            </span>
           </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+
+          <!-- Exercises Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
             ${daySchedule.exercises.map(ex => `
-              <div class="flex items-center justify-between p-3 rounded-lg bg-slate-900/60 border border-white/5">
+              <div class="p-3.5 rounded-xl bg-slate-900/70 border border-white/5 hover:border-emerald-500/30 transition flex flex-col justify-between">
                 <div>
-                  <div class="font-medium text-slate-200 text-sm">${ex.name}</div>
-                  <div class="text-xs text-slate-400">${ex.target || ''}</div>
+                  <div class="flex items-start justify-between gap-2">
+                    <div class="font-bold text-slate-100 text-sm leading-snug">${ex.name}</div>
+                    <span class="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded whitespace-nowrap">
+                      ${ex.sets} sets
+                    </span>
+                  </div>
+                  <div class="text-[11px] text-cyan-400 font-medium mt-0.5">${ex.target || ''}</div>
+                  ${ex.formCue ? `<p class="text-[11px] text-slate-400 mt-2 bg-slate-950/60 p-2 rounded-lg border border-white/5 leading-relaxed">💡 <strong class="text-slate-300">Cue:</strong> ${ex.formCue}</p>` : ''}
                 </div>
-                <div class="text-right">
-                  <div class="text-xs font-mono font-bold text-emerald-400">${ex.sets} sets</div>
-                  <div class="text-xs text-slate-400 font-mono">${ex.reps} reps</div>
+                <div class="flex items-center justify-between pt-2.5 mt-2.5 border-t border-white/5 text-[11px] text-slate-400 font-mono">
+                  <span>Target: <strong class="text-slate-200">${ex.reps}</strong></span>
+                  <span>Rest: <strong class="text-emerald-400">${ex.rest || '60s'}</strong></span>
                 </div>
               </div>
             `).join('')}
           </div>
+
+          <!-- End-of-Session Finisher / Recovery Card -->
+          ${daySchedule.finisher ? `
+            <div class="p-3.5 rounded-xl bg-gradient-to-r from-emerald-500/10 via-cyan-500/10 to-transparent border border-emerald-500/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="text-sm">🏁</span>
+                  <span class="text-xs font-bold text-emerald-300 uppercase tracking-wider">${daySchedule.finisher.title}</span>
+                  <span class="text-[10px] font-mono text-cyan-400 font-bold bg-cyan-500/10 px-2 py-0.5 rounded">${daySchedule.finisher.duration}</span>
+                </div>
+                <p class="text-xs text-slate-300 mt-1 leading-relaxed">${daySchedule.finisher.description}</p>
+              </div>
+              <span class="text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/20 whitespace-nowrap self-end sm:self-auto">
+                Goal Focused
+              </span>
+            </div>
+          ` : ''}
         `;
         workoutContainer.appendChild(card);
       });
