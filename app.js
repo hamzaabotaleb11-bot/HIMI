@@ -238,17 +238,15 @@ class RtmApp {
       intake.calories = Math.max(0, Math.round(intake.calories + (meal.calories || 0)));
       localStorage.setItem(this.getTodayKey(), JSON.stringify(intake));
 
-      // 2. Append to daily food log
-      const foodSummary = meal.foods && meal.foods.length
-        ? meal.foods.map(f => `${f.name} (${f.qty})`).join(', ')
-        : meal.description;
-
+      // 2. Append to daily food log (Displayed as Meal x)
       const log = this.getDailyFoodLog();
       const filteredLog = log.filter(item => item.id !== mealLogId);
       filteredLog.unshift({
         id: mealLogId,
-        name: `${meal.meal} (${foodSummary})`,
-        grams: 1,
+        mealIndex: index,
+        type: 'meal',
+        name: `Meal ${index + 1}`,
+        grams: null,
         protein: meal.protein || 0,
         carbs: meal.carbs || 0,
         fats: meal.fats || 0,
@@ -432,10 +430,11 @@ class RtmApp {
     intake.calories = Math.max(0, Math.round(intake.calories + computed.calories));
     localStorage.setItem(this.getTodayKey(), JSON.stringify(intake));
 
-    // 2. Append to daily food log
+    // 2. Append to daily food log (Added from macros as the food it is)
     const log = this.getDailyFoodLog();
     log.unshift({
       id: 'log_' + Date.now(),
+      type: 'food',
       name: computed.name,
       grams: computed.grams,
       protein: computed.protein,
@@ -471,9 +470,11 @@ class RtmApp {
     localStorage.setItem(this.getTodayKey(), JSON.stringify(intake));
 
     // If this entry was a logged meal, unmark it in done list
-    if (String(logId).startsWith('meallog_')) {
-      const parts = logId.split('_');
-      const mealIdx = parseInt(parts[1], 10);
+    const mealIdx = (removed && removed.mealIndex !== undefined && !isNaN(removed.mealIndex))
+      ? removed.mealIndex
+      : (String(logId).startsWith('meallog_') ? parseInt(logId.split('_')[1], 10) : null);
+
+    if (mealIdx !== null && !isNaN(mealIdx)) {
       let list = this.getDoneMealsList();
       if (list.includes(mealIdx)) {
         list = list.filter(i => i !== mealIdx);
@@ -517,13 +518,32 @@ class RtmApp {
       return;
     }
 
-    container.innerHTML = log.map(item => `
+    container.innerHTML = log.map(item => {
+      // Determine if item is a Meal (from meal plan done) or a single Food item (from macros)
+      const isMeal = (item.type === 'meal') || String(item.id).startsWith('meallog_');
+      let displayName = item.name;
+      if (isMeal) {
+        if (item.mealIndex !== undefined && !isNaN(item.mealIndex)) {
+          displayName = `Meal ${item.mealIndex + 1}`;
+        } else if (String(item.id).startsWith('meallog_')) {
+          const parts = String(item.id).split('_');
+          const idx = parseInt(parts[1], 10);
+          displayName = isNaN(idx) ? (item.name && item.name.startsWith('Meal ') ? item.name : 'Meal') : `Meal ${idx + 1}`;
+        } else if (!displayName || !displayName.toLowerCase().startsWith('meal ')) {
+          displayName = 'Meal';
+        }
+      }
+
+      return `
       <div class="flex items-center justify-between p-3 rounded-xl bg-slate-950/70 border border-white/5 hover:border-white/15 transition text-xs gap-3">
         <div class="space-y-0.5 flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <span class="font-bold text-white text-xs sm:text-sm truncate">${item.name}</span>
-            <span class="text-[11px] font-mono text-emerald-400 font-semibold">${item.grams}g</span>
-            <span class="text-[10px] text-slate-500 font-mono">${item.time}</span>
+            <span class="font-bold text-white text-xs sm:text-sm truncate">${displayName}</span>
+            ${isMeal
+              ? `<span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">Meal Plan</span>`
+              : (item.grams ? `<span class="text-[11px] font-mono text-emerald-400 font-semibold">${item.grams}g</span>` : '')
+            }
+            <span class="text-[10px] text-slate-500 font-mono">${item.time || ''}</span>
           </div>
           <div class="text-[11px] text-slate-400 font-mono flex items-center gap-2 flex-wrap">
             <span class="text-emerald-400 font-semibold">+${item.protein}g P</span> · 
@@ -537,7 +557,8 @@ class RtmApp {
           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
       </div>
-    `).join('');
+    `;
+    }).join('');
   }
 
   openFoodLogModal() {
@@ -2007,7 +2028,7 @@ class RtmApp {
             <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-white/5 gap-2">
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 flex-wrap">
-                  <h5 class="font-extrabold ${isDone ? 'text-slate-400 line-through' : 'text-white'} text-sm sm:text-base">${meal.meal}</h5>
+                  <h5 class="font-extrabold ${isDone ? 'text-slate-400 line-through' : 'text-white'} text-sm sm:text-base">Meal ${index + 1} <span class="text-xs font-medium ${isDone ? 'text-slate-500' : 'text-slate-400'}">(${meal.meal})</span></h5>
                   ${isDone ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-white/10">Logged to Overview</span>` : ''}
                 </div>
                 <div class="text-xs font-mono ${isDone ? 'text-slate-500' : 'text-cyan-400 font-semibold'} mt-0.5">${meal.macros}</div>
