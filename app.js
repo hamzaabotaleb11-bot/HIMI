@@ -89,6 +89,8 @@ class RtmApp {
 
   initFoodMacroTracker() {
     const foodSelect = document.getElementById('macroFoodSelect');
+    const searchInput = document.getElementById('macroFoodSearch');
+    const searchCount = document.getElementById('foodSearchCount');
     const gramsInput = document.getElementById('macroFoodGrams');
     const toggleBtn = document.getElementById('toggleAddMacroBtn');
     const closeBtn = document.getElementById('closeAddMacroBtn');
@@ -96,11 +98,36 @@ class RtmApp {
     const resetBtn = document.getElementById('resetDailyMacrosBtn');
     const addSection = document.getElementById('addMacroSection');
 
-    // Populate food select with grouped categories
-    if (foodSelect && window.PlanEngine && window.PlanEngine.foodDatabase) {
+    // Populate food select with grouped categories and optional search query
+    const populateFoodSelect = (query = '') => {
+      if (!foodSelect || !window.PlanEngine || !window.PlanEngine.foodDatabase) return;
       foodSelect.innerHTML = '';
+      const cleanQ = String(query || '').trim().toLowerCase();
+
+      const matchedFoods = cleanQ
+        ? window.PlanEngine.foodDatabase.filter(item =>
+            item.name.toLowerCase().includes(cleanQ) || item.category.toLowerCase().includes(cleanQ)
+          )
+        : window.PlanEngine.foodDatabase;
+
+      if (searchCount) {
+        searchCount.textContent = cleanQ
+          ? `${matchedFoods.length} ${matchedFoods.length === 1 ? 'match' : 'matches'}`
+          : '';
+      }
+
+      if (matchedFoods.length === 0) {
+        const emptyOpt = document.createElement('option');
+        emptyOpt.value = '';
+        emptyOpt.disabled = true;
+        emptyOpt.selected = true;
+        emptyOpt.textContent = `No foods matching "${query}"`;
+        foodSelect.appendChild(emptyOpt);
+        return;
+      }
+
       const categories = {};
-      window.PlanEngine.foodDatabase.forEach(item => {
+      matchedFoods.forEach(item => {
         if (!categories[item.category]) categories[item.category] = [];
         categories[item.category].push(item);
       });
@@ -116,6 +143,21 @@ class RtmApp {
         });
         foodSelect.appendChild(optgroup);
       });
+
+      if (foodSelect.options.length > 0) {
+        foodSelect.selectedIndex = 0;
+        this.updateFoodMacroPreview();
+      }
+    };
+
+    // Initial population
+    populateFoodSelect('');
+
+    // Search input listener
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        populateFoodSelect(e.target.value);
+      });
     }
 
     // Toggle panel
@@ -123,8 +165,14 @@ class RtmApp {
       toggleBtn.addEventListener('click', () => {
         addSection.classList.toggle('hidden');
         if (!addSection.classList.contains('hidden')) {
-          this.updateFoodMacroPreview();
-          if (gramsInput) gramsInput.focus();
+          if (searchInput) {
+            searchInput.value = '';
+            populateFoodSelect('');
+            searchInput.focus();
+          } else {
+            this.updateFoodMacroPreview();
+            if (gramsInput) gramsInput.focus();
+          }
         }
       });
     }
@@ -143,12 +191,18 @@ class RtmApp {
       gramsInput.addEventListener('input', () => this.updateFoodMacroPreview());
     }
 
-    // Add button
+    // Add button: adds food to daily totals and automatically closes menu
     if (addBtn) {
       addBtn.addEventListener('click', () => {
         const foodId = foodSelect ? foodSelect.value : 'beef';
+        if (!foodId) return;
         const grams = parseFloat(gramsInput ? gramsInput.value : 100) || 100;
         this.addFoodToDailyMacros(foodId, grams);
+
+        // Automatically close the menu after adding
+        if (addSection) {
+          addSection.classList.add('hidden');
+        }
       });
     }
 
