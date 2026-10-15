@@ -436,13 +436,65 @@ var PlanEngine = {
         tierNameAr: 'اقتصادي ذكي (بروتين عالي / تكلفة منخفضة)',
         estimatedCostPerDay: '$4.50 - $6.50 / day',
         estimatedCostPerDayAr: '٤.٥ - ٦.٥ دولار / يومياً',
+        estimatedCostPerMonth: '$135 - $195 / mo',
+        estimatedCostPerMonthAr: '١٣٥ - ١٩٥ دولار / شهرياً',
         groceryList: [
-          { item: 'Whole Eggs (30 pack)', itemAr: 'بيض بلدي / مائدة (كرتونة)', reason: 'Cheap complete protein & healthy fats', reasonAr: 'بروتين متكامل ودهون صحية بأقل سعر' },
-          { item: 'Rolled Oats (1kg bag)', itemAr: 'شوفان حبة كاملة (١ كجم)', reason: 'Complex carbs and high fiber', reasonAr: 'كربوهيدرات معقدة وألياف عالية للشبع' },
-          { item: 'Canned Tuna / Sardines', itemAr: 'تونا معلبة / سردين', reason: 'Lean protein on a budget', reasonAr: 'بروتين صافي أوميغا 3 ممتاز' },
-          { item: 'Cottage Cheese / Labneh', itemAr: 'جبن قريش / لبنة', reason: 'High casein protein for overnight recovery', reasonAr: 'بروتين كازين بطيء الامتصاص للعضلات' },
-          { item: 'White/Brown Rice & Lentils', itemAr: 'أرز أبيض/بني وعدس أصفر/أبو جبة', reason: 'Bulk, cheap clean energy', reasonAr: 'طاقة نظيفة وموفرة جداً' },
-          { item: 'Peanut Butter & Bananas', itemAr: 'زبدة فول سوداني وموز', reason: 'High calorie density & potassium', reasonAr: 'سعرات صحية وبوتاسيوم للطاقة' }
+          {
+            item: 'Whole Eggs (30-Egg Trays)',
+            monthlyQty: '4 Trays (120 Eggs)',
+            category: 'Complete Protein',
+            reason: '3 eggs at breakfast + 1 egg at dinner daily (~4 eggs/day)',
+            monthlyTarget: '120 eggs / month'
+          },
+          {
+            item: 'Canned Tuna / Sardines (in Water)',
+            monthlyQty: '30 Cans (1 Full Case)',
+            category: 'Lean Protein',
+            reason: '1 can daily for quick, zero-prep 35g midday lean protein',
+            monthlyTarget: '30 cans / month'
+          },
+          {
+            item: 'Cottage Cheese / Labneh (جبن قريش)',
+            monthlyQty: '9 Tubs (4.5 kg total)',
+            category: 'Slow-Release Casein',
+            reason: '150g every night before sleep for continuous muscle recovery',
+            monthlyTarget: '4.5 kg / month'
+          },
+          {
+            item: 'Rolled Oats (Whole Grain)',
+            monthlyQty: '2 Bags (2 kg total)',
+            category: 'Complex Carbs',
+            reason: '60g daily with morning eggs & warm water/milk for fiber',
+            monthlyTarget: '2 kg / month'
+          },
+          {
+            item: 'White / Brown Rice & Dry Lentils',
+            monthlyQty: '5 kg Rice + 2 kg Lentils',
+            category: 'Clean Bulk Energy',
+            reason: '150g cooked rice lunch + lentils for high-value carbs',
+            monthlyTarget: '7 kg bulk grains / month'
+          },
+          {
+            item: 'Natural Peanut Butter',
+            monthlyQty: '2 Jars (1 kg total)',
+            category: 'Healthy Fats',
+            reason: 'Daily 1 tbsp snack toast for dense healthy fats & calories',
+            monthlyTarget: '2 jars (1 kg) / month'
+          },
+          {
+            item: 'Bananas & Fresh Salad Veggies',
+            monthlyQty: '4-5 kg Bananas + 6 kg Salad',
+            category: 'Micronutrients & Potassium',
+            reason: 'Daily breakfast banana + fresh cucumber & tomato salad',
+            monthlyTarget: 'Weekly market restock (~10 kg/mo)'
+          },
+          {
+            item: 'Whole Wheat Pita / Bread',
+            monthlyQty: '5 Packs (60 Pitas/Slices)',
+            category: 'Complex Carbs',
+            reason: 'Daily snack bread + dinner pita with cottage cheese',
+            monthlyTarget: '60 servings / month'
+          }
         ],
         dailyMeals: [
           {
@@ -480,12 +532,65 @@ var PlanEngine = {
         tierNameAr: 'متوازن ومتنوع (ميزانية متوسطة)',
         estimatedCostPerDay: '$8.00 - $12.00 / day',
         estimatedCostPerDayAr: '٨ - ١٢ دولار / يومياً',
+        estimatedCostPerMonth: '$240 - $360 / mo',
+        estimatedCostPerMonthAr: '٢٤٠ - ٣٦٠ دولار / شهرياً',
         groceryList: [
-          { item: 'Chicken Breast (fresh bulk)', itemAr: 'صدور دجاج طازجة (شراء كميات)', reason: 'Pure lean protein staple', reasonAr: 'المصدر الأساسي للبروتين الصافي' },
-          { item: 'Greek Yogurt (plain)', itemAr: 'زبادي يوناني طبيعي', reason: 'High protein & gut health', reasonAr: 'بروتين عالي وخمائر صحية للأمعاء' },
-          { item: 'Sweet Potatoes & Quinoa', itemAr: 'بطاطا حلوة وكينوا', reason: 'Low glycemic carbs & vitamins', reasonAr: 'كربوهيدرات بطيئة الهضم وفيتامينات' },
-          { item: 'Frozen Mixed Berries', itemAr: 'توت مشكل مجمد', reason: 'Antioxidants & great flavor', reasonAr: 'مضادات أكسدة وسعرات قليلة' },
-          { item: 'Olive Oil & Raw Almonds', itemAr: 'زيت زيتون بكر ولوز نيء', reason: 'Hormone balance & brain health', reasonAr: 'دهون غير مشبعة تدعم الهرمونات' }
+          {
+            item: 'Fresh Chicken Breast (Bulk Value Pack)',
+            monthlyQty: '7 - 8 kg Fresh Breast',
+            category: 'Lean Protein',
+            reason: '180g grilled chicken daily for high-bioavailability lunch',
+            monthlyTarget: '7.5 kg / month (~250g raw/day)'
+          },
+          {
+            item: 'Greek Yogurt (Plain 0% Non-Fat)',
+            monthlyQty: '6 Tubs (6 kg total)',
+            category: 'Gut Health & Protein',
+            reason: '200g daily morning bowl with berries and rolled oats',
+            monthlyTarget: '6 kg / month (1 kg tub weekly)'
+          },
+          {
+            item: 'Farm Fresh Eggs (30-Egg Trays)',
+            monthlyQty: '3 Trays (90 Eggs)',
+            category: 'Essential Choline',
+            reason: '2 eggs daily with breakfast + 1 hard-boiled snack',
+            monthlyTarget: '90 eggs / month'
+          },
+          {
+            item: 'Lean Minced Beef / Sirloin (90/10)',
+            monthlyQty: '3 - 4 kg Lean Beef',
+            category: 'Heme Iron & Zinc',
+            reason: '150g portion 3-4 nights a week for dinner variation',
+            monthlyTarget: '3.5 kg / month'
+          },
+          {
+            item: 'Sweet Potatoes & Quinoa',
+            monthlyQty: '6 kg Potatoes + 1.5 kg Quinoa',
+            category: 'Low-GI Complex Carbs',
+            reason: '200g baked sweet potato lunch + dinner quinoa bowls',
+            monthlyTarget: '7.5 kg complex carbs / month'
+          },
+          {
+            item: 'Frozen Mixed Berries (Blueberries & Strawberries)',
+            monthlyQty: '3 Bags (3 kg total)',
+            category: 'Antioxidants & Fiber',
+            reason: '100g daily with morning Greek yogurt bowl',
+            monthlyTarget: '3 kg / month'
+          },
+          {
+            item: 'Extra Virgin Olive Oil & Raw Almonds',
+            monthlyQty: '2 Bottles (1.5L) + 1 kg Almonds',
+            category: 'Hormone Support Fats',
+            reason: 'Daily 15ml salad/cooking oil + afternoon handful of almonds',
+            monthlyTarget: '1.5L EVOO + 1 kg almonds / month'
+          },
+          {
+            item: 'Fresh Broccoli & Baby Greens',
+            monthlyQty: 'Weekly fresh buy (~6 kg/mo)',
+            category: 'Micronutrients',
+            reason: 'Daily steamed broccoli lunch + dressed dinner greens',
+            monthlyTarget: '6 kg fresh greens / month'
+          }
         ],
         dailyMeals: [
           {
@@ -523,11 +628,65 @@ var PlanEngine = {
         tierNameAr: 'أداء عالي وفاخر (ميزانية مرنة)',
         estimatedCostPerDay: '$15.00+ / day',
         estimatedCostPerDayAr: '١٥+ دولار / يومياً',
+        estimatedCostPerMonth: '$450+ / mo',
+        estimatedCostPerMonthAr: '٤٥٠+ دولار / شهرياً',
         groceryList: [
-          { item: 'Fresh Salmon Fillets', itemAr: 'فيليه سمك سلمون طازج', reason: 'Premium Omega-3s & high quality protein', reasonAr: 'أعلى جودة بروتين وأوميغا 3 نقية' },
-          { item: 'Grass-fed Beef Steaks', itemAr: 'لحم بقري عضوي (ستيك)', reason: 'Natural creatine, iron & zinc', reasonAr: 'كرياتين وحديد طبيعي لبناء القوة' },
-          { item: 'Organic Avocados & Nuts', itemAr: 'أفوكادو عضوي ومكسرات منوعة', reason: 'Quality healthy fats', reasonAr: 'دهون مفيدة ومضادات أكسدة' },
-          { item: 'Whey Isolate Protein', itemAr: 'مكمل واي بروتين آيزوليت', reason: 'Ultra-fast absorption post-workout', reasonAr: 'سريع الامتصاص بعد التمرين' }
+          {
+            item: 'Fresh Salmon Fillets & White Fish',
+            monthlyQty: '5 - 6 kg Fresh Fillets',
+            category: 'Omega-3 EPA/DHA',
+            reason: '200g fresh salmon or cod 4x/week for peak brain & recovery',
+            monthlyTarget: '5.5 kg fresh fish / month'
+          },
+          {
+            item: 'Grass-Fed Sirloin / Beef Steaks',
+            monthlyQty: '5 - 6 kg Prime Steaks',
+            category: 'Natural Creatine & Iron',
+            reason: '200g steak 3x/week for natural strength and hormone peak',
+            monthlyTarget: '5 kg prime steak / month'
+          },
+          {
+            item: 'Whey Protein Isolate Powder',
+            monthlyQty: '1 Large Tub (2 lb / 30 Servings)',
+            category: 'Ultra-Fast Absorption',
+            reason: '1 scoop immediately post-workout with almond milk',
+            monthlyTarget: '1 tub (30 scoops) / month'
+          },
+          {
+            item: 'Organic Pasture-Raised Eggs',
+            monthlyQty: '3-4 Cartons (90-120 Eggs)',
+            category: 'Bioavailable Protein',
+            reason: '3 organic eggs daily with morning sourdough & smoked salmon',
+            monthlyTarget: '90-120 organic eggs / month'
+          },
+          {
+            item: 'Fresh Organic Hass Avocados',
+            monthlyQty: '25 - 30 Whole Avocados',
+            category: 'Monounsaturated Fats',
+            reason: '1/2 to 1 whole avocado daily across breakfast & salads',
+            monthlyTarget: '30 avocados / month (~1 daily)'
+          },
+          {
+            item: 'Organic Jasmine Rice & Tri-Color Quinoa',
+            monthlyQty: '4 kg Jasmine Rice + 2 kg Quinoa',
+            category: 'Clean Performance Fuel',
+            reason: 'Daily post-workout carb reload & dinner bowl base',
+            monthlyTarget: '6 kg organic grains / month'
+          },
+          {
+            item: 'Artisanal Sourdough & Almond Butter',
+            monthlyQty: '4 Fresh Loaves + 2 Jars Butter',
+            category: 'Fermented Carbs & Fats',
+            reason: 'Daily breakfast sourdough toast + workout energy bites',
+            monthlyTarget: '4 loaves + 2 jars / month'
+          },
+          {
+            item: 'Fresh Asparagus, Baby Spinach & Organic Berries',
+            monthlyQty: 'Weekly premium produce (~8 kg/mo)',
+            category: 'Superfoods & Micronutrients',
+            reason: 'Daily grilled asparagus, organic berry bowl & salad greens',
+            monthlyTarget: '8 kg premium produce / month'
+          }
         ],
         dailyMeals: [
           {

@@ -313,9 +313,20 @@
     <div id="pane-nutrition" class="tab-content hidden space-y-6">
       <!-- Grocery List Card -->
       <div class="glass-card p-6 border border-white/10 space-y-4">
-        <h4 class="text-sm font-bold text-emerald-400 flex items-center gap-2">
-          Core Grocery Staples (High-Value Protein & Carbs)
-        </h4>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-white/10 gap-2">
+          <div>
+            <h4 class="text-sm sm:text-base font-bold text-emerald-400 flex items-center gap-2">
+              <span id="groceryHeadingTitle">Monthly Grocery Staples</span>
+            </h4>
+            <p id="groceryHeadingSub" class="text-xs text-slate-400 mt-0.5">
+              Calculated monthly supply needed for your daily meal plan based on your selected budget.
+            </p>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span id="groceryTierBadge" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"></span>
+            <span id="groceryMonthlyCostBadge" class="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30"></span>
+          </div>
+        </div>
         <div id="groceryListContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
       </div>
 

@@ -909,15 +909,45 @@ class RtmApp {
     }
 
     // 3. Nutrition Tab Render
+    const groceryTitle = document.getElementById('groceryHeadingTitle');
+    if (groceryTitle) {
+      const cleanTierName = (mealPlan.tierName || 'Budget-Smart').split('(')[0].trim();
+      groceryTitle.textContent = `Monthly Grocery Staples (${cleanTierName})`;
+    }
+
+    const tierBadge = document.getElementById('groceryTierBadge');
+    if (tierBadge) {
+      const tierMap = {
+        budget: 'Smart Budget',
+        moderate: 'Standard Fresh',
+        premium: 'Performance'
+      };
+      tierBadge.textContent = tierMap[this.profile.budgetTier] || 'Smart Budget';
+    }
+
+    const costBadge = document.getElementById('groceryMonthlyCostBadge');
+    if (costBadge) {
+      costBadge.textContent = mealPlan.estimatedCostPerMonth ? `~${mealPlan.estimatedCostPerMonth}` : `~${mealPlan.estimatedCostPerDay}`;
+    }
+
     const groceryContainer = document.getElementById('groceryListContainer');
     if (groceryContainer) {
       groceryContainer.innerHTML = mealPlan.groceryList.map(item => `
-        <div class="flex items-start justify-between p-3.5 rounded-lg bg-slate-900/60 border border-white/5">
-          <div>
-            <div class="font-semibold text-white text-sm">${item.item}</div>
-            <div class="text-xs text-slate-400 mt-0.5">${item.reason}</div>
+        <div class="flex items-start justify-between p-3.5 rounded-lg bg-slate-900/60 border border-white/5 hover:border-emerald-500/30 transition">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="font-semibold text-white text-sm">${item.item}</span>
+              ${item.monthlyQty ? `<span class="text-[11px] font-mono px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">${item.monthlyQty}</span>` : ''}
+            </div>
+            <div class="text-xs text-slate-400 leading-relaxed">${item.reason}</div>
+            ${item.monthlyTarget ? `
+              <div class="text-[11px] text-slate-400 flex items-center gap-1.5 pt-0.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
+                <span>Monthly Target: <strong class="text-slate-300">${item.monthlyTarget}</strong></span>
+              </div>
+            ` : ''}
           </div>
-          <span class="badge-pill bg-emerald-500/10 text-emerald-400 text-xs">High Value</span>
+          <span class="badge-pill bg-emerald-500/10 text-emerald-400 text-xs shrink-0 ml-2 font-medium">${item.category || 'High Value'}</span>
         </div>
       `).join('');
     }
