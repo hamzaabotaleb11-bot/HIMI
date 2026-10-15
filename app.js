@@ -485,22 +485,28 @@ class RtmApp {
 
   renderFoodLog() {
     const container = document.getElementById('todayFoodLogList');
-    const section = document.getElementById('todayFoodLogSection');
     const countEl = document.getElementById('todayFoodLogCount');
-    if (!container || !section) return;
+    const badgeEl = document.getElementById('overviewFoodLogCountBadge');
+    if (!container) return;
 
     const log = this.getDailyFoodLog();
-    if (countEl) {
-      countEl.textContent = log.length > 0 ? `${log.length} ${log.length === 1 ? 'item' : 'items'}` : '';
-    }
+    const countText = log.length > 0 ? `${log.length} ${log.length === 1 ? 'item' : 'items'}` : '0 items';
+    if (countEl) countEl.textContent = countText;
+    if (badgeEl) badgeEl.textContent = `${log.length}`;
 
     if (log.length === 0) {
-      section.classList.add('hidden');
-      container.innerHTML = '';
+      container.innerHTML = `
+        <div class="p-8 text-center text-slate-400 space-y-2">
+          <svg class="w-8 h-8 text-slate-600 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+          </svg>
+          <p class="text-xs font-semibold text-slate-300">No foods logged today yet</p>
+          <p class="text-[11px] text-slate-500 max-w-xs mx-auto">Use <span class="text-emerald-400 font-bold">+ Add to Macros</span> or mark meals <span class="text-emerald-400 font-bold">Done</span> to track your daily intake.</p>
+        </div>
+      `;
       return;
     }
 
-    section.classList.remove('hidden');
     container.innerHTML = log.map(item => `
       <div class="flex items-center justify-between p-3 rounded-xl bg-slate-950/70 border border-white/5 hover:border-white/15 transition text-xs gap-3">
         <div class="space-y-0.5 flex-1 min-w-0">
@@ -524,8 +530,42 @@ class RtmApp {
     `).join('');
   }
 
+  openFoodLogModal() {
+    this.renderFoodLog();
+    const modal = document.getElementById('foodLogModal');
+    if (modal) modal.classList.remove('opacity-0', 'pointer-events-none');
+  }
+
+  closeFoodLogModal() {
+    const modal = document.getElementById('foodLogModal');
+    if (modal) modal.classList.add('opacity-0', 'pointer-events-none');
+  }
+
   // Event bindings
   bindEvents() {
+    // Food Log Modal (On-demand view of today's logged foods)
+    const btnOpenFoodLog = document.getElementById('btnOpenFoodLog');
+    if (btnOpenFoodLog) {
+      btnOpenFoodLog.addEventListener('click', () => this.openFoodLogModal());
+    }
+
+    const closeFoodLogModalBtn = document.getElementById('closeFoodLogModalBtn');
+    if (closeFoodLogModalBtn) {
+      closeFoodLogModalBtn.addEventListener('click', () => this.closeFoodLogModal());
+    }
+
+    const closeFoodLogModalBottomBtn = document.getElementById('closeFoodLogModalBottomBtn');
+    if (closeFoodLogModalBottomBtn) {
+      closeFoodLogModalBottomBtn.addEventListener('click', () => this.closeFoodLogModal());
+    }
+
+    const foodLogModal = document.getElementById('foodLogModal');
+    if (foodLogModal) {
+      foodLogModal.addEventListener('click', (e) => {
+        if (e.target === foodLogModal) this.closeFoodLogModal();
+      });
+    }
+
     // Settings Modal
     const openSettingsBtn = document.getElementById('openSettingsBtn');
     if (openSettingsBtn) {
@@ -1476,7 +1516,19 @@ class RtmApp {
     // Current daily intake progress
     const intake = this.getDailyIntake();
 
-    // 1. Overview Render: progress / goal with a "/" in between
+    // 1. Overview Render: Day of Week & Date Display
+    const now = new Date();
+    const daysFull = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const monthsShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const dayName = daysFull[now.getDay()];
+    const dateFormatted = `${monthsShort[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+
+    const dayTextEl = document.getElementById('overviewDayText');
+    if (dayTextEl) dayTextEl.textContent = dayName;
+    const dateTextEl = document.getElementById('overviewDateText');
+    if (dateTextEl) dateTextEl.textContent = dateFormatted;
+
+    // Overview Calories: progress / goal with a "/" in between
     const targetCalEl = document.getElementById('macroTargetCal');
     if (targetCalEl) {
       targetCalEl.innerHTML = `<span class="text-white">${intake.calories.toLocaleString()}</span> / <span class="text-emerald-400">${macros.calories.toLocaleString()} kcal</span>`;
