@@ -58,6 +58,9 @@ class RtmApp {
       ? [...this.profile.selectedDays]
       : ['Mon', 'Tue', 'Thu', 'Fri'];
 
+    // Weekly meal staples show/hide preference (defaults to false so meals are primary)
+    this.showWeeklyStaples = localStorage.getItem('rtm_show_weekly_staples') === 'true';
+
     this.init();
   }
 
@@ -258,6 +261,54 @@ class RtmApp {
       // 3. Re-render UI
       this.renderAll();
       this.renderFoodLog();
+    }
+  }
+
+  // Toggle Weekly Meal Staples show/hide state
+  toggleWeeklyStaples(forceState) {
+    if (typeof forceState === 'boolean') {
+      this.showWeeklyStaples = forceState;
+    } else {
+      this.showWeeklyStaples = !this.showWeeklyStaples;
+    }
+    localStorage.setItem('rtm_show_weekly_staples', this.showWeeklyStaples ? 'true' : 'false');
+    this.updateWeeklyStaplesVisibility();
+  }
+
+  // Synchronize Weekly Meal Staples show/hide UI state
+  updateWeeklyStaplesVisibility() {
+    const body = document.getElementById('weeklyStaplesBody');
+    const btn = document.getElementById('toggleWeeklyStaplesBtn');
+    const btnText = document.getElementById('toggleWeeklyStaplesBtnText');
+    const btnIcon = document.getElementById('toggleWeeklyStaplesIcon');
+    const quickBtnText = document.getElementById('quickToggleStaplesText');
+    const quickBtnIcon = document.getElementById('quickToggleStaplesIcon');
+
+    if (body) {
+      body.classList.toggle('hidden', !this.showWeeklyStaples);
+    }
+    if (btn) {
+      btn.setAttribute('aria-expanded', this.showWeeklyStaples ? 'true' : 'false');
+    }
+    if (btnText) {
+      btnText.textContent = this.showWeeklyStaples ? 'Hide Staples' : 'Show Staples';
+    }
+    if (btnIcon) {
+      if (this.showWeeklyStaples) {
+        btnIcon.classList.add('rotate-180');
+      } else {
+        btnIcon.classList.remove('rotate-180');
+      }
+    }
+    if (quickBtnText) {
+      quickBtnText.textContent = this.showWeeklyStaples ? 'Hide Staples' : 'Weekly Staples';
+    }
+    if (quickBtnIcon) {
+      if (this.showWeeklyStaples) {
+        quickBtnIcon.classList.add('rotate-180');
+      } else {
+        quickBtnIcon.classList.remove('rotate-180');
+      }
     }
   }
 
@@ -633,6 +684,33 @@ class RtmApp {
     const btnQuickGen = document.getElementById('btnQuickGenerateWorkout');
     if (btnQuickGen) {
       btnQuickGen.addEventListener('click', () => this.quickGenerateWorkout());
+    }
+
+    // Weekly Meal Staples show/hide toggle option (Meals Tab)
+    const toggleWeeklyStaplesBtn = document.getElementById('toggleWeeklyStaplesBtn');
+    if (toggleWeeklyStaplesBtn) {
+      toggleWeeklyStaplesBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.toggleWeeklyStaples();
+      });
+    }
+
+    const weeklyStaplesHeader = document.getElementById('weeklyStaplesHeader');
+    if (weeklyStaplesHeader) {
+      weeklyStaplesHeader.addEventListener('click', () => {
+        this.toggleWeeklyStaples();
+      });
+    }
+
+    const quickToggleStaplesBtn = document.getElementById('quickToggleStaplesBtn');
+    if (quickToggleStaplesBtn) {
+      quickToggleStaplesBtn.addEventListener('click', () => {
+        const willOpen = !this.showWeeklyStaples;
+        this.toggleWeeklyStaples();
+        if (willOpen) {
+          document.getElementById('weeklyStaplesCard')?.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
     }
 
     // Navigation Tabs delegation
@@ -2058,6 +2136,9 @@ class RtmApp {
         `;
       }).join('');
     }
+
+    // Synchronize weekly meal staples show/hide visibility
+    this.updateWeeklyStaplesVisibility();
 
     // 4. Progress Tab Render (Swapped: number & weight on the left, note entry on the right)
     const historyContainer = document.getElementById('progressHistoryList');
